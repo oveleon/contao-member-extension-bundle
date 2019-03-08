@@ -1,0 +1,23 @@
+<?php
+
+/*
+ * This file is part of Oveleon ContaoOnofficeShopTv Bundle.
+ *
+ * (c) https://www.oveleon.de/
+ */
+
+// Back end modules
+$GLOBALS['BE_MOD']['system']['member_settings'] = array
+(
+    'tables'            => array('tl_member_settings'),
+    'hideInNavigation'  => true,
+);
+
+// Front end modules
+array_insert($GLOBALS['FE_MOD']['user'], -1, array
+(
+    'avatar' => '\\Oveleon\\ContaoMemberExtensionBundle\\ModuleAvatar'
+));
+
+// Register hooks
+$GLOBALS['TL_HOOKS']['updatePersonalData'][] = array('\\Oveleon\\ContaoMemberExtensionBundle\\Member', 'updateAvatar');
