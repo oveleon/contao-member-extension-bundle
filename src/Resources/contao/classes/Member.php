@@ -106,10 +106,12 @@ class Member extends \Frontend
             $_SESSION['FILES']['avatar'] = $_SESSION['FILES']['avatar'];
 
             // Overwrite the upload folder with user's home directory
-            if ($objMember->assignDir && $objMember->homeDir)
+            if (!$objMember->assignDir || !$objMember->homeDir)
             {
-                $intUploadFolder = $objMember->homeDir;
+                return;
             }
+
+            $intUploadFolder = $objMember->homeDir;
 
             $objUploadFolder = \FilesModel::findByUuid($intUploadFolder);
 
