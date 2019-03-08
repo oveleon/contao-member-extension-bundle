@@ -21,3 +21,9 @@ array_insert($GLOBALS['FE_MOD']['user'], -1, array
 
 // Register hooks
 $GLOBALS['TL_HOOKS']['updatePersonalData'][] = array('\\Oveleon\\ContaoMemberExtensionBundle\\Member', 'updateAvatar');
+
+// Style sheet
+if (TL_MODE == 'BE')
+{
+    $GLOBALS['TL_CSS'][] = 'bundles/contaomemberextension/style.css|static';
+}
