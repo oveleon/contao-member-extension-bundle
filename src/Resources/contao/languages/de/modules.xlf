@@ -10,12 +10,12 @@
         <target>Mitglieder-Einstellungen vornehmen</target>
       </trans-unit>
       <trans-unit id="FMD.avatar.0">
-        <source>Avatar</source>
-        <target>Avatar</target>
+        <source>Profile picture</source>
+        <target>Profilbild</target>
       </trans-unit>
       <trans-unit id="FMD.avatar.1">
-        <source>Displays the avatar of the member.</source>
-        <target>Zeigt den Avatar des Mitgliedes an.</target>
+        <source>Displays the profile picture of the member.</source>
+        <target>Zeigt das Profilbild des Mitgliedes an.</target>
       </trans-unit>
     </body>
   </file>
