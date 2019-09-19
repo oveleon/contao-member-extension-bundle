@@ -2,12 +2,12 @@
   <file datatype="php" original="src/Resources/contao/languages/en/tl_member.php" source-language="en" target-language="de">
     <body>
       <trans-unit id="tl_member.avatar.0">
-        <source>Avatar</source>
-        <target>Avatar</target>
+        <source>Profile picture</source>
+        <target>Profilbild</target>
       </trans-unit>
       <trans-unit id="tl_member.avatar.1">
-        <source>Here you can choose an avatar for the member.</source>
-        <target>Hier können Sie einen Avatar für das Mitglied auswählen.</target>
+        <source>Here you can choose a profile picture for the member.</source>
+        <target>Hier können Sie ein Profilbild für das Mitglied auswählen.</target>
       </trans-unit>
       <trans-unit id="tl_member.settings.0">
         <source>Settings</source>
