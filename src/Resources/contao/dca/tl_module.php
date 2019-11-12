@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Oveleon ContaoOnofficeShopTv Bundle.
+ * This file is part of Oveleon ContaoMemberExtension Bundle.
  *
  * (c) https://www.oveleon.de/
  */

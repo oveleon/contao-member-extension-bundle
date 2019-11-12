@@ -1,11 +1,9 @@
 <?php
 
 /*
- * This file is part of Contao.
+ * This file is part of Oveleon ContaoMemberExtension Bundle.
  *
- * (c) Leo Feyer
- *
- * @license LGPL-3.0-or-later
+ * (c) https://www.oveleon.de/
  */
 
 namespace Oveleon\ContaoMemberExtensionBundle;
