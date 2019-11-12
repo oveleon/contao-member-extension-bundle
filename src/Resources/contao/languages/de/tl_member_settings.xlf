@@ -2,16 +2,16 @@
   <file datatype="php" original="src/Resources/contao/languages/en/tl_member.php" source-language="en" target-language="de">
     <body>
       <trans-unit id="tl_member_settings.defaultAvatar.0">
-        <source>Default avatar</source>
-        <target>Standard-Avatar</target>
+        <source>Default profile pricutre</source>
+        <target>Standard-Profilbild</target>
       </trans-unit>
       <trans-unit id="tl_member_settings.defaultAvatar.1">
-        <source>The default avatar is displayed for members who have not set their own avatar.</source>
-        <target>Der Standard-Avatar wird bei Mitgliedern angezeigt, die keinen eigene Avatar gesetzt haben.</target>
+        <source>The default profile picture is displayed for members who have not set their own profile picture.</source>
+        <target>Das Standard-Profilbild wird bei Mitgliedern angezeigt, die keinen eigens Profilbild gesetzt haben.</target>
       </trans-unit>#
       <trans-unit id="tl_member_settings.avatar_legend">
-        <source>Avatar</source>
-        <target>Avatar</target>
+        <source>Profile picture</source>
+        <target>Profilbild</target>
       </trans-unit>
     </body>
   </file>
