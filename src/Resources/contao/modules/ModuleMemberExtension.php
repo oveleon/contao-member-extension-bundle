@@ -14,7 +14,6 @@ use Contao\MemberModel;
 use Contao\Module;
 use Contao\PageModel;
 use Contao\StringUtil;
-use Contao\System;
 
 /**
  * Parent class for member modules.
