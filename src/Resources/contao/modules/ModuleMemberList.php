@@ -66,19 +66,22 @@ class ModuleMemberList extends ModuleMemberExtension
         $objGroups = MemberModel::findByGroups($this->groups);
         $arrMembers = null;
 
-        while($objGroups->next())
+        if($objGroups->count())
         {
-            if($objGroups->disable)
+            while($objGroups->next())
             {
-                continue;
+                if($objGroups->disable)
+                {
+                    continue;
+                }
+
+                $arrMemberFields = StringUtil::deserialize($this->memberFields, true);
+
+                $objTemplate = new FrontendTemplate($this->memberListTpl ?: $this->strMemberTemplate);
+                $objTemplate->setData($objGroups->current()->row());
+
+                $arrMembers[] = $this->parseMemberTemplate($objGroups->current(), $objTemplate, $arrMemberFields, $this->imgSize);
             }
-
-            $arrMemberFields = StringUtil::deserialize($this->memberFields, true);
-
-            $objTemplate = new FrontendTemplate($this->memberListTpl ?: $this->strMemberTemplate);
-            $objTemplate->setData($objGroups->current()->row());
-
-            $arrMembers[] = $this->parseMemberTemplate($objGroups->current(), $objTemplate, $arrMemberFields, $this->imgSize);
         }
 
         if(null === $arrMembers)
