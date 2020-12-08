@@ -63,14 +63,17 @@ class ModuleMemberList extends ModuleMemberExtension
 	 */
 	protected function compile()
 	{
-        $objGroups = MemberModel::findByGroups($this->groups);
+        $objGroups = MemberModel::findAll();
+        $arrGroups = StringUtil::deserialize($this->groups);
         $arrMembers = null;
 
         if($objGroups->count())
         {
             while($objGroups->next())
             {
-                if($objGroups->disable)
+                $memberGroups = StringUtil::deserialize($objGroups->groups);
+
+                if($objGroups->disable || empty($arrGroups) || !\is_array($arrGroups) || !\count(array_intersect($arrGroups, $memberGroups)))
                 {
                     continue;
                 }
