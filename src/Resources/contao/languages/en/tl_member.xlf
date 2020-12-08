@@ -1,0 +1,18 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="src/Resources/contao/languages/en/tl_member.php" source-language="en">
+    <body>
+      <trans-unit id="tl_member.avatar.0">
+        <source>Profile picture</source>
+      </trans-unit>
+      <trans-unit id="tl_member.avatar.1">
+        <source>Here you can choose a profile picture for the member.</source>
+      </trans-unit>
+      <trans-unit id="tl_member.settings.0">
+        <source>Settings</source>
+      </trans-unit>
+      <trans-unit id="tl_member.settings.1">
+        <source>Member settings</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

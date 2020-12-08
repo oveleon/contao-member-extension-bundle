@@ -1,0 +1,18 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="src/Resources/contao/languages/en/modules.php" source-language="en">
+    <body>
+      <trans-unit id="MOD.member_settings.0">
+        <source>Member settings</source>
+      </trans-unit>
+      <trans-unit id="MOD.member_settings.1">
+        <source>Configure member settings</source>
+      </trans-unit>
+      <trans-unit id="FMD.avatar.0">
+        <source>Profile picture</source>
+      </trans-unit>
+      <trans-unit id="FMD.avatar.1">
+        <source>Displays the profile picture of the member.</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
