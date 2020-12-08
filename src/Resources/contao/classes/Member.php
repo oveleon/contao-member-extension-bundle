@@ -6,22 +6,33 @@
  */
 namespace Oveleon\ContaoMemberExtensionBundle;
 
+use Contao\Config;
+use Contao\Dbafs;
+use Contao\File;
+use Contao\FilesModel;
+use Contao\Frontend;
+use Contao\FrontendUser;
+use Contao\MemberModel;
+use Contao\StringUtil;
+use Contao\Validator;
+
 /**
  * Class Member
  *
  * @author Fabian Ekert <fabian@oveleon.de>
+ * @author Daniele Sciannimanica <https://github.com/doishub>
  */
-class Member extends \Frontend
+class Member extends Frontend
 {
     /**
      * Update avatar of member
      *
-     * @param \FrontendUser $objUser
-     * @param array         $arrData
+     * @param FrontendUser $objUser
+     * @param array        $arrData
      */
     public function updateAvatar($objUser, $arrData)
     {
-        $objMember = \MemberModel::findByPk($objUser->id);
+        $objMember = MemberModel::findByPk($objUser->id);
 
         if ($objMember === null)
         {
@@ -34,7 +45,7 @@ class Member extends \Frontend
         // Sanitize the filename
         try
         {
-            $file['name'] = \StringUtil::sanitizeFileName($file['name']);
+            $file['name'] = StringUtil::sanitizeFileName($file['name']);
         }
         catch (\InvalidArgumentException $e)
         {
@@ -44,7 +55,7 @@ class Member extends \Frontend
         }
 
         // Invalid file name
-        if (!\Validator::isValidFileName($file['name']))
+        if (!Validator::isValidFileName($file['name']))
         {
             // ToDo: Fehler: Dateiname beinhaltet unzulässige Zeichen
 
@@ -63,8 +74,8 @@ class Member extends \Frontend
             return;
         }
 
-        $objFile = new \File($file['name']);
-        $uploadTypes = \StringUtil::trimsplit(',', \Config::get('validImageTypes'));
+        $objFile = new File($file['name']);
+        $uploadTypes = StringUtil::trimsplit(',', \Config::get('validImageTypes'));
 
         // File type is not allowed
         if (!\in_array($objFile->extension, $uploadTypes))
@@ -77,7 +88,7 @@ class Member extends \Frontend
 
         if ($arrImageSize = @getimagesize($file['tmp_name']))
         {
-            $intImageWidth = \Config::get('imageWidth');
+            $intImageWidth = Config::get('imageWidth');
 
             // Image exceeds maximum image width
             if ($intImageWidth > 0 && $arrImageSize[0] > $intImageWidth)
@@ -88,7 +99,7 @@ class Member extends \Frontend
                 return;
             }
 
-            $intImageHeight = \Config::get('imageHeight');
+            $intImageHeight = Config::get('imageHeight');
 
             // Image exceeds maximum image height
             if ($intImageHeight > 0 && $arrImageSize[1] > $intImageHeight)
@@ -109,7 +120,7 @@ class Member extends \Frontend
 
             $intUploadFolder = $objMember->homeDir;
 
-            $objUploadFolder = \FilesModel::findByUuid($intUploadFolder);
+            $objUploadFolder = FilesModel::findByUuid($intUploadFolder);
 
             // The upload folder could not be found
             if ($objUploadFolder === null)
@@ -126,25 +137,25 @@ class Member extends \Frontend
 
                 // Move the file to its destination
                 $this->Files->move_uploaded_file($file['tmp_name'], $strUploadFolder . '/' . $file['name']);
-                $this->Files->chmod($strUploadFolder . '/' . $file['name'], \Config::get('defaultFileChmod'));
+                $this->Files->chmod($strUploadFolder . '/' . $file['name'], Config::get('defaultFileChmod'));
 
                 $strUuid = null;
                 $strFile = $strUploadFolder . '/' . $file['name'];
 
                 // Generate the DB entries
-                if (\Dbafs::shouldBeSynchronized($strFile))
+                if (Dbafs::shouldBeSynchronized($strFile))
                 {
-                    $objModel = \FilesModel::findByPath($strFile);
+                    $objModel = FilesModel::findByPath($strFile);
 
                     if ($objModel === null)
                     {
-                        $objModel = \Dbafs::addResource($strFile);
+                        $objModel = Dbafs::addResource($strFile);
                     }
 
-                    $strUuid = \StringUtil::binToUuid($objModel->uuid);
+                    $strUuid = StringUtil::binToUuid($objModel->uuid);
 
                     // Update the hash of the target folder
-                    \Dbafs::updateFolderHashes($strUploadFolder);
+                    Dbafs::updateFolderHashes($strUploadFolder);
 
                     // Update member avatar
                     $objMember->avatar = $objModel->uuid;
@@ -195,6 +206,6 @@ class Member extends \Frontend
             $upload_max_filesize = round($upload_max_filesize * 1024 * 1024 * 1024);
         }
 
-        return min($upload_max_filesize, \Config::get('maxFileSize'));
+        return min($upload_max_filesize, Config::get('maxFileSize'));
     }
 }

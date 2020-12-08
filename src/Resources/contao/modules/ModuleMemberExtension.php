@@ -74,7 +74,7 @@ abstract class ModuleMemberExtension extends Module
      *
      * @param $objMember
      * @param $objTemplate
-     * @param $varImageSize
+     * @param $varImgSize
      */
     protected function addAvatarToTemplate($objMember, $objTemplate, $varImgSize)
     {
