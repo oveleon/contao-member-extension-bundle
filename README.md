@@ -2,9 +2,10 @@
 Member Extension for Contao 4 Open Source CMS
 
 The following functions are added by this bundle:
-- Avatar-Upload (BE/FE)
-    - Avatar Default-Image
-- _More useful member extensions will follow..._
+- Avatar (BE/FE)
+    - Fallback / Default Image
+- Memberlist
+- Memberreader
 
 ### Avatar
 For the representation of the avatar, a separate module is provided. To prepare the avatar upload for the frontend, you only have to select the option "Avatar" in the module "Personal data".

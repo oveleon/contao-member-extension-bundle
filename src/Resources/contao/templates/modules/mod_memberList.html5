@@ -1,0 +1,13 @@
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+
+<?php if ($this->members): ?>
+    <?php foreach ($this->members as $member): ?>
+        <?=$member?>
+    <?php endforeach; ?>
+<?php else: ?>
+    <p class="empty message"><?=$this->empty?></p>
+<?php endif; ?>
+
+<?php $this->endblock(); ?>

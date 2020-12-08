@@ -5,6 +5,7 @@
  *
  * (c) https://www.oveleon.de/
  */
+
 // Back end modules
 $GLOBALS['BE_MOD']['system']['member_settings'] = array
 (
@@ -15,11 +16,13 @@ $GLOBALS['BE_MOD']['system']['member_settings'] = array
 // Front end modules
 array_insert($GLOBALS['FE_MOD']['user'], -1, array
 (
-    'avatar' => '\\Oveleon\\ContaoMemberExtensionBundle\\ModuleAvatar'
+    'avatar'       => 'Oveleon\ContaoMemberExtensionBundle\ModuleAvatar',
+    'memberList'   => 'Oveleon\ContaoMemberExtensionBundle\ModuleMemberList',
+    'memberReader' => 'Oveleon\ContaoMemberExtensionBundle\ModuleMemberReader'
 ));
 
 // Register hooks
-$GLOBALS['TL_HOOKS']['updatePersonalData'][] = array('\\Oveleon\\ContaoMemberExtensionBundle\\Member', 'updateAvatar');
+$GLOBALS['TL_HOOKS']['updatePersonalData'][] = array('Oveleon\ContaoMemberExtensionBundle\Member', 'updateAvatar');
 
 // Style sheet
 if (TL_MODE == 'BE')

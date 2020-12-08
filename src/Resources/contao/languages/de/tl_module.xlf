@@ -1,0 +1,30 @@
+<?xml version="1.0" ?><xliff version="1.1">
+  <file datatype="php" original="src/Resources/contao/languages/en/tl_module.php" source-language="en" target-language="de">
+    <body>
+      <trans-unit id="tl_module.memberFields.0">
+        <source>Member fields</source>
+        <target>Mitglied-Felder</target>
+      </trans-unit>
+      <trans-unit id="tl_module.memberFields.1">
+        <source>Here you can make a selection of the fields that will be output.</source>
+        <target>Hier können Sie eine Auswhal der Felder treffen, welche ausgegeben werden.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.memberListTpl.0">
+        <source>List-Template</source>
+        <target>Listen-Template</target>
+      </trans-unit>
+      <trans-unit id="tl_module.memberListTpl.1">
+        <source>Here you can choose your own member list template.</source>
+        <target>Hier können Sie ein eigenes Mitglieder-Listen Template wählen.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.memberReaderTpl.0">
+        <source>Reader-Template</source>
+        <target>Leser-Template</target>
+      </trans-unit>
+      <trans-unit id="tl_module.memberReaderTpl.1">
+        <source>Here you can choose your own member reader template.</source>
+        <target>Hier können Sie ein eigenes Mitglied-Leser Template wählen.</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

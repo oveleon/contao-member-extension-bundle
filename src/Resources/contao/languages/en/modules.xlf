@@ -8,10 +8,22 @@
         <source>Configure member settings</source>
       </trans-unit>
       <trans-unit id="FMD.avatar.0">
-        <source>Profile picture</source>
+        <source>Profile picture / Avatar</source>
       </trans-unit>
       <trans-unit id="FMD.avatar.1">
         <source>Displays the profile picture of the member.</source>
+      </trans-unit>
+      <trans-unit id="FMD.memberList.0">
+        <source>Memberlist</source>
+      </trans-unit>
+      <trans-unit id="FMD.memberList.1">
+        <source>Displays a list of members.</source>
+      </trans-unit>
+      <trans-unit id="FMD.memberReader.0">
+        <source>Memberreader</source>
+      </trans-unit>
+      <trans-unit id="FMD.memberReader.1">
+        <source>Displays a members details.</source>
       </trans-unit>
     </body>
   </file>

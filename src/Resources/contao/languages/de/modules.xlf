@@ -10,12 +10,28 @@
         <target>Mitglieder-Einstellungen vornehmen</target>
       </trans-unit>
       <trans-unit id="FMD.avatar.0">
-        <source>Profile picture</source>
-        <target>Profilbild</target>
+        <source>Profile picture / Avatar</source>
+        <target>Profilbild / Avatar</target>
       </trans-unit>
       <trans-unit id="FMD.avatar.1">
         <source>Displays the profile picture of the member.</source>
         <target>Zeigt das Profilbild des Mitgliedes an.</target>
+      </trans-unit>
+      <trans-unit id="FMD.memberList.0">
+        <source>Memberlist</source>
+        <target>Mitgliederliste</target>
+      </trans-unit>
+      <trans-unit id="FMD.memberList.1">
+        <source>Displays a list of members.</source>
+        <target>Gibt eine Liste der Mitglieder aus.</target>
+      </trans-unit>
+      <trans-unit id="FMD.memberReader.0">
+        <source>Memberreader</source>
+        <target>Mitgliedleser</target>
+      </trans-unit>
+      <trans-unit id="FMD.memberReader.1">
+        <source>Displays a members details.</source>
+        <target>Gibt eine Details eines Mitglieds aus.</target>
       </trans-unit>
     </body>
   </file>
