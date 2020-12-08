@@ -28,7 +28,7 @@ abstract class ModuleMemberExtension extends Module
      * @param $objMember
      * @param $objTemplate
      * @param $arrMemberFields
-     * @param $varImageSize
+     * @param $varImgSize
      *
      * @return string
      */
