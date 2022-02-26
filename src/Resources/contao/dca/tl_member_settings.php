@@ -1,35 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Oveleon ContaoMemberExtension Bundle.
  *
- * (c) https://www.oveleon.de/
+ * @package     contao-member-extension-bundle
+ * @license     MIT
+ * @author      Daniele Sciannimanica   <https://github.com/doishub>
+ * @author      Fabian Ekert            <https://github.com/eki89>
+ * @author      Sebastian Zoglowek      <https://github.com/zoglo>
+ * @copyright   Oveleon                 <https://www.oveleon.de/>
  */
-
-$GLOBALS['TL_DCA']['tl_member_settings'] = array
-(
+$GLOBALS['TL_DCA']['tl_member_settings'] = [
 
 	// Config
-	'config' => array
-	(
-		'dataContainer'               => 'File',
-		'closed'                      => true
-	),
+	'config' => [
+		'dataContainer' => 'File',
+		'closed' => true
+	],
 
 	// Palettes
-	'palettes' => array
-	(
-		'default'                     => '{avatar_legend},defaultAvatar;'
-	),
+	'palettes' => ['default' =>'{avatar_legend},defaultAvatar;'],
 
 	// Fields
-	'fields' => array
-	(
-		'defaultAvatar' => array
-		(
-            'label'                   => &$GLOBALS['TL_LANG']['tl_member_settings']['defaultAvatar'],
-            'inputType'               => 'fileTree',
-            'eval'                    => array('fieldType'=>'radio', 'filesOnly'=>true, 'isGallery'=>true, 'extensions'=>Config::get('validImageTypes'), 'tl_class'=>'clr')
-		)
-	)
-);
+	'fields' => [
+		'defaultAvatar' => [
+            'label' => &$GLOBALS['TL_LANG']['tl_member_settings']['defaultAvatar'],
+            'inputType' => 'fileTree',
+            'eval' => array('fieldType'=>'radio', 'filesOnly'=>true, 'isGallery'=>true, 'extensions'=>Config::get('validImageTypes'), 'tl_class'=>'clr')
+		]
+	]
+];
