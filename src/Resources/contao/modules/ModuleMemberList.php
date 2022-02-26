@@ -1,9 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Oveleon ContaoMemberExtension Bundle.
  *
- * (c) https://www.oveleon.de/
+ * @package     contao-member-extension-bundle
+ * @license     MIT
+ * @author      Daniele Sciannimanica   <https://github.com/doishub>
+ * @author      Fabian Ekert            <https://github.com/eki89>
+ * @author      Sebastian Zoglowek      <https://github.com/zoglo>
+ * @copyright   Oveleon                 <https://www.oveleon.de/>
  */
 
 namespace Oveleon\ContaoMemberExtensionBundle;
@@ -12,7 +19,7 @@ use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
 use Contao\MemberModel;
 use Contao\StringUtil;
-use Patchwork\Utf8;
+use Contao\System;
 
 /**
  * Class ModuleMemberList
@@ -41,12 +48,12 @@ class ModuleMemberList extends ModuleMemberExtension
 	 */
 	public function generate()
 	{
-		if (TL_MODE == 'BE')
-		{
-			/** @var BackendTemplate|object $objTemplate */
-			$objTemplate = new BackendTemplate('be_wildcard');
+        $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
-			$objTemplate->wildcard = '### ' . Utf8::strtoupper($GLOBALS['TL_LANG']['FMD']['memberList'][0]) . ' ###';
+        if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request))
+        {
+            $objTemplate = new BackendTemplate('be_wildcard');
+			$objTemplate->wildcard = '### ' . mb_strtoupper($GLOBALS['TL_LANG']['FMD']['memberList'][0], 'UTF-8') . ' ###';
 			$objTemplate->title = $this->headline;
 			$objTemplate->id = $this->id;
 			$objTemplate->link = $this->name;
