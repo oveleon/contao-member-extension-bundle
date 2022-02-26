@@ -1,30 +1,50 @@
 {
-  "name":"oveleon/contao-member-extension-bundle",
-  "type":"contao-bundle",
-  "description":"Member feature extension for Contao.",
-  "keywords":["contao","member-extension-bundle"],
-  "homepage":"https://oveleon.de/",
-  "license":"MIT",
-  "authors":[
+  "name": "oveleon/contao-member-extension-bundle",
+  "type": "contao-bundle",
+  "description": "Member feature extension for Contao.",
+  "keywords": ["contao","member-extension-bundle"],
+  "homepage": "https://oveleon.de/",
+  "license": "MIT",
+  "authors": [
     {
-      "name":"Oveleon",
-      "homepage":"https://oveleon.de/",
+      "name": "Oveleon",
+      "homepage": "https://oveleon.de/",
+      "role": "Developer"
+    },
+    {
+      "name": "Daniele Sciannimanica",
+      "homepage": "https://github.com/doishub",
       "role":"Developer"
+    },
+    {
+      "name": "Fabian Ekert",
+      "homepage": "https://github.com/eki89",
+      "role": "Developer"
+    },
+    {
+      "name": "Sebastian Zoglowek",
+      "homepage": "https://github.com/zoglo",
+      "role": "Developer"
     }
   ],
-  "require":{
-    "php":">=7.1",
-    "contao/core-bundle":"^4.4"
+  "require": {
+    "php": "^7.4 || ^8.0",
+    "contao/core-bundle":"^4.9"
   },
   "require-dev": {
-    "contao/manager-plugin": "^2.0"
+    "contao/manager-plugin": "^2.3.1"
   },
   "conflict": {
     "contao/core": "*",
-    "contao/core-bundle": "4.4.1",
     "contao/manager-plugin": "<2.0 || >=3.0"
   },
-  "autoload":{
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.2.x-dev"
+    },
+    "contao-manager-plugin": "Oveleon\\ContaoMemberExtensionBundle\\ContaoManager\\Plugin"
+  },
+  "autoload": {
     "psr-4": {
       "Oveleon\\ContaoMemberExtensionBundle\\": "src/"
     },
@@ -38,7 +58,7 @@
       "src/Resources/contao/templates/"
     ]
   },
-  "extra":{
-    "contao-manager-plugin": "Oveleon\\ContaoMemberExtensionBundle\\ContaoManager\\Plugin"
+  "support": {
+    "issues": "https://github.com/oveleon/contao-member-extension-bundle/issues"
   }
 }
