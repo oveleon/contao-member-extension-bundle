@@ -1,33 +1,57 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of Oveleon ContaoMemberExtension Bundle.
  *
- * (c) https://www.oveleon.de/
+ * @package     contao-member-extension-bundle
+ * @license     MIT
+ * @author      Daniele Sciannimanica   <https://github.com/doishub>
+ * @author      Fabian Ekert            <https://github.com/eki89>
+ * @author      Sebastian Zoglowek      <https://github.com/zoglo>
+ * @copyright   Oveleon                 <https://www.oveleon.de/>
  */
+
 namespace Oveleon\ContaoMemberExtensionBundle;
 
 use Contao\Config;
+use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\Dbafs;
 use Contao\File;
 use Contao\FilesModel;
 use Contao\Frontend;
-use Contao\FrontendUser;
 use Contao\MemberModel;
 use Contao\StringUtil;
+use Contao\System;
 use Contao\Validator;
+use Psr\Log\LogLevel;
 
-/**
- * Class Member
- *
- * @author Fabian Ekert <fabian@oveleon.de>
- * @author Daniele Sciannimanica <https://github.com/doishub>
- */
 class Member extends Frontend
 {
     /**
+     * MemberAvatar file name
+     *
+     * @var string
+     */
+    protected $avatarName = 'memberAvatar';
+
+    /**
+     * Create avatar for a member | Registration
+     *
+     * @param int          $userId
+     * @param array        $arrData
+     */
+    public function createAvatar($userId, $arrData)
+    {
+        $objMember = MemberModel::findById($userId);
+        $this->updateAvatar($objMember, $arrData);
+    }
+
+    /**
      * Update avatar of member
      *
-     * @param FrontendUser $objUser
+     * @param MemberModel  $objMember
      * @param array        $arrData
      */
     public function updateAvatar($objUser, $arrData)
@@ -41,6 +65,7 @@ class Member extends Frontend
 
         $file = $_SESSION['FILES']['avatar'];
         $maxlength_kb = $this->getMaximumUploadSize();
+        $maxlength_kb_readable = $this->getReadableSize($maxlength_kb);
 
         // Sanitize the filename
         try
@@ -50,6 +75,7 @@ class Member extends Frontend
         catch (\InvalidArgumentException $e)
         {
             // ToDo: Fehler: Dateiname beinhaltet unzulässige Zeichen
+            $this->addError($GLOBALS['TL_LANG']['ERR']['filename']);
 
             return;
         }
@@ -58,17 +84,37 @@ class Member extends Frontend
         if (!Validator::isValidFileName($file['name']))
         {
             // ToDo: Fehler: Dateiname beinhaltet unzulässige Zeichen
-
+            $this->addError($GLOBALS['TL_LANG']['ERR']['filename']);
             return;
         }
 
         // File was not uploaded
-        // ToDo
+        // ToDo: File was not uploaded
+        if (!is_uploaded_file($file['tmp_name']))
+        {
+            if ($file['error'] == 1 || $file['error'] == 2)
+            {
+                $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['filesize'], $maxlength_kb_readable));
+            }
+            elseif ($file['error'] == 3)
+            {
+                $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['filepartial'], $file['name']));
+            }
+            elseif ($file['error'] > 0)
+            {
+                $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['fileerror'], $file['error'], $file['name']));
+            }
+
+            unset($_FILES[$this->strName]);
+
+            return;
+        }
 
         // File is too big
         if ($file['size'] > $maxlength_kb)
         {
             // ToDo: Fehler: Datei zu groß
+            $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['filesize'], $maxlength_kb_readable));
             unset($_SESSION['FILES']['avatar']);
 
             return;
@@ -81,6 +127,7 @@ class Member extends Frontend
         if (!\in_array($objFile->extension, $uploadTypes))
         {
             // ToDo: Fehler: Dateityp nicht erlaubt
+            $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $objFile->extension));
             unset($_SESSION['FILES']['avatar']);
 
             return;
@@ -91,10 +138,9 @@ class Member extends Frontend
             $intImageWidth = Config::get('imageWidth');
 
             // Image exceeds maximum image width
-            if ($intImageWidth > 0 && $arrImageSize[0] > $intImageWidth)
-            {
-                // ToDo: Fehler: Bild ist zu groß in der breite
-                unset($_SESSION['FILES']['avatar']);
+            if ($intImageWidth > 0 && $arrImageSize[0] > $intImageWidth) {
+                $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['filewidth'], $file['name'], $intImageWidth));
+                unset($_FILES[$this->strName]);
 
                 return;
             }
@@ -102,81 +148,91 @@ class Member extends Frontend
             $intImageHeight = Config::get('imageHeight');
 
             // Image exceeds maximum image height
-            if ($intImageHeight > 0 && $arrImageSize[1] > $intImageHeight)
-            {
-                // ToDo: Fehler: Bild ist zu groß in der höhe
-                unset($_SESSION['FILES']['avatar']);
+            if ($intImageHeight > 0 && $arrImageSize[1] > $intImageHeight) {
+                $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['fileheight'], $file['name'], $intImageHeight));
+                unset($_FILES[$this->strName]);
 
                 return;
             }
+        }
 
-            $_SESSION['FILES']['avatar'] = $_SESSION['FILES']['avatar'];
+        // Upload valid file type with no width and height -> svg
 
-            // Overwrite the upload folder with user's home directory
-            if (!$objMember->assignDir || !$objMember->homeDir)
+        // Don't upload if no homedir is assigned
+        // ToDo: Add error
+        if (!$objMember->assignDir || !$objMember->homeDir)
+        {
+            return;
+        }
+
+        $intUploadFolder = $objMember->homeDir;
+
+        $objUploadFolder = FilesModel::findByUuid($intUploadFolder);
+
+        // The upload folder could not be found
+        if ($objUploadFolder === null)
+        {
+            throw new \Exception("Invalid upload folder ID $intUploadFolder");
+        }
+
+        $strUploadFolder = $objUploadFolder->path;
+
+        // Store the file if the upload folder exists
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+
+        if (!!$strUploadFolder & is_dir($projectDir . '/' . $strUploadFolder))
+        {
+            // Delete existing avatar if it exists
+            $this->deleteAvatar($objMember);
+
+            $this->import('Files');
+
+            // Rename file
+            $file['name'] =  $this->avatarName . '.' . $objFile->extension;
+
+            // Move the file to its destination
+            $this->Files->move_uploaded_file($file['tmp_name'], $strUploadFolder . '/' . $file['name']);
+            $this->Files->chmod($strUploadFolder . '/' . $file['name'], 0666 & ~umask());
+
+            $strUuid = null;
+            $strFile = $strUploadFolder . '/' . $file['name'];
+
+
+            // Generate the DB entries
+            if (Dbafs::shouldBeSynchronized($strFile))
             {
-                return;
-            }
+                $objModel = FilesModel::findByPath($strFile);
 
-            $intUploadFolder = $objMember->homeDir;
-
-            $objUploadFolder = FilesModel::findByUuid($intUploadFolder);
-
-            // The upload folder could not be found
-            if ($objUploadFolder === null)
-            {
-                throw new \Exception("Invalid upload folder ID $intUploadFolder");
-            }
-
-            $strUploadFolder = $objUploadFolder->path;
-
-            // Store the file if the upload folder exists
-            if ($strUploadFolder != '' && is_dir(TL_ROOT . '/' . $strUploadFolder))
-            {
-                $this->import('Files');
-
-                // Move the file to its destination
-                $this->Files->move_uploaded_file($file['tmp_name'], $strUploadFolder . '/' . $file['name']);
-                $this->Files->chmod($strUploadFolder . '/' . $file['name'], Config::get('defaultFileChmod'));
-
-                $strUuid = null;
-                $strFile = $strUploadFolder . '/' . $file['name'];
-
-                // Generate the DB entries
-                if (Dbafs::shouldBeSynchronized($strFile))
+                if ($objModel === null)
                 {
-                    $objModel = FilesModel::findByPath($strFile);
-
-                    if ($objModel === null)
-                    {
-                        $objModel = Dbafs::addResource($strFile);
-                    }
-
-                    $strUuid = StringUtil::binToUuid($objModel->uuid);
-
-                    // Update the hash of the target folder
-                    Dbafs::updateFolderHashes($strUploadFolder);
-
-                    // Update member avatar
-                    $objMember->avatar = $objModel->uuid;
-                    $objMember->save();
+                    $objModel = Dbafs::addResource($strFile);
                 }
 
-                // Add the session entry (see #6986)
-                $_SESSION['FILES']['avatar'] = array
-                (
-                    'name'     => $file['name'],
-                    'type'     => $file['type'],
-                    'tmp_name' => TL_ROOT . '/' . $strFile,
-                    'error'    => $file['error'],
-                    'size'     => $file['size'],
-                    'uploaded' => true,
-                    'uuid'     => $strUuid
-                );
+                $strUuid = StringUtil::binToUuid($objModel->uuid);
 
-                // Add a log entry
-                $this->log('File "' . $strUploadFolder . '/' . $file['name'] . '" has been uploaded', __METHOD__, TL_FILES);
+                // Update the hash of the target folder
+                Dbafs::updateFolderHashes($strUploadFolder);
+
+                // Update member avatar
+                $objMember->avatar = $objModel->uuid;
+                $objMember->save();
             }
+
+            // Add the session entry
+            $_SESSION['FILES']['avatar'] = array
+            (
+                'name'     => $file['name'],
+                'type'     => $file['type'],
+                'tmp_name' => $projectDir . '/' . $strFile,
+                'error'    => $file['error'],
+                'size'     => $file['size'],
+                'uploaded' => true,
+                'uuid'     => $strUuid
+            );
+
+            // Add a log entry
+            $logger = System::getContainer()->get('monolog.logger.contao');
+            $logger->log(LogLevel::INFO, 'File "' . $strUploadFolder . '/' . $file['name'] . '" has been uploaded', array('contao' => new ContaoContext(__METHOD__, TL_FILES)));
         }
 
         unset($_SESSION['FILES']['avatar']);
@@ -207,5 +263,31 @@ class Member extends Frontend
         }
 
         return min($upload_max_filesize, Config::get('maxFileSize'));
+    }
+
+    /**
+     * Add an error message
+     *
+     * @param string $strError The error message
+     */
+    public function addError($strError)
+    {
+        $this->class = 'error';
+        $this->arrErrors[] = $strError;
+    }
+
+    public function deleteAvatar($objMember)
+    {
+        if(!!$objMember->avatar)
+        {
+            $objFile = FilesModel::findByUuid($objMember->avatar) ?? '';
+
+            // Only delete existing file
+            if (!!$objFile && file_exists($objFile->path))
+            {
+                $file = new File($objFile->path);
+                $file->delete();
+            }
+        }
     }
 }

@@ -2,8 +2,14 @@
 
 <?php $this->block('content'); ?>
 
+<?php if($this->noAvatar):?>
+  <figure class="image_container">
+    <img src="<?= $this->singleSRC; ?>" itemprop="image">
+  </figure>
+<?php else: ?>
   <figure class="image_container">
       <?php $this->insert('picture_default', $this->picture); ?>
   </figure>
+<?php endif; ?>
 
 <?php $this->endblock(); ?>
