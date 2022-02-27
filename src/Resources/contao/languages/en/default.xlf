@@ -7,6 +7,12 @@
       <trans-unit id="MSC.memberDetail">
         <source>More</source>
       </trans-unit>
+      <trans-unit id="MSC.deleteAvatar">
+        <source>Delete avatar</source>
+      </trans-unit>
+      <trans-unit id="MSC.avatarDeleted">
+        <source>The avatar was successfully deleted</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
