@@ -26,6 +26,7 @@ $GLOBALS['BE_MOD']['system']['member_settings'] = array
 // ToDo: Change to ArrayUtil::arrayInsert in the future
 array_insert($GLOBALS['FE_MOD']['user'], -1, [
     'avatar'       => 'Oveleon\ContaoMemberExtensionBundle\ModuleAvatar',
+    'deleteAvatar' => 'Oveleon\ContaoMemberExtensionBundle\ModuleDeleteAvatar',
     'memberList'   => 'Oveleon\ContaoMemberExtensionBundle\ModuleMemberList',
     'memberReader' => 'Oveleon\ContaoMemberExtensionBundle\ModuleMemberReader'
 ]);

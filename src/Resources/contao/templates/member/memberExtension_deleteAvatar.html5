@@ -1,0 +1,23 @@
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+
+<!-- indexer::stop -->
+
+  <?php if ($this->message): ?>
+    <p class="tl_confirm"><?= $this->message ?></p>
+  <?php else: ?>
+    <form id="<?= $this->formId ?>" method="post">
+      <div class="formbody">
+        <input type="hidden" name="FORM_SUBMIT" value="<?= $this->formId ?>">
+        <input type="hidden" name="REQUEST_TOKEN" value="{{request_token}}">
+        <div class="widget widget-submit">
+          <button type="submit" class="submit"><?= $this->slabel ?></button>
+        </div>
+      </div>
+    </form>
+  <?php endif; ?>
+
+<!-- indexer::continue -->
+
+<?php $this->endblock(); ?>
