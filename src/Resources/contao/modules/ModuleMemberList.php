@@ -18,6 +18,7 @@ namespace Oveleon\ContaoMemberExtensionBundle;
 use Contao\BackendTemplate;
 use Contao\FrontendTemplate;
 use Contao\MemberModel;
+use Contao\Model\Collection;
 use Contao\StringUtil;
 use Contao\System;
 
@@ -80,19 +81,13 @@ class ModuleMemberList extends ModuleMemberExtension
             return;
         }
 
-        $objMembers = MemberModel::findAll();
+        $objMembers = $this->getMembers();
         $arrMembers = [];
 
         if($objMembers->count())
         {
             while($objMembers->next())
             {
-                // Skip disabled users instantly
-                if($objMembers->disable)
-                {
-                    continue;
-                }
-
                 $memberGroups = StringUtil::deserialize($objMembers->groups);
 
                 if(!\count(array_intersect($arrGroups, $memberGroups)))
@@ -116,4 +111,17 @@ class ModuleMemberList extends ModuleMemberExtension
 
         $this->Template->members = $arrMembers;
 	}
+
+    /**
+     * Get members
+     *
+     * @return Collection|MemberModel|null
+     */
+    protected function getMembers()
+    {
+        $arrOptions = [];
+        $t = MemberModel::getTable();
+
+        return MemberModel::findBy(["$t.disable=''"], null, $arrOptions);
+    }
 }
