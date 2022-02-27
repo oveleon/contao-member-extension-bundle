@@ -270,7 +270,7 @@ class Member extends Frontend
      *
      * @return void
      */
-    public function deleteAvatar(MemberModel $objMember): void
+    public static function deleteAvatar(MemberModel $objMember): void
     {
         if(!!$objMember->avatar)
         {
