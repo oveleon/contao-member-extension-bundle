@@ -20,13 +20,21 @@ use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\Dbafs;
 use Contao\File;
 use Contao\FilesModel;
+use Contao\FileUpload;
 use Contao\Frontend;
+use Contao\FrontendUser;
 use Contao\MemberModel;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Validator;
 use Psr\Log\LogLevel;
 
+
+/**
+ * Class Member
+ * 
+ * @property int $avatar UUID of the avatar
+ */
 class Member extends Frontend
 {
     /**
@@ -39,24 +47,42 @@ class Member extends Frontend
     /**
      * Create avatar for a member | Registration
      *
-     * @param int          $userId
-     * @param array        $arrData
+     * @param int   $userId
+     * @param array $arrData
+     *
+     * @return void
      */
-    public function createAvatar($userId, $arrData)
+    public function createAvatar(int $userId, array $arrData): void
     {
         $objMember = MemberModel::findById($userId);
-        $this->updateAvatar($objMember, $arrData);
+        $this->processAvatar($objMember, $arrData);
     }
 
     /**
-     * Update avatar of member
+     * Update avatar of a member | Login
      *
-     * @param MemberModel  $objMember
-     * @param array        $arrData
+     * @param FrontendUser  $objUser
+     * @param array         $arrData
+     *
+     * @return void
      */
-    public function updateAvatar($objUser, $arrData)
+    public function updateAvatar(FrontendUser $objUser, $arrData): void
     {
-        $objMember = MemberModel::findByPk($objUser->id);
+        $objMember = MemberModel::findById($objUser->id);
+        $this->processAvatar($objMember, $arrData);
+    }
+
+    /**
+     * Process avatar upload for a member
+     *
+     * @param MemberModel   $objMember
+     * @param array         $arrData
+     *
+     * @return void
+     */
+    protected function processAvatar(MemberModel $objMember, array $arrData): void
+    {
+        $objMember = MemberModel::findByPk($objMember->id);
 
         if ($objMember === null)
         {
@@ -74,38 +100,26 @@ class Member extends Frontend
         }
         catch (\InvalidArgumentException $e)
         {
-            // ToDo: Fehler: Dateiname beinhaltet unzulässige Zeichen
-            $this->addError($GLOBALS['TL_LANG']['ERR']['filename']);
-
+            // ToDo: add error message for invalid characters
             return;
         }
 
         // Invalid file name
         if (!Validator::isValidFileName($file['name']))
         {
-            // ToDo: Fehler: Dateiname beinhaltet unzulässige Zeichen
-            $this->addError($GLOBALS['TL_LANG']['ERR']['filename']);
+            // ToDo: add error message for invalid characters
             return;
         }
 
         // File was not uploaded
-        // ToDo: File was not uploaded
         if (!is_uploaded_file($file['tmp_name']))
         {
-            if ($file['error'] == 1 || $file['error'] == 2)
-            {
-                $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['filesize'], $maxlength_kb_readable));
-            }
-            elseif ($file['error'] == 3)
-            {
-                $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['filepartial'], $file['name']));
-            }
-            elseif ($file['error'] > 0)
-            {
-                $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['fileerror'], $file['error'], $file['name']));
-            }
+            // ToDo: Add error messages
+            /*if ($file['error'] == 1 || $file['error'] == 2) { // Add error message for maximum file size }
+            elseif ($file['error'] == 3) { // Add error message for partial upload }
+            elseif ($file['error'] > 0) { // Add error message for failed upload }*/
 
-            unset($_FILES[$this->strName]);
+            unset($_SESSION['FILES']['avatar']);
 
             return;
         }
@@ -113,8 +127,7 @@ class Member extends Frontend
         // File is too big
         if ($file['size'] > $maxlength_kb)
         {
-            // ToDo: Fehler: Datei zu groß
-            $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['filesize'], $maxlength_kb_readable));
+            // ToDo: add error message for maximum file size
             unset($_SESSION['FILES']['avatar']);
 
             return;
@@ -126,8 +139,7 @@ class Member extends Frontend
         // File type is not allowed
         if (!\in_array($objFile->extension, $uploadTypes))
         {
-            // ToDo: Fehler: Dateityp nicht erlaubt
-            $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['filetype'], $objFile->extension));
+            // ToDo: add error message for not allowed file type
             unset($_SESSION['FILES']['avatar']);
 
             return;
@@ -139,8 +151,8 @@ class Member extends Frontend
 
             // Image exceeds maximum image width
             if ($intImageWidth > 0 && $arrImageSize[0] > $intImageWidth) {
-                $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['filewidth'], $file['name'], $intImageWidth));
-                unset($_FILES[$this->strName]);
+                // ToDo: add error message for exceeding width
+                unset($_SESSION['FILES']['avatar']);
 
                 return;
             }
@@ -149,8 +161,8 @@ class Member extends Frontend
 
             // Image exceeds maximum image height
             if ($intImageHeight > 0 && $arrImageSize[1] > $intImageHeight) {
-                $this->addError(sprintf($GLOBALS['TL_LANG']['ERR']['fileheight'], $file['name'], $intImageHeight));
-                unset($_FILES[$this->strName]);
+                // ToDo: add error message for exceeding height
+                unset($_SESSION['FILES']['avatar']);
 
                 return;
             }
@@ -159,9 +171,9 @@ class Member extends Frontend
         // Upload valid file type with no width and height -> svg
 
         // Don't upload if no homedir is assigned
-        // ToDo: Add error
         if (!$objMember->assignDir || !$objMember->homeDir)
         {
+            // ToDo: add error message for no homedir
             return;
         }
 
@@ -245,45 +257,28 @@ class Member extends Frontend
      */
     protected function getMaximumUploadSize()
     {
-        // Get the upload_max_filesize from the php.ini
-        $upload_max_filesize = ini_get('upload_max_filesize');
-
-        // Convert the value to bytes
-        if (stripos($upload_max_filesize, 'K') !== false)
+        if ($this->maxlength > 0)
         {
-            $upload_max_filesize = round($upload_max_filesize * 1024);
-        }
-        elseif (stripos($upload_max_filesize, 'M') !== false)
-        {
-            $upload_max_filesize = round($upload_max_filesize * 1024 * 1024);
-        }
-        elseif (stripos($upload_max_filesize, 'G') !== false)
-        {
-            $upload_max_filesize = round($upload_max_filesize * 1024 * 1024 * 1024);
+            return $this->maxlength;
         }
 
-        return min($upload_max_filesize, Config::get('maxFileSize'));
+        return FileUpload::getMaxUploadSize();
     }
 
     /**
-     * Add an error message
+     * @param MemberModel $objMember
      *
-     * @param string $strError The error message
+     * @return void
      */
-    public function addError($strError)
-    {
-        $this->class = 'error';
-        $this->arrErrors[] = $strError;
-    }
-
-    public function deleteAvatar($objMember)
+    public function deleteAvatar(MemberModel $objMember): void
     {
         if(!!$objMember->avatar)
         {
-            $objFile = FilesModel::findByUuid($objMember->avatar) ?? '';
+            $objFile = FilesModel::findByUuid($objMember->avatar) ?: '';
+            $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
-            // Only delete existing file
-            if (!!$objFile && file_exists($objFile->path))
+            // Only delete if file exists
+            if (!!$objFile && file_exists($projectDir . '/' . $objFile->path))
             {
                 $file = new File($objFile->path);
                 $file->delete();
