@@ -39,7 +39,7 @@ class ModuleMemberList extends ModuleMemberExtension
 	 * Template
 	 * @var string
 	 */
-	protected $strMemberTemplate = 'member_list_default';
+	protected $strMemberTemplate = 'memberExtension_list_default';
 
 	/**
 	 * Return a wildcard in the back end

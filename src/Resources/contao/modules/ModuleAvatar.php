@@ -35,7 +35,7 @@ class ModuleAvatar extends Module
      *
      * @var string
      */
-    protected $strTemplate = 'member_avatar';
+    protected $strTemplate = 'memberExtension_avatar';
 
     /**
      * Default avatar file path
@@ -74,7 +74,7 @@ class ModuleAvatar extends Module
             return '';
         }
 
-        $this->strTemplate = $this->memberTpl ?: 'member_avatar';
+        $this->strTemplate = $this->memberTpl ?: 'memberExtension_avatar';
 
         return parent::generate();
     }

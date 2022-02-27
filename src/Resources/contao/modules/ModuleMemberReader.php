@@ -43,7 +43,7 @@ class ModuleMemberReader extends ModuleMemberExtension
 	 * Template
 	 * @var string
 	 */
-	protected $strMemberTemplate = 'member_reader_full';
+	protected $strMemberTemplate = 'memberExtension_reader_full';
 
 	/**
 	 * Return a wildcard in the back end

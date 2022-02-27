@@ -27,7 +27,7 @@ array_insert($GLOBALS['TL_DCA']['tl_module']['palettes'], 0, [
 $GLOBALS['TL_DCA']['tl_module']['fields']['memberListTpl'] = [
     'exclude' => true,
     'inputType' => 'select',
-    'options_callback' => static fn () => Controller::getTemplateGroup('member_list_'),
+    'options_callback' => static fn () => Controller::getTemplateGroup('memberExtension_list_'),
     'eval' => ['includeBlankOption'=>true, 'chosen'=>true, 'tl_class'=>'w50'],
     'sql' => "varchar(64) NOT NULL default ''"
 ];
@@ -35,7 +35,7 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['memberListTpl'] = [
 $GLOBALS['TL_DCA']['tl_module']['fields']['memberReaderTpl'] = [
     'exclude' => true,
     'inputType' => 'select',
-    'options_callback' => static fn () => Controller::getTemplateGroup('member_reader_'),
+    'options_callback' => static fn () => Controller::getTemplateGroup('memberExtension_reader_'),
     'eval' => ['includeBlankOption'=>true, 'chosen'=>true, 'tl_class'=>'w50'],
     'sql' => "varchar(64) NOT NULL default ''"
 ];
