@@ -1,6 +1,18 @@
 <?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="src/Resources/contao/languages/en/tl_module.php" source-language="en">
     <body>
+      <trans-unit id="tl_module.ext_order.0">
+        <source>Sort order</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_order.1">
+        <source>Here you can choose the sort order.</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_orderField.0">
+        <source>Sorting field</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_orderField.1">
+        <source>Here you can select the field to be sorted by.</source>
+      </trans-unit>
       <trans-unit id="tl_module.ext_groups.0">
         <source>Groups to show</source>
       </trans-unit>

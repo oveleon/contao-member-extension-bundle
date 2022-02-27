@@ -25,6 +25,8 @@ use Contao\System;
 /**
  * Class ModuleMemberList
  *
+ * @property string $ext_order order of list items
+ * @property string ext_orderField order field for list items
  * @property string $ext_groups considered member groups
  * @property string $memberFields Fields to be displayed
  * @property string $memberListTpl Frontend list template
@@ -121,6 +123,26 @@ class ModuleMemberList extends ModuleMemberExtension
     {
         $arrOptions = [];
         $t = MemberModel::getTable();
+
+        if (!!$this->ext_orderField)
+        {
+            $arrOptions['order'] .= "$t.$this->ext_orderField ";
+        }
+
+        switch ($this->ext_order)
+        {
+            case 'order_random':
+                $arrOptions['order'] = "RAND()";
+                break;
+
+            case 'order_desc':
+                $arrOptions['order'] .= "DESC";
+                break;
+
+            case 'order_asc':
+            default:
+                break;
+        }
 
         return MemberModel::findBy(["$t.disable=''"], null, $arrOptions);
     }
