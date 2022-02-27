@@ -21,8 +21,8 @@ use Contao\Controller;
 array_insert($GLOBALS['TL_DCA']['tl_module']['palettes'], 0, [
     'avatar' => '{title_legend},name,headline,type;{source_legend},imgSize;{template_legend:hide},memberTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID',
     'deleteAvatar' => '{title_legend},name,headline,type;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID',
-    'memberList' => '{title_legend},name,headline,type;{config_legend},groups,memberFields,imgSize;{redirect_legend},jumpTo;{template_legend:hide},customTpl,memberListTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID',
-    'memberReader' => '{title_legend},name,headline,type;{config_legend},groups,memberFields,imgSize;{template_legend:hide},customTpl,memberReaderTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID'
+    'memberList' => '{title_legend},name,headline,type;{config_legend},ext_groups,memberFields,imgSize;{redirect_legend},jumpTo;{template_legend:hide},customTpl,memberListTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID',
+    'memberReader' => '{title_legend},name,headline,type;{config_legend},ext_groups,memberFields,imgSize;{template_legend:hide},customTpl,memberReaderTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID'
 ]);
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['memberListTpl'] = [
@@ -47,6 +47,15 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['memberFields'] = [
     'options_callback' => ['tl_module_extension', 'getMemberProperties'],
     'eval' => ['multiple'=>true],
     'sql' => "blob NULL"
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['ext_groups'] = [
+    'exclude' => true,
+    'inputType' => 'checkbox',
+    'foreignKey' => 'tl_member_group.name',
+    'eval' => ['multiple'=>true],
+    'sql' => "blob NULL",
+    'relation' => ['type'=>'hasMany', 'load'=>'lazy']
 ];
 
 class tl_module_extension extends Backend

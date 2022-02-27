@@ -24,7 +24,9 @@ use Contao\System;
 /**
  * Class ModuleMemberList
  *
- * @author Daniele Sciannimanica <https://github.com/doishub>
+ * @property string $ext_groups considered member groups
+ * @property string $memberFields Fields to be displayed
+ * @property string $memberListTpl Frontend list template
  */
 class ModuleMemberList extends ModuleMemberExtension
 {
@@ -70,17 +72,30 @@ class ModuleMemberList extends ModuleMemberExtension
 	 */
 	protected function compile()
 	{
-        $objGroups = MemberModel::findAll();
-        $arrGroups = StringUtil::deserialize($this->groups);
-        $arrMembers = null;
+        $arrGroups = StringUtil::deserialize($this->ext_groups);
 
-        if($objGroups->count())
+        if(empty($arrGroups) || !\is_array($arrGroups))
         {
-            while($objGroups->next())
-            {
-                $memberGroups = StringUtil::deserialize($objGroups->groups);
+            $this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
+            return;
+        }
 
-                if($objGroups->disable || empty($arrGroups) || !\is_array($arrGroups) || !\count(array_intersect($arrGroups, $memberGroups)))
+        $objMembers = MemberModel::findAll();
+        $arrMembers = [];
+
+        if($objMembers->count())
+        {
+            while($objMembers->next())
+            {
+                // Skip disabled users instantly
+                if($objMembers->disable)
+                {
+                    continue;
+                }
+
+                $memberGroups = StringUtil::deserialize($objMembers->groups);
+
+                if(!\count(array_intersect($arrGroups, $memberGroups)))
                 {
                     continue;
                 }
@@ -88,9 +103,9 @@ class ModuleMemberList extends ModuleMemberExtension
                 $arrMemberFields = StringUtil::deserialize($this->memberFields, true);
 
                 $objTemplate = new FrontendTemplate($this->memberListTpl ?: $this->strMemberTemplate);
-                $objTemplate->setData($objGroups->current()->row());
+                $objTemplate->setData($objMembers->current()->row());
 
-                $arrMembers[] = $this->parseMemberTemplate($objGroups->current(), $objTemplate, $arrMemberFields, $this->imgSize);
+                $arrMembers[] = $this->parseMemberTemplate($objMembers->current(), $objTemplate, $arrMemberFields, $this->imgSize);
             }
         }
 
