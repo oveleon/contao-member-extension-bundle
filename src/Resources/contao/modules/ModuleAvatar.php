@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Oveleon\ContaoMemberExtensionBundle;
 
 use Contao\BackendTemplate;
+use Contao\Config;
 use Contao\FilesModel;
 use Contao\FrontendUser;
 use Contao\MemberModel;
@@ -95,25 +96,31 @@ class ModuleAvatar extends Module
 
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
+        // Check for avatar
+        if(!!$objMember->avatar)
+        {
+            $objFile = FilesModel::findByUuid($objMember->avatar);
+        }
+        // Check for standard avatar from member configuration
+        else if(!!Config::get('defaultAvatar'))
+        {
+            $objFile = FilesModel::findByUuid(Config::get('defaultAvatar'));
+        }
+        else
+        {
+            $objTemplate->singleSRC = self::$strDefaultPath;
+        }
 
-        if (!$this->User->avatar)
+        // If file does not exist use default image
+        if ($objFile === null || !is_file($projectDir . '/' . $objFile->path))
         {
             $objTemplate->singleSRC = self::$strDefaultPath;
         }
         else
         {
-            $objFile = FilesModel::findByUuid($this->User->avatar);
-
-            if ($objFile === null || !is_file($projectDir . '/' . $objFile->path))
-            {
-                $objTemplate->singleSRC = self::$strDefaultPath;
-            }
-            else
-            {
-                $objTemplate->noAvatar = false;
-                $this->singleSRC = $objFile->path;
-                $this->addImageToTemplate($this->Template, $this->arrData);
-            }
+            $objTemplate->noAvatar = false;
+            $this->singleSRC = $objFile->path;
+            $this->addImageToTemplate($this->Template, $this->arrData);
         }
     }
 }
