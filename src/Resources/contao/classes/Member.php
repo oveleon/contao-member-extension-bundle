@@ -80,7 +80,7 @@ class Member extends Frontend
      *
      * @return void
      */
-    protected function processAvatar(MemberModel $objMember, array $arrData): void
+    protected function processAvatar(MemberModel $objMember, ?array $arrData): void
     {
         $objMember = MemberModel::findByPk($objMember->id);
 
