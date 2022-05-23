@@ -38,12 +38,7 @@ class ModuleAvatar extends Module
      */
     protected $strTemplate = 'memberExtension_avatar';
 
-    /**
-     * Default avatar file path
-     *
-     * @var string
-     */
-    private static $strDefaultPath = 'bundles/contaomemberextension/avatar.png';
+    const DEFAULT_PICTURE = 'bundles/contaomemberextension/avatar.png';
 
     /**
      * Return a wildcard in the back end
@@ -106,21 +101,17 @@ class ModuleAvatar extends Module
         {
             $objFile = FilesModel::findByUuid(Config::get('defaultAvatar'));
         }
-        else
-        {
-            $objTemplate->singleSRC = self::$strDefaultPath;
-        }
 
         // If file does not exist use default image
-        if ($objFile === null || !is_file($projectDir . '/' . $objFile->path))
-        {
-            $objTemplate->singleSRC = self::$strDefaultPath;
-        }
-        else
+        if (null !== $objFile || is_file($projectDir . '/' . $objFile->path))
         {
             $objTemplate->noAvatar = false;
             $this->singleSRC = $objFile->path;
             $this->addImageToTemplate($this->Template, $this->arrData);
+        }
+        else
+        {
+            $objTemplate->singleSRC = self::DEFAULT_PICTURE;
         }
     }
 }

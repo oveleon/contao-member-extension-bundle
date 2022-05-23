@@ -4,7 +4,7 @@
 
 <?php if($this->noAvatar):?>
   <figure class="image_container">
-    <img src="<?= $this->singleSRC; ?>" itemprop="image">
+    <img src="<?= $this->singleSRC; ?>" width="200" height="200" itemprop="image">
   </figure>
 <?php else: ?>
   <figure class="image_container">
