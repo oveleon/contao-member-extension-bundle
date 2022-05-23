@@ -31,17 +31,18 @@ use Contao\System;
  */
 abstract class ModuleMemberExtension extends Module
 {
+    const DEFAULT_PICTURE = 'bundles/contaomemberextension/avatar.png';
+
     /**
      * Parse member template
      *
      * @param $objMember
      * @param $objTemplate
      * @param $arrMemberFields
-     * @param $varImgSize
-     *
+     * @param $strImgSize
      * @return string
      */
-    protected function parseMemberTemplate($objMember, $objTemplate, $arrMemberFields, $varImgSize)
+    protected function parseMemberTemplate($objMember, $objTemplate, $arrMemberFields, $strImgSize)
     {
         $arrFields = [];
 
@@ -50,7 +51,7 @@ abstract class ModuleMemberExtension extends Module
             switch($field)
             {
                 case 'avatar':
-                    $this->addAvatarToTemplate($objMember, $objTemplate, $varImgSize);
+                    $this->parseMemberAvatar($objMember, $objTemplate, $strImgSize);
                     break;
 
                 default:
@@ -79,42 +80,46 @@ abstract class ModuleMemberExtension extends Module
     }
 
     /**
-     * Add avatar to template
+     * Parses an avatar to the template
      *
-     * @param $objMember
+     * @param MemberModel $objMember
      * @param $objTemplate
-     * @param $varImgSize
+     * @param $strImgSize
+     * @return void
      */
-    protected function addAvatarToTemplate($objMember, $objTemplate, $varImgSize)
+    protected function parseMemberAvatar(MemberModel $objMember, $objTemplate, $strImgSize)
     {
+        $objTemplate->singleSRC = self::DEFAULT_PICTURE;
         $objTemplate->addImage = false;
 
-        if (!$objMember->avatar && !Config::get('defaultAvatar'))
-        {
-            return;
-        }
+        $uuidDefault = Config::get('defaultAvatar');
 
-        $arrData = ['size' => $varImgSize];
-        
         if(!!$objMember->avatar)
         {
             $objFile = FilesModel::findByUuid($objMember->avatar);
         }
-        else
+        else if(!!$uuidDefault)
         {
-            $objFile = FilesModel::findByUuid(Config::get('defaultAvatar'));
+            $objFile = FilesModel::findByUuid($uuidDefault);
         }
-
-        if ($objFile === null || !is_file(System::getContainer()->getParameter('kernel.project_dir') . '/' . $objFile->path))
+        else
         {
             return;
         }
 
-        $arrData['singleSRC'] = $objFile->path;
-        $objTemplate->addImage = true;
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
+        // If file does not exist use default image
+        if (null === $objFile || !\is_file($projectDir . '/' . $objFile->path))
+        {
+            return;
+        }
+
+        $objTemplate->addImage = true;
+        $this->size = $strImgSize;
+        $this->singleSRC = $objFile->path;
         //ToDo: Change to FigureBuilder in the future
-        $this->addImageToTemplate($objTemplate, $arrData, null, null, $objFile);
+        $this->addImageToTemplate($objTemplate, $this->arrData);
     }
 
     /**

@@ -29,7 +29,7 @@ use Contao\System;
  * @author Fabian Ekert <fabian@oveleon.de>
  * @author Sebastian Zoglowek <https://github.com/zoglo>
  */
-class ModuleAvatar extends Module
+class ModuleAvatar extends ModuleMemberExtension
 {
     /**
      * Template.
@@ -37,8 +37,6 @@ class ModuleAvatar extends Module
      * @var string
      */
     protected $strTemplate = 'memberExtension_avatar';
-
-    const DEFAULT_PICTURE = 'bundles/contaomemberextension/avatar.png';
 
     /**
      * Return a wildcard in the back end
@@ -82,36 +80,9 @@ class ModuleAvatar extends Module
     {
         $objTemplate = $this->Template;
 
-        $this->size = $this->imgSize;
-
-        $objTemplate->noAvatar = true;
-
         $this->import(FrontendUser::class, 'User');
         $objMember = MemberModel::findByPk($this->User->id);
 
-        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
-
-        // Check for avatar
-        if(!!$objMember->avatar)
-        {
-            $objFile = FilesModel::findByUuid($objMember->avatar);
-        }
-        // Check for standard avatar from member configuration
-        else if(!!Config::get('defaultAvatar'))
-        {
-            $objFile = FilesModel::findByUuid(Config::get('defaultAvatar'));
-        }
-
-        // If file does not exist use default image
-        if (null !== $objFile || is_file($projectDir . '/' . $objFile->path))
-        {
-            $objTemplate->noAvatar = false;
-            $this->singleSRC = $objFile->path;
-            $this->addImageToTemplate($this->Template, $this->arrData);
-        }
-        else
-        {
-            $objTemplate->singleSRC = self::DEFAULT_PICTURE;
-        }
+        $this->parseMemberAvatar($objMember, $objTemplate, $this->imgSize);
     }
 }

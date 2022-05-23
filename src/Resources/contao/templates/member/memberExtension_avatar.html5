@@ -2,14 +2,6 @@
 
 <?php $this->block('content'); ?>
 
-<?php if($this->noAvatar):?>
-  <figure class="image_container">
-    <img src="<?= $this->singleSRC; ?>" width="200" height="200" itemprop="image">
-  </figure>
-<?php else: ?>
-  <figure class="image_container">
-      <?php $this->insert('picture_default', $this->picture); ?>
-  </figure>
-<?php endif; ?>
+<?php $this->insert('memberExtension_image', $this->arrData); ?>
 
 <?php $this->endblock(); ?>
