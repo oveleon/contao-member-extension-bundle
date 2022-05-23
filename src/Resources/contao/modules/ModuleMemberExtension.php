@@ -58,11 +58,11 @@ abstract class ModuleMemberExtension extends Module
                     {
                         if (\is_array(($arrValue = StringUtil::deserialize($varValue))))
                         {
-                            $arrFields[] = implode(",", $arrValue);
+                            $arrFields[$field] = implode(",", $arrValue);
                         }
                         else
                         {
-                            $arrFields[] = $varValue;
+                            $arrFields[$field] = $varValue;
                         }
                     }
             }

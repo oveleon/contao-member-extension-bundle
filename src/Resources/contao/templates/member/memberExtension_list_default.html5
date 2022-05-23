@@ -5,8 +5,8 @@
         </figure>
     <?php endif; ?>
     <ul>
-        <?php foreach ($this->fields as $field): ?>
-            <li><?=$field?></li>
+        <?php foreach ($this->fields as $k => $v): ?>
+            <li class="<?= $k ?>"><?= $v ?></li>
         <?php endforeach; ?>
     </ul>
     <?php if($this->link): ?>
