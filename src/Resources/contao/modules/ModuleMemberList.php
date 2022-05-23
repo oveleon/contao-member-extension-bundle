@@ -83,30 +83,30 @@ class ModuleMemberList extends ModuleMemberExtension
             return;
         }
 
+        $objTemplate = new FrontendTemplate($this->memberListTpl ?: $this->strMemberTemplate);
+
         $objMembers = $this->getMembers();
         $arrMembers = [];
 
-        if($objMembers->count())
+        if(null !== $objMembers)
         {
             while($objMembers->next())
             {
-                $memberGroups = StringUtil::deserialize($objMembers->groups);
+                $objMember = $objMembers->current();
 
-                if(!\count(array_intersect($arrGroups, $memberGroups)))
+                if(!$this->checkMemberGroups($arrGroups, $objMember))
                 {
                     continue;
                 }
 
                 $arrMemberFields = StringUtil::deserialize($this->memberFields, true);
+                $objTemplate->setData($objMember->row());
 
-                $objTemplate = new FrontendTemplate($this->memberListTpl ?: $this->strMemberTemplate);
-                $objTemplate->setData($objMembers->current()->row());
-
-                $arrMembers[] = $this->parseMemberTemplate($objMembers->current(), $objTemplate, $arrMemberFields, $this->imgSize);
+                $arrMembers[] = $this->parseMemberTemplate($objMember, $objTemplate, $arrMemberFields, $this->imgSize);
             }
         }
 
-        if(null === $arrMembers)
+        if(empty($arrMembers))
         {
             $this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
         }
@@ -115,11 +115,35 @@ class ModuleMemberList extends ModuleMemberExtension
 	}
 
     /**
+     * Checks whether a member is in any given group
+     *
+     * @param array $arrGroups
+     * @param MemberModel $objMember
+     * @return bool
+     */
+    private function checkMemberGroups(array $arrGroups, MemberModel $objMember): bool
+    {
+        if(empty($arrGroups))
+        {
+            return false;
+        }
+
+        $arrMemberGroups = StringUtil::deserialize($objMember->groups);
+
+        if(!\is_array($arrMemberGroups) || !\count(array_intersect($arrGroups, $arrMemberGroups)))
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Get members
      *
      * @return Collection|MemberModel|null
      */
-    protected function getMembers()
+    private function getMembers()
     {
         $arrOptions = [];
         $t = MemberModel::getTable();
