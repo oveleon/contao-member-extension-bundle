@@ -307,7 +307,7 @@ class Member extends Frontend
         $arrData = ['singleSRC'=>$objFile->path, 'size'=>$strImgSize];
 
         //ToDo: Change to FigureBuilder in the future
-        $objTemplate->addImageToTemplate($objTemplate, $arrData);
+        $objTemplate->addImageToTemplate($objTemplate, $arrData, null, null, $objFile);
     }
 
     /**
