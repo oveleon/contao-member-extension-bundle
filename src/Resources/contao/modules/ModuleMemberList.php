@@ -16,9 +16,14 @@ declare(strict_types=1);
 namespace Oveleon\ContaoMemberExtensionBundle;
 
 use Contao\BackendTemplate;
+use Contao\Config;
+use Contao\CoreBundle\Exception\PageNotFoundException;
+use Contao\Environment;
 use Contao\FrontendTemplate;
+use Contao\Input;
 use Contao\MemberModel;
 use Contao\Model\Collection;
+use Contao\Pagination;
 use Contao\StringUtil;
 use Contao\System;
 
@@ -75,6 +80,9 @@ class ModuleMemberList extends ModuleMemberExtension
 	 */
 	protected function compile()
 	{
+        $limit = null;
+        $offset = 0;
+
         $arrGroups = StringUtil::deserialize($this->ext_groups);
 
         if(empty($arrGroups) || !\is_array($arrGroups))
@@ -86,6 +94,9 @@ class ModuleMemberList extends ModuleMemberExtension
         $objTemplate = new FrontendTemplate($this->memberListTpl ?: $this->strMemberTemplate);
 
         $objMembers = $this->getMembers();
+
+        $intTotal = 0;
+
         $arrMembers = [];
 
         if(null !== $objMembers)
@@ -99,6 +110,8 @@ class ModuleMemberList extends ModuleMemberExtension
                     continue;
                 }
 
+                $intTotal += 1;
+
                 $arrMemberFields = StringUtil::deserialize($this->memberFields, true);
                 $objTemplate->setData($objMember->row());
 
@@ -106,10 +119,47 @@ class ModuleMemberList extends ModuleMemberExtension
             }
         }
 
+        $total = $intTotal - $offset;
+
+        if ($this->numberOfItems > 0)
+        {
+            $limit = $this->numberOfItems;
+        }
+
+        if ($this->perPage > 0 && (!isset($limit) || $this->numberOfItems > $this->perPage))
+        {
+            if (isset($limit))
+            {
+                $total = min($limit, $total);
+            }
+
+            $id = 'page_n' . $this->id;
+            $page = Input::get($id) ?? 1;
+
+            if ($page < 1 || $page > max(ceil($total/$this->perPage), 1))
+            {
+                throw new PageNotFoundException('Page not found: ' . Environment::get('uri'));
+            }
+
+            $limit = $this->perPage;
+            $offset += (max($page, 1) - 1) * $this->perPage;
+            $skip = 0;
+
+            if ($offset + $limit > $total + $skip)
+            {
+                $limit = $total + $skip - $offset;
+            }
+
+            $objPagination = new Pagination($total, $this->perPage, Config::get('maxPaginationLinks'), $id);
+            $this->Template->pagination = $objPagination->generate("\n  ");
+        }
+
         if(empty($arrMembers))
         {
             $this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
         }
+
+        $arrMembers = \array_slice($arrMembers, $offset, ($limit ?: 0), true);
 
         $this->Template->members = $arrMembers;
 	}
