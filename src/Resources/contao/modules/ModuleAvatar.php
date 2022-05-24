@@ -68,7 +68,7 @@ class ModuleAvatar extends ModuleMemberExtension
             return '';
         }
 
-        $this->strTemplate = $this->memberTpl ?: 'memberExtension_avatar';
+        $this->strTemplate = $this->customTpl ?: 'memberExtension_avatar';
 
         return parent::generate();
     }
