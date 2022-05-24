@@ -18,6 +18,22 @@ The Member extension bunde adds the possibility to display members and their det
 The member options are extended with an avatar that can be changed and uploaded in the member edit module and registration module.
 Additionally, you can display members with their details in a reader page.
 
++ [Features](#features)
++ [Installation](#installation)
+   + [Upgrading](#upgrading-to-version-1.2)
+   + [Composer](#via-composer)
+   + [Contao Manager](#via-contao-manager)
++ [Initial Setup](#initial-setup)
++ [Insert tags](#insert-tags)
+   + [Avatar insert tags](#avatar-insert-tags)
++ [Front end modules](#front-end-modules)
+   + [Memberlist](#memberlist)
+   + [Memberreader](#memberreader)
+   + [Avatar / Profile picture](#avatar--profile-picture)
+   + [Delete avatar](#delete-avatar)
++ [Support](#support)
++ [Sponsoring](#sponsoring)
++ 
 ## Features
 
 - Compatible with Contao 4.9 and higher versions (PHP 8 Support)
@@ -86,24 +102,6 @@ detail pages.
 
 ---
 
-## Front end modules
-
-### Memberlist
-
-Displays activated members in a list
-
-### Memberreader
-Displays a detail page of a member
-
-### Avatar / Profile picture
-Displays an avatar of a member. If no avatar has been uploaded, the default avatar (or the fallback avatar from the bundle)
-will be shown
-
-### Delete Avatar
-A module that can be embedded into a page that adds the possibility to delete the avatar of a member.
-
----
-
 ## Insert tags
 Member avatars can be shown using following *insert-tags*
 
@@ -162,6 +160,27 @@ The standard mode vor avatar insert tags is *crop*
     <td>Displays the avatar of member id 123 with a width of 300, a height of 400 and the mode: box</td>
   </tr>
 </table>
+
+---
+
+## Front end modules
+
+### Memberlist
+
+Displays activated members in a list
+
+### Memberreader
+
+Displays a detail page of a member
+
+### Avatar / Profile picture
+
+Displays an avatar of a member. If no avatar has been uploaded, the default avatar (or the fallback avatar from the bundle)
+will be shown
+
+### Delete Avatar
+
+A module that can be embedded into a page that adds the possibility to delete the avatar of a member.
 
 ---
 
