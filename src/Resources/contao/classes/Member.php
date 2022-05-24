@@ -37,6 +37,8 @@ use Psr\Log\LogLevel;
  */
 class Member extends Frontend
 {
+    const DEFAULT_PICTURE = 'bundles/contaomemberextension/avatar.png';
+
     /**
      * MemberAvatar file name
      *
@@ -263,6 +265,49 @@ class Member extends Frontend
         }
 
         return FileUpload::getMaxUploadSize();
+    }
+
+    /**
+     * Parses an avatar to the template
+     *
+     * @param MemberModel $objMember
+     * @param $objTemplate
+     * @param $strImgSize
+     * @return void
+     */
+    public static function parseMemberAvatar(MemberModel $objMember, &$objTemplate, $strImgSize)
+    {
+        $objTemplate->singleSRC = self::DEFAULT_PICTURE;
+        $objTemplate->addImage = false;
+
+        $uuidDefault = Config::get('defaultAvatar');
+
+        if(!!$objMember->avatar)
+        {
+            $objFile = FilesModel::findByUuid($objMember->avatar);
+        }
+        else if(!!$uuidDefault)
+        {
+            $objFile = FilesModel::findByUuid($uuidDefault);
+        }
+        else
+        {
+            return;
+        }
+
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+
+        // If file does not exist use default image
+        if (null === $objFile || !\is_file($projectDir . '/' . $objFile->path))
+        {
+            return;
+        }
+
+        $objTemplate->addImage = true;
+        $arrData = ['singleSRC'=>$objFile->path, 'size'=>$strImgSize];
+
+        //ToDo: Change to FigureBuilder in the future
+        $objTemplate->addImageToTemplate($objTemplate, $arrData);
     }
 
     /**

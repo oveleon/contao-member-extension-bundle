@@ -31,8 +31,6 @@ use Contao\System;
  */
 abstract class ModuleMemberExtension extends Module
 {
-    const DEFAULT_PICTURE = 'bundles/contaomemberextension/avatar.png';
-
     /**
      * Parse member template
      *
@@ -51,7 +49,7 @@ abstract class ModuleMemberExtension extends Module
             switch($field)
             {
                 case 'avatar':
-                    $this->parseMemberAvatar($objMember, $objTemplate, $strImgSize);
+                    Member::parseMemberAvatar($objMember, $objTemplate, $strImgSize);
                     break;
 
                 default:
@@ -77,49 +75,6 @@ abstract class ModuleMemberExtension extends Module
         }
 
         return $objTemplate->parse();
-    }
-
-    /**
-     * Parses an avatar to the template
-     *
-     * @param MemberModel $objMember
-     * @param $objTemplate
-     * @param $strImgSize
-     * @return void
-     */
-    protected function parseMemberAvatar(MemberModel $objMember, $objTemplate, $strImgSize)
-    {
-        $objTemplate->singleSRC = self::DEFAULT_PICTURE;
-        $objTemplate->addImage = false;
-
-        $uuidDefault = Config::get('defaultAvatar');
-
-        if(!!$objMember->avatar)
-        {
-            $objFile = FilesModel::findByUuid($objMember->avatar);
-        }
-        else if(!!$uuidDefault)
-        {
-            $objFile = FilesModel::findByUuid($uuidDefault);
-        }
-        else
-        {
-            return;
-        }
-
-        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
-
-        // If file does not exist use default image
-        if (null === $objFile || !\is_file($projectDir . '/' . $objFile->path))
-        {
-            return;
-        }
-
-        $objTemplate->addImage = true;
-        $this->size = $strImgSize;
-        $this->singleSRC = $objFile->path;
-        //ToDo: Change to FigureBuilder in the future
-        $this->addImageToTemplate($objTemplate, $this->arrData);
     }
 
     /**

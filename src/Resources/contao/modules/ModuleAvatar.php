@@ -83,6 +83,6 @@ class ModuleAvatar extends ModuleMemberExtension
         $this->import(FrontendUser::class, 'User');
         $objMember = MemberModel::findByPk($this->User->id);
 
-        $this->parseMemberAvatar($objMember, $objTemplate, $this->imgSize);
+        Member::parseMemberAvatar($objMember, $objTemplate, $this->imgSize);
     }
 }
