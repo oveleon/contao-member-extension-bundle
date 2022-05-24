@@ -20,7 +20,7 @@ Additionally, you can display members with their details in a reader page.
 
 + [Features](#features)
 + [Installation](#installation)
-   + [Upgrading](#upgrading-to-version-1.2)
+   + [Upgrading](#upgrading-to-version-12)
    + [Composer](#via-composer)
    + [Contao Manager](#via-contao-manager)
 + [Initial Setup](#initial-setup)
@@ -33,7 +33,7 @@ Additionally, you can display members with their details in a reader page.
    + [Delete avatar](#delete-avatar)
 + [Support](#support)
 + [Sponsoring](#sponsoring)
-+ 
+
 ## Features
 
 - Compatible with Contao 4.9 and higher versions (PHP 8 Support)
