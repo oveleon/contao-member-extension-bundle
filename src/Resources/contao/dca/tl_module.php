@@ -143,7 +143,7 @@ class tl_module_extension extends Backend
 
         foreach ($GLOBALS['TL_DCA']['tl_member']['fields'] as $k=>$v)
         {
-            if (!empty($v['inputType']) && $v['eval']['feViewable'] === true)
+            if (!empty($v['inputType']) && $v['eval']['feViewable'] === true && $k !== 'avatar')
             {
                 $return[$k] = $GLOBALS['TL_DCA']['tl_member']['fields'][$k]['label'][0] . ' ['.$k.']';
             }
