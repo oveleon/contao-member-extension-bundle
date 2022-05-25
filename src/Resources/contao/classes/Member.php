@@ -277,8 +277,10 @@ class Member extends Frontend
      */
     public static function parseMemberAvatar(MemberModel $objMember, &$objTemplate, $strImgSize)
     {
+        $objTemplate->addImage= true;
+
         $objTemplate->singleSRC = self::DEFAULT_PICTURE;
-        $objTemplate->addImage = false;
+        $objTemplate->addFallbackImage = true;
 
         $uuidDefault = Config::get('defaultAvatar');
 
@@ -303,7 +305,7 @@ class Member extends Frontend
             return;
         }
 
-        $objTemplate->addImage = true;
+        $objTemplate->addFallbackImage = false;
         $arrData = ['singleSRC'=>$objFile->path, 'size'=>$strImgSize];
 
         //ToDo: Change to FigureBuilder in the future

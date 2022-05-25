@@ -1,5 +1,8 @@
 <div class="member_reader_full">
-  <?php $this->insert('memberExtension_image', $this->arrData); ?>
+
+  <?php if($this->addImage): ?>
+    <?php $this->insert('memberExtension_image', $this->arrData); ?>
+  <?php endif; ?>
 
   <ul>
     <?php foreach ($this->fields as $k => $v): ?>

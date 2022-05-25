@@ -1,8 +1,8 @@
 <figure class="image_container">
 
-  <?php if($this->addImage): ?>
-    <?php $this->insert('picture_default', $this->picture); ?>
-  <?php else: ?>
+  <?php if($this->addFallbackImage): ?>
     <img src="<?= $this->singleSRC; ?>" width="200" height="200" itemprop="image">
+  <?php else: ?>
+    <?php $this->insert('picture_default', $this->picture); ?>
   <?php endif; ?>
 </figure>

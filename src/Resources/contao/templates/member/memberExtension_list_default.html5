@@ -1,11 +1,15 @@
 <div class="member_list_default">
-  <?php $this->insert('memberExtension_image', $this->arrData); ?>
+
+  <?php if($this->addImage): ?>
+    <?php $this->insert('memberExtension_image', $this->arrData); ?>
+  <?php endif; ?>
 
   <ul>
     <?php foreach ($this->fields as $k => $v): ?>
       <li class="<?= $k ?>"><?= $v ?></li>
     <?php endforeach; ?>
   </ul>
+
   <?php if($this->link): ?>
     <a href="<?=$this->link?>"><?=$GLOBALS['TL_LANG']['MSC']['memberDetail']?></a>
   <?php endif; ?>
