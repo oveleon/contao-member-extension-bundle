@@ -150,6 +150,8 @@ class ModuleMemberList extends ModuleMemberExtension
                 $limit = $total + $skip - $offset;
             }
 
+            $arrMembers = \array_slice($arrMembers, $offset, ($limit ?: $intTotal), true);
+
             $objPagination = new Pagination($total, $this->perPage, Config::get('maxPaginationLinks'), $id);
             $this->Template->pagination = $objPagination->generate("\n  ");
         }
@@ -158,8 +160,6 @@ class ModuleMemberList extends ModuleMemberExtension
         {
             $this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
         }
-
-        $arrMembers = \array_slice($arrMembers, $offset, ($limit ?: 0), true);
 
         $this->Template->members = $arrMembers;
 	}
