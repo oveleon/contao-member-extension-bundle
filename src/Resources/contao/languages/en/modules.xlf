@@ -8,10 +8,16 @@
         <source>Configure member settings</source>
       </trans-unit>
       <trans-unit id="FMD.avatar.0">
-        <source>Profile picture / Avatar</source>
+        <source>Avatar / profile picture</source>
       </trans-unit>
       <trans-unit id="FMD.avatar.1">
-        <source>Displays the profile picture of the member.</source>
+        <source>Displays the avatar of the member.</source>
+      </trans-unit>
+      <trans-unit id="FMD.deleteAvatar.0">
+        <source>Delete avatar</source>
+      </trans-unit>
+      <trans-unit id="FMD.deleteAvatar.1">
+        <source>Adds a button to delete the avatar of the member.</source>
       </trans-unit>
       <trans-unit id="FMD.memberList.0">
         <source>Memberlist</source>

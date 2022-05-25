@@ -2,12 +2,13 @@
 
 <?php $this->block('content'); ?>
 
-<?php if ($this->members): ?>
-    <?php foreach ($this->members as $member): ?>
-        <?=$member?>
-    <?php endforeach; ?>
-<?php else: ?>
+<?php if (empty($this->members)): ?>
     <p class="empty message"><?=$this->empty?></p>
+<?php else: ?>
+    <?php foreach ($this->members as $member): ?>
+      <?=$member?>
+    <?php endforeach; ?>
+    <?= $this->pagination ?>
 <?php endif; ?>
 
 <?php $this->endblock(); ?>

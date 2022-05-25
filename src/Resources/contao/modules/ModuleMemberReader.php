@@ -1,9 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Oveleon ContaoMemberExtension Bundle.
  *
- * (c) https://www.oveleon.de/
+ * @package     contao-member-extension-bundle
+ * @license     MIT
+ * @author      Daniele Sciannimanica   <https://github.com/doishub>
+ * @author      Fabian Ekert            <https://github.com/eki89>
+ * @author      Sebastian Zoglowek      <https://github.com/zoglo>
+ * @copyright   Oveleon                 <https://www.oveleon.de/>
  */
 
 namespace Oveleon\ContaoMemberExtensionBundle;
@@ -16,12 +23,14 @@ use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\MemberModel;
 use Contao\StringUtil;
-use Patchwork\Utf8;
+use Contao\System;
 
 /**
  * Class ModuleMemberList
- *
- * @author Daniele Sciannimanica <https://github.com/doishub>
+ * 
+ * @property string $ext_groups considered member groups
+ * @property string $memberFields Fields to be displayed
+ * @property string $memberReaderTpl Frontend reader template
  */
 class ModuleMemberReader extends ModuleMemberExtension
 {
@@ -36,7 +45,7 @@ class ModuleMemberReader extends ModuleMemberExtension
 	 * Template
 	 * @var string
 	 */
-	protected $strMemberTemplate = 'member_reader_full';
+	protected $strMemberTemplate = 'memberExtension_reader_full';
 
 	/**
 	 * Return a wildcard in the back end
@@ -45,12 +54,12 @@ class ModuleMemberReader extends ModuleMemberExtension
 	 */
 	public function generate()
 	{
-		if (TL_MODE == 'BE')
-		{
-			/** @var BackendTemplate|object $objTemplate */
-			$objTemplate = new BackendTemplate('be_wildcard');
+        $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
-			$objTemplate->wildcard = '### ' . Utf8::strtoupper($GLOBALS['TL_LANG']['FMD']['memberList'][0]) . ' ###';
+        if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request))
+        {
+            $objTemplate = new BackendTemplate('be_wildcard');
+			$objTemplate->wildcard = '### ' . mb_strtoupper($GLOBALS['TL_LANG']['FMD']['memberList'][0], 'UTF-8') . ' ###';
 			$objTemplate->title = $this->headline;
 			$objTemplate->id = $this->id;
 			$objTemplate->link = $this->name;
@@ -79,14 +88,14 @@ class ModuleMemberReader extends ModuleMemberExtension
         // Get the member
         $objMember = MemberModel::findByIdOrAlias(Input::get('items'));
 
-        // The member does not exist
+        // The member does not exist and is not deactivated
         if ($objMember === null || $objMember->disable)
         {
             throw new PageNotFoundException('Page not found: ' . Environment::get('uri'));
         }
 
-        // Check groups
-        $arrGroups = StringUtil::deserialize($this->groups);
+        // Check for group intersection
+        $arrGroups = StringUtil::deserialize($this->ext_groups);
         $memberGroups = StringUtil::deserialize($objMember->groups);
 
         if (empty($arrGroups) || !\is_array($arrGroups) || !\count(array_intersect($arrGroups, $memberGroups)))

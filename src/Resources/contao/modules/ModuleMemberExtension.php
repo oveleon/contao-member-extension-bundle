@@ -1,8 +1,16 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * This file is part of Oveleon ContaoMemberExtension Bundle.
  *
- * (c) https://www.oveleon.de/
+ * @package     contao-member-extension-bundle
+ * @license     MIT
+ * @author      Daniele Sciannimanica   <https://github.com/doishub>
+ * @author      Fabian Ekert            <https://github.com/eki89>
+ * @author      Sebastian Zoglowek      <https://github.com/zoglo>
+ * @copyright   Oveleon                 <https://www.oveleon.de/>
  */
 
 namespace Oveleon\ContaoMemberExtensionBundle;
@@ -14,6 +22,7 @@ use Contao\MemberModel;
 use Contao\Module;
 use Contao\PageModel;
 use Contao\StringUtil;
+use Contao\System;
 
 /**
  * Parent class for member modules.
@@ -28,11 +37,10 @@ abstract class ModuleMemberExtension extends Module
      * @param $objMember
      * @param $objTemplate
      * @param $arrMemberFields
-     * @param $varImgSize
-     *
+     * @param $strImgSize
      * @return string
      */
-    protected function parseMemberTemplate($objMember, $objTemplate, $arrMemberFields, $varImgSize)
+    protected function parseMemberTemplate($objMember, $objTemplate, $arrMemberFields, $strImgSize)
     {
         $arrFields = [];
 
@@ -41,7 +49,7 @@ abstract class ModuleMemberExtension extends Module
             switch($field)
             {
                 case 'avatar':
-                    $this->addAvatarToTemplate($objMember, $objTemplate, $varImgSize);
+                    Member::parseMemberAvatar($objMember, $objTemplate, $strImgSize);
                     break;
 
                 default:
@@ -49,11 +57,11 @@ abstract class ModuleMemberExtension extends Module
                     {
                         if (\is_array(($arrValue = StringUtil::deserialize($varValue))))
                         {
-                            $arrFields[] = implode(",", $arrValue);
+                            $arrFields[$field] = implode(",", $arrValue);
                         }
                         else
                         {
-                            $arrFields[] = $varValue;
+                            $arrFields[$field] = $varValue;
                         }
                     }
             }
@@ -67,54 +75,6 @@ abstract class ModuleMemberExtension extends Module
         }
 
         return $objTemplate->parse();
-    }
-
-    /**
-     * Add avatar to template
-     *
-     * @param $objMember
-     * @param $objTemplate
-     * @param $varImgSize
-     */
-    protected function addAvatarToTemplate($objMember, $objTemplate, $varImgSize)
-    {
-        $objTemplate->addImage = false;
-
-        $arrData = array(
-            'size' => $varImgSize
-        );
-
-        if ($objMember->avatar == '' && Config::get('defaultAvatar') == '')
-        {
-            return;
-        }
-
-        if ($objMember->avatar == '')
-        {
-            $objFile = FilesModel::findByUuid( Config::get('defaultAvatar') );
-
-            if ($objFile === null || !is_file(TL_ROOT . '/' . $objFile->path))
-            {
-                return;
-            }
-
-            $arrData['singleSRC'] = $objFile->path;
-            $objTemplate->addImage = true;
-            $this->addImageToTemplate($objTemplate, $arrData);
-        }
-
-        $objFile = FilesModel::findByUuid($objMember->avatar);
-
-        if ($objFile === null || !is_file(TL_ROOT . '/' . $objFile->path))
-        {
-            $arrData['singleSRC'] = FilesModel::findByUuid(Config::get('defaultAvatar'))->path;
-            $objTemplate->addImage = true;
-            $this->addImageToTemplate($objTemplate, $arrData);
-        }
-
-        $arrData['singleSRC'] = $objFile->path;
-        $objTemplate->addImage = true;
-        $this->addImageToTemplate($objTemplate, $arrData, null, null, $objFile);
     }
 
     /**

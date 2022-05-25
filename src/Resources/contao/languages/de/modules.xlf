@@ -17,6 +17,14 @@
         <source>Displays the profile picture of the member.</source>
         <target>Zeigt das Profilbild des Mitgliedes an.</target>
       </trans-unit>
+      <trans-unit id="FMD.deleteAvatar.0">
+        <source>Delete avatar</source>
+        <target>Profilbild löschen</target>
+      </trans-unit>
+      <trans-unit id="FMD.deleteAvatar.1">
+        <source>Adds a button to delete the avatar of the member.</source>
+        <target>Fügt eine Schaltfläche zum Löschen des Profilbildes hinzu.</target>
+      </trans-unit>
       <trans-unit id="FMD.memberList.0">
         <source>Memberlist</source>
         <target>Mitgliederliste</target>

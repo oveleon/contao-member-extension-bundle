@@ -1,29 +1,61 @@
 <?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="src/Resources/contao/languages/en/tl_module.php" source-language="en" target-language="de">
     <body>
+      <trans-unit id="tl_module.ext_order.0">
+        <source>Sort order</source>
+        <target>Sortierreihenfolge</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_order.1">
+        <source>Here you can choose the sort order.</source>
+        <target>Hier können Sie die Sortierreihenfolge festlegen.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_orderField.0">
+        <source>Sorting field</source>
+        <target>Sortierfeld</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_orderField.1">
+        <source>Here you can select the field to be sorted by.</source>
+        <target>Hier können Sie das Feld auswählen, nach dem sortiert werden soll.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_groups.0">
+        <source>Groups to show</source>
+        <target>Anzuzeigende Gruppen</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_groups.1">
+        <source>Here you can select the member groups to be displayed.</source>
+        <target>Hier können Sie die Mitgliedergruppen auswählen, die angezeigt werden sollen.</target>
+      </trans-unit>
       <trans-unit id="tl_module.memberFields.0">
         <source>Member fields</source>
-        <target>Mitglied-Felder</target>
+        <target>Mitglieds-Felder</target>
       </trans-unit>
       <trans-unit id="tl_module.memberFields.1">
-        <source>Here you can make a selection of the fields that will be output.</source>
-        <target>Hier können Sie eine Auswhal der Felder treffen, welche ausgegeben werden.</target>
+        <source>Here you can select the member fields to be displayed.</source>
+        <target>Hier können Sie die auszugebenden Mitgliederfelder auswählen.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.memberFields.0">
+        <source>Member fields</source>
+        <target>Mitglieds-Felder</target>
+      </trans-unit>
+      <trans-unit id="tl_module.memberFields.1">
+        <source>Here you can select the member fields to be output.</source>
+        <target>Hier können Sie die auszugebenden Mitgliederfelder auswählen.</target>
       </trans-unit>
       <trans-unit id="tl_module.memberListTpl.0">
-        <source>List-Template</source>
+        <source>List template</source>
         <target>Listen-Template</target>
       </trans-unit>
       <trans-unit id="tl_module.memberListTpl.1">
-        <source>Here you can choose your own member list template.</source>
-        <target>Hier können Sie ein eigenes Mitglieder-Listen Template wählen.</target>
+        <source>Here you can set your own member list template.</source>
+        <target>Hier können Sie ein eigenes Mitglieder-Listen Template einstellen.</target>
       </trans-unit>
       <trans-unit id="tl_module.memberReaderTpl.0">
-        <source>Reader-Template</source>
+        <source>Reader template</source>
         <target>Leser-Template</target>
       </trans-unit>
       <trans-unit id="tl_module.memberReaderTpl.1">
-        <source>Here you can choose your own member reader template.</source>
-        <target>Hier können Sie ein eigenes Mitglied-Leser Template wählen.</target>
+        <source>Here you can set your own member reader template.</source>
+        <target>Hier können Sie ein eigenes Mitglieds-Leser Template einstellen.</target>
       </trans-unit>
     </body>
   </file>

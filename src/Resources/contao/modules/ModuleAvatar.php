@@ -1,105 +1,88 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Oveleon ContaoMemberExtension Bundle.
  *
- * (c) https://www.oveleon.de/
+ * @package     contao-member-extension-bundle
+ * @license     MIT
+ * @author      Daniele Sciannimanica   <https://github.com/doishub>
+ * @author      Fabian Ekert            <https://github.com/eki89>
+ * @author      Sebastian Zoglowek      <https://github.com/zoglo>
+ * @copyright   Oveleon                 <https://www.oveleon.de/>
  */
 
 namespace Oveleon\ContaoMemberExtensionBundle;
 
-use Patchwork\Utf8;
+use Contao\BackendTemplate;
+use Contao\Config;
+use Contao\FilesModel;
+use Contao\FrontendUser;
+use Contao\MemberModel;
+use Contao\Module;
+use Contao\System;
 
 /**
  * Class ModuleAvatar
  *
  * @author Fabian Ekert <fabian@oveleon.de>
+ * @author Sebastian Zoglowek <https://github.com/zoglo>
  */
-class ModuleAvatar extends \Module
+class ModuleAvatar extends ModuleMemberExtension
 {
+    /**
+     * Template.
+     *
+     * @var string
+     */
+    protected $strTemplate = 'memberExtension_avatar';
 
-	/**
-	 * Template
-	 * @var string
-	 */
-	protected $strTemplate = 'member_avatar';
+    /**
+     * Return a wildcard in the back end
+     *
+     * @return string
+     */
+    public function generate()
+    {
+        $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
-	/**
-	 * Return a wildcard in the back end
-	 *
-	 * @return string
-	 */
-	public function generate()
-	{
-		if (TL_MODE == 'BE')
-		{
-			/** @var BackendTemplate|object $objTemplate */
-			$objTemplate = new \BackendTemplate('be_wildcard');
+        if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request))
+        {
+            $objTemplate = new BackendTemplate('be_wildcard');
+            $objTemplate->wildcard = '### ' . mb_strtoupper($GLOBALS['TL_LANG']['FMD']['avatar'][0], 'UTF-8') . ' ###';
+            $objTemplate->title = $this->headline;
+            $objTemplate->id = $this->id;
+            $objTemplate->link = $this->name;
+            $objTemplate->href = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
 
-			$objTemplate->wildcard = '### ' . Utf8::strtoupper($GLOBALS['TL_LANG']['FMD']['avatar'][0]) . ' ###';
-			$objTemplate->title = $this->headline;
-			$objTemplate->id = $this->id;
-			$objTemplate->link = $this->name;
-			$objTemplate->href = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
+            return $objTemplate->parse();
+        }
 
-			return $objTemplate->parse();
-		}
+        // Return if user is not logged in
+        $tokenChecker = System::getContainer()->get('contao.security.token_checker');
+        $blnFeUserLoggedIn = $tokenChecker->hasFrontendUser();
 
-		// Return if user is not logged in
-		if (!FE_USER_LOGGED_IN)
-		{
-			return '';
-		}
-
-		if ($this->memberTpl != '')
-		{
-			$this->strTemplate = $this->memberTpl;
-		}
-
-		return parent::generate();
-	}
-
-	/**
-	 * Generate the module
-	 */
-	protected function compile()
-	{
-        $this->size = $this->imgSize;
-
-        $this->import('FrontendUser', 'User');
-
-        if ($this->User->avatar == '' && \Config::get('defaultAvatar') == '')
+        if (!$blnFeUserLoggedIn)
         {
             return '';
         }
 
-        if ($this->User->avatar == '')
-        {
-            $objFile = \FilesModel::findByUuid(\Config::get('defaultAvatar'));
+        $this->strTemplate = $this->customTpl ?: 'memberExtension_avatar';
 
-            if ($objFile === null || !is_file(TL_ROOT . '/' . $objFile->path))
-            {
-                return '';
-            }
+        return parent::generate();
+    }
 
-            $this->singleSRC = $objFile->path;
+    /**
+     * Generate the module
+     */
+    protected function compile()
+    {
+        $objTemplate = $this->Template;
 
-            $this->addImageToTemplate($this->Template, $this->arrData);
-            return;
-        }
+        $this->import(FrontendUser::class, 'User');
+        $objMember = MemberModel::findByPk($this->User->id);
 
-        $objFile = \FilesModel::findByUuid($this->User->avatar);
-
-        if ($objFile === null || !is_file(TL_ROOT . '/' . $objFile->path))
-        {
-            $this->singleSRC = \FilesModel::findByUuid(\Config::get('defaultAvatar'))->path;
-
-            $this->addImageToTemplate($this->Template, $this->arrData);
-            return;
-        }
-
-        $this->singleSRC = $objFile->path;
-
-        $this->addImageToTemplate($this->Template, $this->arrData, null, null, $objFile);
-	}
+        Member::parseMemberAvatar($objMember, $objTemplate, $this->imgSize);
+    }
 }

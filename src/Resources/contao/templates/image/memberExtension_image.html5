@@ -1,0 +1,8 @@
+<figure class="image_container">
+
+  <?php if($this->addImage): ?>
+    <?php $this->insert('picture_default', $this->picture); ?>
+  <?php else: ?>
+    <img src="<?= $this->singleSRC; ?>" width="200" height="200" itemprop="image">
+  <?php endif; ?>
+</figure>

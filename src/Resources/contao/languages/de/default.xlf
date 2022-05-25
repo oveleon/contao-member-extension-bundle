@@ -9,6 +9,14 @@
         <source>More</source>
         <target>Mehr</target>
       </trans-unit>
+      <trans-unit id="MSC.deleteAvatar">
+        <source>Delete avatar</source>
+        <target>Profilbild löschen</target>
+      </trans-unit>
+      <trans-unit id="MSC.avatarDeleted">
+        <source>The avatar was successfully deleted</source>
+        <target>Das Profilbild wurde erfolgreich gelöscht</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

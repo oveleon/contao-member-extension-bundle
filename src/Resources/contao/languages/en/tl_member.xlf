@@ -2,10 +2,10 @@
   <file datatype="php" original="src/Resources/contao/languages/en/tl_member.php" source-language="en">
     <body>
       <trans-unit id="tl_member.avatar.0">
-        <source>Profile picture</source>
+        <source>Avatar</source>
       </trans-unit>
       <trans-unit id="tl_member.avatar.1">
-        <source>Here you can choose a profile picture for the member.</source>
+        <source>Here you can choose an avatar for the member.</source>
       </trans-unit>
       <trans-unit id="tl_member.settings.0">
         <source>Settings</source>

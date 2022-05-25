@@ -1,23 +1,47 @@
 <?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="src/Resources/contao/languages/en/tl_module.php" source-language="en">
     <body>
+      <trans-unit id="tl_module.ext_order.0">
+        <source>Sort order</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_order.1">
+        <source>Here you can choose the sort order.</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_orderField.0">
+        <source>Sorting field</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_orderField.1">
+        <source>Here you can select the field to be sorted by.</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_groups.0">
+        <source>Groups to show</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_groups.1">
+        <source>Here you can select the member groups to be displayed.</source>
+      </trans-unit>
       <trans-unit id="tl_module.memberFields.0">
         <source>Member fields</source>
       </trans-unit>
       <trans-unit id="tl_module.memberFields.1">
-        <source>Here you can make a selection of the fields that will be output.</source>
+        <source>Here you can select the member fields to be displayed.</source>
+      </trans-unit>
+      <trans-unit id="tl_module.memberFields.0">
+        <source>Member fields</source>
+      </trans-unit>
+      <trans-unit id="tl_module.memberFields.1">
+        <source>Here you can select the member fields to be output.</source>
       </trans-unit>
       <trans-unit id="tl_module.memberListTpl.0">
-        <source>List-Template</source>
+        <source>List template</source>
       </trans-unit>
       <trans-unit id="tl_module.memberListTpl.1">
-        <source>Here you can choose your own member list template.</source>
+        <source>Here you can set your own member list template.</source>
       </trans-unit>
       <trans-unit id="tl_module.memberReaderTpl.0">
-        <source>Reader-Template</source>
+        <source>Reader template</source>
       </trans-unit>
       <trans-unit id="tl_module.memberReaderTpl.1">
-        <source>Here you can choose your own member reader template.</source>
+        <source>Here you can set your own member reader template.</source>
       </trans-unit>
     </body>
   </file>
