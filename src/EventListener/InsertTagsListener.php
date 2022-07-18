@@ -48,13 +48,13 @@ class InsertTagsListener
         $key = strtolower($elements[0]);
 
         if (\in_array($key, self::SUPPORTED_TAGS, true)) {
-            return $this->replaceEventInsertTag($key, $elements, $flags);
+            return $this->replaceMemberInsertTag($key, $elements, $flags);
         }
 
         return false;
     }
 
-    private function replaceEventInsertTag(string $insertTag, array $elements, array $flags): string
+    private function replaceMemberInsertTag(string $insertTag, array $elements, array $flags): string
     {
         $this->framework->initialize();
         $tokenChecker = System::getContainer()->get('contao.security.token_checker');
