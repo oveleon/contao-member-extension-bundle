@@ -32,7 +32,7 @@ use Psr\Log\LogLevel;
 
 /**
  * Class Member
- * 
+ *
  * @property int $avatar UUID of the avatar
  */
 class Member extends Frontend
@@ -270,36 +270,27 @@ class Member extends Frontend
     /**
      * Parses an avatar to the template
      *
-     * @param MemberModel $objMember
+     * @param MemberModel|null $objMember
      * @param $objTemplate
      * @param $strImgSize
      * @return void
      */
-    public static function parseMemberAvatar(MemberModel $objMember, &$objTemplate, $strImgSize)
+    public static function parseMemberAvatar(?MemberModel $objMember, &$objTemplate, $strImgSize)
     {
         $objTemplate->addImage= true;
 
         $objTemplate->singleSRC = self::DEFAULT_PICTURE;
         $objTemplate->addFallbackImage = true;
 
-        $uuidDefault = Config::get('defaultAvatar');
-
-        if(!!$objMember->avatar)
-        {
-            $objFile = FilesModel::findByUuid($objMember->avatar);
-        }
-        else if(!!$uuidDefault)
-        {
-            $objFile = FilesModel::findByUuid($uuidDefault);
-        }
-        else
-        {
-            return;
-        }
-
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
-        // If file does not exist use default image
+        // Check if member avatar exists
+        if(null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'.$objFile->path))
+        {
+            $objFile = !!($uuidDefault = Config::get('defaultAvatar')) ? FilesModel::findByUuid($uuidDefault) : null;
+        }
+
+        // Check if config avatar exists
         if (null === $objFile || !\is_file($projectDir . '/' . $objFile->path))
         {
             return;
@@ -310,6 +301,31 @@ class Member extends Frontend
 
         //ToDo: Change to FigureBuilder in the future
         $objTemplate->addImageToTemplate($objTemplate, $arrData, null, null, $objFile);
+    }
+
+    /**
+     * Gets the url for a member avatar
+     *
+     * @param MemberModel|null $objMember
+     * @return string
+     */
+    public static function getMemberAvatarURL(?MemberModel $objMember): string
+    {
+        // ToDo: Merge logic with parseMemberAvatar
+        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+
+        if(null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'. $objFile->path))
+        {
+            $objFile = !!($uuidDefault = Config::get('defaultAvatar')) ? FilesModel::findByUuid($uuidDefault) : null;
+        }
+
+        // Check if config avatar exists
+        if (null === $objFile || !\is_file($projectDir . '/' . $objFile->path))
+        {
+            return self::DEFAULT_PICTURE;
+        }
+
+        return $objFile->path;
     }
 
     /**
