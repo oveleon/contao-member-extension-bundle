@@ -26,7 +26,8 @@ use Oveleon\ContaoMemberExtensionBundle\Member;
 class InsertTagsListener
 {
     private const SUPPORTED_TAGS = [
-        'avatar'
+        'avatar',
+        'avatar_url'
     ];
 
     /**
@@ -83,14 +84,24 @@ class InsertTagsListener
                 break;
         }
 
-        if(!!$objMember = MemberModel::findByPk($memberID))
+        $objMember = MemberModel::findByPk($memberID);
+
+        switch ($insertTag)
         {
-            $strImgSize = $this->convertImgSize($elements[3]);
-            $objTemplate = new FrontendTemplate('memberExtension_image');
+            case 'avatar':
+            {
+                $strImgSize = $this->convertImgSize($elements[3]);
+                $objTemplate = new FrontendTemplate('memberExtension_image');
 
-            Member::parseMemberAvatar($objMember, $objTemplate, $strImgSize);
+                Member::parseMemberAvatar($objMember, $objTemplate, $strImgSize);
 
-            return $objTemplate->parse();
+                return $objTemplate->parse();
+            }
+
+            case 'avatar_url':
+            {
+                return Member::getMemberAvatarURL($objMember);
+            }
         }
 
         return '';
