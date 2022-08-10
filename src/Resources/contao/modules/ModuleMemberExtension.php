@@ -65,7 +65,15 @@ abstract class ModuleMemberExtension extends Module
                 default:
                     if($varValue = $objMember->{$field})
                     {
-                        self::parseMemberDetails($arrFields, $field, $varValue);
+                        if (\is_array(($arrValue = StringUtil::deserialize($varValue))))
+                        {
+                            $arrFields[$field] = implode(",", $arrValue);
+                        }
+                        else
+                        {
+                            $arrFields[$field] = $varValue;
+                        }
+                        //self::parseMemberDetails($arrFields, $field, $varValue);
                     }
             }
         }
