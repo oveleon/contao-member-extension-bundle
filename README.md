@@ -113,6 +113,10 @@ Member avatars can be shown using following *insert-tags*
 {{avatar::member::current::200x200xproportional}}
 {{avatar::member::4}}
 {{avatar::member::4::300x300xcrop}}
+
+// Output file url
+{{avatar_url::member::current}}
+{{avatar_url::member:4}}
 ```
 
 The allowed image size parameters are:
