@@ -206,7 +206,7 @@ class ModuleMemberList extends ModuleMemberExtension
         switch ($this->ext_order)
         {
             case 'order_random':
-                $arrOptions['order'] .= "RAND()";
+                $arrOptions['order'] = "RAND()";
                 break;
 
             case 'order_desc':
