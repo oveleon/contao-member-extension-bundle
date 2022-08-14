@@ -1,12 +1,15 @@
 <?php
 
-/**
- * Procuna
+/*
+ * This file is part of Oveleon ContaoMemberExtension Bundle.
  *
- * @link      https://www.oveleon.de/
- * @copyright Copyright (c) 2021  Oveleon GbR (https://www.oveleon.de)
+ * @package     contao-member-extension-bundle
+ * @license     MIT
+ * @author      Sebastian Zoglowek     <https://github.com/zoglo>
+ * @author      Daniele Sciannimanica  <https://github.com/doishub>
+ * @author      Fabian Ekert           <https://github.com/eki89>
+ * @copyright   Oveleon                <https://www.oveleon.de/>
  */
-
 
 namespace Oveleon\ContaoMemberExtensionBundle\DependencyInjection;
 
