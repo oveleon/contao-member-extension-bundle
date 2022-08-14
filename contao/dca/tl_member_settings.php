@@ -17,21 +17,18 @@ use Contao\Config;
 
 $GLOBALS['TL_DCA']['tl_member_settings'] = [
 
-	// Config
-	'config' => [
-		'dataContainer' => 'File',
-		'closed' => true
-	],
+    'config' => [
+        'dataContainer' => 'File',
+        'closed' => true
+    ],
 
-	// Palettes
-	'palettes' => ['default' =>'{avatar_legend},defaultAvatar;'],
+    'palettes' => ['default' =>'{avatar_legend},defaultAvatar;'],
 
-	// Fields
-	'fields' => [
-		'defaultAvatar' => [
+    'fields' => [
+        'defaultAvatar' => [
             'label' => &$GLOBALS['TL_LANG']['tl_member_settings']['defaultAvatar'],
             'inputType' => 'fileTree',
             'eval' => array('fieldType'=>'radio', 'filesOnly'=>true, 'isGallery'=>true, 'extensions'=>Config::get('validImageTypes'), 'tl_class'=>'clr')
-		]
-	]
+        ]
+    ]
 ];

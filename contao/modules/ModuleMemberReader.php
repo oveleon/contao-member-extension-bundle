@@ -35,38 +35,38 @@ use Contao\System;
 class ModuleMemberReader extends ModuleMemberExtension
 {
 
-	/**
-	 * Template
-	 * @var string
-	 */
-	protected $strTemplate = 'mod_memberReader';
+    /**
+     * Template
+     * @var string
+     */
+    protected $strTemplate = 'mod_memberReader';
 
-	/**
-	 * Template
-	 * @var string
-	 */
-	protected $strMemberTemplate = 'memberExtension_reader_full';
+    /**
+     * Template
+     * @var string
+     */
+    protected $strMemberTemplate = 'memberExtension_reader_full';
 
-	/**
-	 * Return a wildcard in the back end
-	 *
-	 * @return string
-	 */
-	public function generate()
-	{
+    /**
+     * Return a wildcard in the back end
+     *
+     * @return string
+     */
+    public function generate()
+    {
         $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
         if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request))
         {
             $objTemplate = new BackendTemplate('be_wildcard');
-			$objTemplate->wildcard = '### ' . mb_strtoupper($GLOBALS['TL_LANG']['FMD']['memberList'][0], 'UTF-8') . ' ###';
-			$objTemplate->title = $this->headline;
-			$objTemplate->id = $this->id;
-			$objTemplate->link = $this->name;
-			$objTemplate->href = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
+            $objTemplate->wildcard = '### ' . mb_strtoupper($GLOBALS['TL_LANG']['FMD']['memberList'][0], 'UTF-8') . ' ###';
+            $objTemplate->title = $this->headline;
+            $objTemplate->id = $this->id;
+            $objTemplate->link = $this->name;
+            $objTemplate->href = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
 
-			return $objTemplate->parse();
-		}
+            return $objTemplate->parse();
+        }
 
         // Set the item from the auto_item parameter
         if (!isset($_GET['items']) && isset($_GET['auto_item']) && Config::get('useAutoItem'))
@@ -74,14 +74,14 @@ class ModuleMemberReader extends ModuleMemberExtension
             Input::setGet('items', Input::get('auto_item'));
         }
 
-		return parent::generate();
-	}
+        return parent::generate();
+    }
 
-	/**
-	 * Generate the module
-	 */
-	protected function compile()
-	{
+    /**
+     * Generate the module
+     */
+    protected function compile()
+    {
         $this->Template->referer = 'javascript:history.go(-1)';
         $this->Template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
 
@@ -109,5 +109,5 @@ class ModuleMemberReader extends ModuleMemberExtension
         $objTemplate->setData($objMember->row());
 
         $this->Template->member = $this->parseMemberTemplate($objMember, $objTemplate, $arrMemberFields, $this->imgSize);
-	}
+    }
 }

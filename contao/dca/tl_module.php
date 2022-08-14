@@ -111,7 +111,7 @@ class tl_module_extension extends Backend
      * Return all sortable fields of table tl_member
      */
     public function getViewableMemberFields(): array
-	{
+    {
         $return = [];
 
         Contao\System::loadLanguageFile('tl_member');
