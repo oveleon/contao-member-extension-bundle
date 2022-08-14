@@ -41,18 +41,11 @@ class Member extends Frontend
 
     /**
      * MemberAvatar file name
-     *
-     * @var string
      */
-    protected $avatarName = 'memberAvatar';
+    protected string $avatarName = 'memberAvatar';
 
     /**
      * Create avatar for a member | Registration
-     *
-     * @param int   $userId
-     * @param array $arrData
-     *
-     * @return void
      */
     public function createAvatar(int $userId, array $arrData): void
     {
@@ -62,13 +55,8 @@ class Member extends Frontend
 
     /**
      * Update avatar of a member | Login
-     *
-     * @param FrontendUser  $objUser
-     * @param array         $arrData
-     *
-     * @return void
      */
-    public function updateAvatar(FrontendUser $objUser, $arrData): void
+    public function updateAvatar(FrontendUser $objUser, array $arrData): void
     {
         $objMember = MemberModel::findById($objUser->id);
         $this->processAvatar($objMember, $arrData);
@@ -76,11 +64,6 @@ class Member extends Frontend
 
     /**
      * Process avatar upload for a member
-     *
-     * @param MemberModel   $objMember
-     * @param array         $arrData
-     *
-     * @return void
      */
     protected function processAvatar(MemberModel $objMember, ?array $arrData): void
     {
@@ -173,6 +156,7 @@ class Member extends Frontend
         // Upload valid file type with no width and height -> svg
 
         // Don't upload if no homedir is assigned
+        // ToDo: Create homedir?
         if (!$objMember->assignDir || !$objMember->homeDir)
         {
             // ToDo: add error message for no homedir
@@ -186,7 +170,7 @@ class Member extends Frontend
         // The upload folder could not be found
         if ($objUploadFolder === null)
         {
-            throw new \Exception("Invalid upload folder ID $intUploadFolder");
+            throw new Exception("Invalid upload folder ID $intUploadFolder");
         }
 
         $strUploadFolder = $objUploadFolder->path;
@@ -246,7 +230,7 @@ class Member extends Frontend
 
             // Add a log entry
             $logger = System::getContainer()->get('monolog.logger.contao');
-            $logger->log(LogLevel::INFO, 'File "' . $strUploadFolder . '/' . $file['name'] . '" has been uploaded', array('contao' => new ContaoContext(__METHOD__, TL_FILES)));
+            $logger->log(LogLevel::INFO, 'File "' . $strUploadFolder . '/' . $file['name'] . '" has been uploaded', ['contao' => new ContaoContext(__METHOD__, TL_FILES)]);
         }
 
         unset($_SESSION['FILES']['avatar']);
@@ -254,10 +238,8 @@ class Member extends Frontend
 
     /**
      * Return the maximum upload file size in bytes
-     *
-     * @return string
      */
-    protected function getMaximumUploadSize()
+    protected function getMaximumUploadSize(): string
     {
         if ($this->maxlength > 0)
         {
@@ -269,13 +251,8 @@ class Member extends Frontend
 
     /**
      * Parses an avatar to the template
-     *
-     * @param MemberModel|null $objMember
-     * @param $objTemplate
-     * @param $strImgSize
-     * @return void
      */
-    public static function parseMemberAvatar(?MemberModel $objMember, &$objTemplate, $strImgSize)
+    public static function parseMemberAvatar(?MemberModel $objMember, &$objTemplate, $strImgSize): void
     {
         $objTemplate->addImage= true;
 
@@ -305,9 +282,6 @@ class Member extends Frontend
 
     /**
      * Gets the url for a member avatar
-     *
-     * @param MemberModel|null $objMember
-     * @return string
      */
     public static function getMemberAvatarURL(?MemberModel $objMember): string
     {
@@ -329,9 +303,7 @@ class Member extends Frontend
     }
 
     /**
-     * @param MemberModel $objMember
-     *
-     * @return void
+     * Deletes an avatar
      */
     public static function deleteAvatar(MemberModel $objMember): void
     {

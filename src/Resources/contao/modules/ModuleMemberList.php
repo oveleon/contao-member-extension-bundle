@@ -39,47 +39,47 @@ use Contao\System;
 class ModuleMemberList extends ModuleMemberExtension
 {
 
-	/**
-	 * Template
-	 * @var string
-	 */
-	protected $strTemplate = 'mod_memberList';
+    /**
+     * Template
+     * @var string
+     */
+    protected $strTemplate = 'mod_memberList';
 
-	/**
-	 * Template
-	 * @var string
-	 */
-	protected $strMemberTemplate = 'memberExtension_list_default';
+    /**
+     * Template
+     * @var string
+     */
+    protected $strMemberTemplate = 'memberExtension_list_default';
 
-	/**
-	 * Return a wildcard in the back end
-	 *
-	 * @return string
-	 */
-	public function generate()
-	{
+    /**
+     * Return a wildcard in the back end
+     *
+     * @return string
+     */
+    public function generate()
+    {
         $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
         if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request))
         {
             $objTemplate = new BackendTemplate('be_wildcard');
-			$objTemplate->wildcard = '### ' . mb_strtoupper($GLOBALS['TL_LANG']['FMD']['memberList'][0], 'UTF-8') . ' ###';
-			$objTemplate->title = $this->headline;
-			$objTemplate->id = $this->id;
-			$objTemplate->link = $this->name;
-			$objTemplate->href = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
+            $objTemplate->wildcard = '### ' . mb_strtoupper($GLOBALS['TL_LANG']['FMD']['memberList'][0], 'UTF-8') . ' ###';
+            $objTemplate->title = $this->headline;
+            $objTemplate->id = $this->id;
+            $objTemplate->link = $this->name;
+            $objTemplate->href = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
 
-			return $objTemplate->parse();
-		}
+            return $objTemplate->parse();
+        }
 
-		return parent::generate();
-	}
+        return parent::generate();
+    }
 
-	/**
-	 * Generate the module
-	 */
-	protected function compile()
-	{
+    /**
+     * Generate the module
+     */
+    protected function compile()
+    {
         $limit = null;
         $offset = 0;
 
@@ -162,7 +162,7 @@ class ModuleMemberList extends ModuleMemberExtension
         }
 
         $this->Template->members = $arrMembers;
-	}
+    }
 
     /**
      * Checks whether a member is in any given group
@@ -195,8 +195,8 @@ class ModuleMemberList extends ModuleMemberExtension
      */
     private function getMembers()
     {
-        $arrOptions = [];
         $t = MemberModel::getTable();
+        $arrOptions = ['order' => ''];
 
         if (!!$this->ext_orderField)
         {
@@ -206,7 +206,7 @@ class ModuleMemberList extends ModuleMemberExtension
         switch ($this->ext_order)
         {
             case 'order_random':
-                $arrOptions['order'] = "RAND()";
+                $arrOptions['order'] .= "RAND()";
                 break;
 
             case 'order_desc':

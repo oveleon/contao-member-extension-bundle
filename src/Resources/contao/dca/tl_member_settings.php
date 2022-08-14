@@ -12,6 +12,9 @@ declare(strict_types=1);
  * @author      Sebastian Zoglowek      <https://github.com/zoglo>
  * @copyright   Oveleon                 <https://www.oveleon.de/>
  */
+
+use Contao\Config;
+
 $GLOBALS['TL_DCA']['tl_member_settings'] = [
 
 	// Config

@@ -13,21 +13,22 @@ declare(strict_types=1);
  * @copyright   Oveleon                 <https://www.oveleon.de/>
  */
 
+use Contao\Config;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
+
 // Extend the default palette
-Contao\CoreBundle\DataContainer\PaletteManipulator::create()
-    ->addField(['avatar'], 'personal_legend', Contao\CoreBundle\DataContainer\PaletteManipulator::POSITION_APPEND)
+PaletteManipulator::create()
+    ->addField(['avatar'], 'personal_legend', PaletteManipulator::POSITION_APPEND)
     ->applyToPalette('default', 'tl_member')
 ;
 
 // Add global operations
-array_insert($GLOBALS['TL_DCA']['tl_member']['list']['global_operations'], 0, [
-    'settings' => [
-        'label' => &$GLOBALS['TL_LANG']['tl_member']['settings'],
-        'href' => 'do=member_settings',
-        'icon' => 'edit.svg',
-        'attributes' => 'onclick="Backend.getScrollOffset()" accesskey="e"'
-    ]
-]);
+$GLOBALS['TL_DCA']['tl_member']['list']['global_operations']['settings'] = [
+    'label' => &$GLOBALS['TL_LANG']['tl_member']['settings'],
+    'href' => 'do=member_settings',
+    'icon' => 'edit.svg',
+    'attributes' => 'onclick="Backend.getScrollOffset()" accesskey="e"'
+];
 
 // Add fields to tl_user
 $GLOBALS['TL_DCA']['tl_member']['fields']['avatar'] = [
