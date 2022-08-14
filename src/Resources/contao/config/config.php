@@ -16,14 +16,13 @@ declare(strict_types=1);
 // Back end modules
 use Contao\System;
 
-$GLOBALS['BE_MOD']['system']['member_settings'] = array
-(
+$GLOBALS['BE_MOD']['system']['member_settings'] = [
     'tables'            => ['tl_member_settings'],
     'hideInNavigation'  => true,
-);
+];
 
 // Front end modules
-// ToDo: Change to ArrayUtil::arrayInsert in the future
+// ToDo: Change to ArrayUtil::arrayInsert when Contao 4.9 support ends
 array_insert($GLOBALS['FE_MOD']['user'], -1, [
     'avatar'       => 'Oveleon\ContaoMemberExtensionBundle\ModuleAvatar',
     'deleteAvatar' => 'Oveleon\ContaoMemberExtensionBundle\ModuleDeleteAvatar',
@@ -37,8 +36,3 @@ $GLOBALS['TL_HOOKS']['updatePersonalData'][] = ['Oveleon\ContaoMemberExtensionBu
 
 // Style sheet
 $request = System::getContainer()->get('request_stack')->getCurrentRequest();
-
-if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request))
-{
-    $GLOBALS['TL_CSS'][] = 'bundles/contaomemberextension/style.css|static';
-}
