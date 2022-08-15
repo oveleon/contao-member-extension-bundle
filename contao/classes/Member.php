@@ -252,7 +252,7 @@ class Member extends Frontend
     /**
      * Parses an avatar to the template
      */
-    public static function parseMemberAvatar(?MemberModel $objMember, &$objTemplate, $strImgSize): void
+    public static function parseMemberAvatar(?MemberModel $objMember, &$objTemplate, ?string $strImgSize): void
     {
         $objTemplate->addImage= true;
 
@@ -274,7 +274,13 @@ class Member extends Frontend
         }
 
         $objTemplate->addFallbackImage = false;
-        $arrData = ['singleSRC'=>$objFile->path, 'size'=>$strImgSize];
+
+        $arrData = ['singleSRC'=>$objFile->path];
+
+        if (null !== $strImgSize)
+        {
+            $arrData['size'] = $strImgSize;
+        }
 
         //ToDo: Change to FigureBuilder in the future
         $objTemplate->addImageToTemplate($objTemplate, $arrData, null, null, $objFile);

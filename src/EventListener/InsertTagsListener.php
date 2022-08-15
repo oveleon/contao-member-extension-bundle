@@ -90,10 +90,14 @@ class InsertTagsListener
         {
             case 'avatar':
             {
-                $strImgSize = $this->convertImgSize($elements[3]);
+                if (isset($elements[3]))
+                {
+                    $strImgSize = $this->convertImgSize($elements[3]);
+                }
+
                 $objTemplate = new FrontendTemplate('memberExtension_image');
 
-                Member::parseMemberAvatar($objMember, $objTemplate, $strImgSize);
+                Member::parseMemberAvatar($objMember, $objTemplate, $strImgSize ?? null);
 
                 return $objTemplate->parse();
             }

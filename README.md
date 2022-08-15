@@ -72,7 +72,7 @@ detail pages.
     ![Admin View: Member overview](https://www.oveleon.de/share/github-assets/contao-member-extension-bundle/default_avatar.jpg)
     ![Admin View: Member settings](https://www.oveleon.de/share/github-assets/contao-member-extension-bundle/default_avatar_setup.jpg)
 
-2. To display your members, you need to setup a memberlist
+2. To display your members, you need to set up a memberlist
    1. Create the front end module *memberlist*
    2. Choose the member groups and the member fields that should be displayed
    3. Optionally you can set up a redirect page to your memberreader
