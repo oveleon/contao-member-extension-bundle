@@ -76,7 +76,7 @@ class ModuleDeleteAvatar extends Module
         $this->import(FrontendUser::class, 'User');
         $objMember = MemberModel::findByPk($this->User->id);
 
-        if(null === $objMember)
+        if (null === $objMember)
         {
             return '';
         }
@@ -110,7 +110,7 @@ class ModuleDeleteAvatar extends Module
             $objMember = MemberModel::findByPk($this->User->id);
 
             // Delete avatar if it exists
-            if(!!$objMember->avatar)
+            if (!!$objMember->avatar)
             {
                 Member::deleteAvatar($objMember);
                 // Unset avatar
@@ -124,7 +124,7 @@ class ModuleDeleteAvatar extends Module
         }
 
         // Confirmation message
-        if($session->isStarted() && $flashBag->has('mod_avatar_deleted')) {
+        if ($session->isStarted() && $flashBag->has('mod_avatar_deleted')) {
             $arrMessages = $flashBag->get('mod_avatar_deleted');
             $this->Template->message = $arrMessages[0];
         }

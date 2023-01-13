@@ -52,7 +52,7 @@ abstract class ModuleMemberExtension extends Module
 
         foreach ($arrMemberFields as $field)
         {
-            switch($field)
+            switch ($field)
             {
                 /*case 'homeDir':
                 case 'assignDir':
@@ -63,7 +63,7 @@ abstract class ModuleMemberExtension extends Module
                     break;
 
                 default:
-                    if($varValue = $objMember->{$field})
+                    if ($varValue = $objMember->{$field})
                     {
                         if (\is_array(($arrValue = StringUtil::deserialize($varValue))))
                         {
@@ -80,7 +80,7 @@ abstract class ModuleMemberExtension extends Module
 
         $objTemplate->fields = $arrFields;
 
-        if($this->jumpTo)
+        if ($this->jumpTo)
         {
             $objTemplate->link = $this->generateMemberUrl($objMember);
         }

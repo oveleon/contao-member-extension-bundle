@@ -60,15 +60,16 @@ class InsertTagsListener
         $this->framework->initialize();
         $tokenChecker = System::getContainer()->get('contao.security.token_checker');
 
-        if($elements[1] !== 'member')
+        if ($elements[1] !== 'member')
         {
             return '';
         }
 
-        switch ($elements[2]) {
+        switch ($elements[2])
+        {
 
             case 'current':
-                if(!$tokenChecker->hasFrontendUser())
+                if (!$tokenChecker->hasFrontendUser())
                 {
                     return '';
                 }
@@ -76,7 +77,7 @@ class InsertTagsListener
                 break;
 
             default:
-                if(!\is_numeric($elements[2]))
+                if (!\is_numeric($elements[2]))
                 {
                     return '';
                 }
@@ -128,7 +129,7 @@ class InsertTagsListener
             ResizeConfiguration::MODE_CROP,
         ];
 
-        if(!!$mode && in_array($mode, $arrValidModes, true))
+        if (!!$mode && in_array($mode, $arrValidModes, true))
         {
             $arrSizes[] = $mode;
         }

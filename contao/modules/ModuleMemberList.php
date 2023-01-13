@@ -85,7 +85,7 @@ class ModuleMemberList extends ModuleMemberExtension
 
         $arrGroups = StringUtil::deserialize($this->ext_groups);
 
-        if(empty($arrGroups) || !\is_array($arrGroups))
+        if (empty($arrGroups) || !\is_array($arrGroups))
         {
             $this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
             return;
@@ -99,13 +99,13 @@ class ModuleMemberList extends ModuleMemberExtension
 
         $arrMembers = [];
 
-        if(null !== $objMembers)
+        if (null !== $objMembers)
         {
             while($objMembers->next())
             {
                 $objMember = $objMembers->current();
 
-                if(!$this->checkMemberGroups($arrGroups, $objMember))
+                if (!$this->checkMemberGroups($arrGroups, $objMember))
                 {
                     continue;
                 }
@@ -156,7 +156,7 @@ class ModuleMemberList extends ModuleMemberExtension
             $this->Template->pagination = $objPagination->generate("\n  ");
         }
 
-        if(empty($arrMembers))
+        if (empty($arrMembers))
         {
             $this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
         }
@@ -173,14 +173,14 @@ class ModuleMemberList extends ModuleMemberExtension
      */
     private function checkMemberGroups(array $arrGroups, MemberModel $objMember): bool
     {
-        if(empty($arrGroups))
+        if (empty($arrGroups))
         {
             return false;
         }
 
         $arrMemberGroups = StringUtil::deserialize($objMember->groups);
 
-        if(!\is_array($arrMemberGroups) || !\count(array_intersect($arrGroups, $arrMemberGroups)))
+        if (!\is_array($arrMemberGroups) || !\count(array_intersect($arrGroups, $arrMemberGroups)))
         {
             return false;
         }

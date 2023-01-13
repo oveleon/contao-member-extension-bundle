@@ -29,7 +29,6 @@ use Contao\System;
 use Contao\Validator;
 use Psr\Log\LogLevel;
 
-
 /**
  * Class Member
  *
@@ -262,7 +261,7 @@ class Member extends Frontend
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
         // Check if member avatar exists
-        if(null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'.$objFile->path))
+        if (null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'.$objFile->path))
         {
             $objFile = !!($uuidDefault = Config::get('defaultAvatar')) ? FilesModel::findByUuid($uuidDefault) : null;
         }
@@ -294,7 +293,7 @@ class Member extends Frontend
         // ToDo: Merge logic with parseMemberAvatar
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
-        if(null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'. $objFile->path))
+        if (null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'. $objFile->path))
         {
             $objFile = !!($uuidDefault = Config::get('defaultAvatar')) ? FilesModel::findByUuid($uuidDefault) : null;
         }
@@ -313,7 +312,7 @@ class Member extends Frontend
      */
     public static function deleteAvatar(MemberModel $objMember): void
     {
-        if(!!$objMember->avatar)
+        if (!!$objMember->avatar)
         {
             $objFile = FilesModel::findByUuid($objMember->avatar) ?: '';
             $projectDir = System::getContainer()->getParameter('kernel.project_dir');
