@@ -18,6 +18,7 @@ namespace Oveleon\ContaoMemberExtensionBundle;
 use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\CoreBundle\Exception\PageNotFoundException;
+use Contao\Date;
 use Contao\Environment;
 use Contao\FrontendTemplate;
 use Contao\Input;
@@ -196,6 +197,9 @@ class ModuleMemberList extends ModuleMemberExtension
     private function getMembers()
     {
         $t = MemberModel::getTable();
+        $time = Date::floorToMinute();
+
+        $arrColumns = ["$t.disable='' AND ($t.start='' OR $t.start<='$time') AND ($t.stop='' OR $t.stop>'$time') "];
         $arrOptions = ['order' => ''];
 
         if (!!$this->ext_orderField)
@@ -218,6 +222,6 @@ class ModuleMemberList extends ModuleMemberExtension
                 break;
         }
 
-        return MemberModel::findBy(["$t.disable=''"], null, $arrOptions);
+        return MemberModel::findBy($arrColumns, null, $arrOptions);
     }
 }
