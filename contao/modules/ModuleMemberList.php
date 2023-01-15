@@ -7,10 +7,10 @@ declare(strict_types=1);
  *
  * @package     contao-member-extension-bundle
  * @license     MIT
- * @author      Daniele Sciannimanica   <https://github.com/doishub>
- * @author      Fabian Ekert            <https://github.com/eki89>
- * @author      Sebastian Zoglowek      <https://github.com/zoglo>
- * @copyright   Oveleon                 <https://www.oveleon.de/>
+ * @author      Sebastian Zoglowek     <https://github.com/zoglo>
+ * @author      Daniele Sciannimanica  <https://github.com/doishub>
+ * @author      Fabian Ekert           <https://github.com/eki89>
+ * @copyright   Oveleon                <https://www.oveleon.de/>
  */
 
 namespace Oveleon\ContaoMemberExtensionBundle;
@@ -18,6 +18,7 @@ namespace Oveleon\ContaoMemberExtensionBundle;
 use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\CoreBundle\Exception\PageNotFoundException;
+use Contao\Date;
 use Contao\Environment;
 use Contao\FrontendTemplate;
 use Contao\Input;
@@ -39,53 +40,54 @@ use Contao\System;
 class ModuleMemberList extends ModuleMemberExtension
 {
 
-	/**
-	 * Template
-	 * @var string
-	 */
-	protected $strTemplate = 'mod_memberList';
+    /**
+     * Template
+     * @var string
+     */
+    protected $strTemplate = 'mod_memberList';
 
-	/**
-	 * Template
-	 * @var string
-	 */
-	protected $strMemberTemplate = 'memberExtension_list_default';
+    /**
+     * Template
+     * @var string
+     */
+    protected $strMemberTemplate = 'memberExtension_list_default';
 
-	/**
-	 * Return a wildcard in the back end
-	 *
-	 * @return string
-	 */
-	public function generate()
-	{
+    /**
+     * Display a wildcard in the back end
+     *
+     * @return string
+     */
+    public function generate()
+    {
+        $container = System::getContainer();
         $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
-        if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request))
+        if ($request && $container->get('contao.routing.scope_matcher')->isBackendRequest($request))
         {
             $objTemplate = new BackendTemplate('be_wildcard');
-			$objTemplate->wildcard = '### ' . mb_strtoupper($GLOBALS['TL_LANG']['FMD']['memberList'][0], 'UTF-8') . ' ###';
-			$objTemplate->title = $this->headline;
-			$objTemplate->id = $this->id;
-			$objTemplate->link = $this->name;
-			$objTemplate->href = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
+            $objTemplate->wildcard = '### ' . $GLOBALS['TL_LANG']['FMD']['memberList'][0] . ' ###';
+            $objTemplate->title = $this->headline;
+            $objTemplate->id = $this->id;
+            $objTemplate->link = $this->name;
+            $objTemplate->href = StringUtil::specialcharsUrl(System::getContainer()->get('router')->generate('contao_backend', ['do'=>'themes', 'table'=>'tl_module', 'act'=>'edit', 'id'=>$this->id]));
 
-			return $objTemplate->parse();
-		}
+            return $objTemplate->parse();
+        }
 
-		return parent::generate();
-	}
+        return parent::generate();
+    }
 
-	/**
-	 * Generate the module
-	 */
-	protected function compile()
-	{
+    /**
+     * Generate the module
+     */
+    protected function compile()
+    {
         $limit = null;
         $offset = 0;
 
         $arrGroups = StringUtil::deserialize($this->ext_groups);
 
-        if(empty($arrGroups) || !\is_array($arrGroups))
+        if (empty($arrGroups) || !\is_array($arrGroups))
         {
             $this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
             return;
@@ -99,13 +101,13 @@ class ModuleMemberList extends ModuleMemberExtension
 
         $arrMembers = [];
 
-        if(null !== $objMembers)
+        if (null !== $objMembers)
         {
             while($objMembers->next())
             {
                 $objMember = $objMembers->current();
 
-                if(!$this->checkMemberGroups($arrGroups, $objMember))
+                if (!$this->checkMemberGroups($arrGroups, $objMember))
                 {
                     continue;
                 }
@@ -156,13 +158,13 @@ class ModuleMemberList extends ModuleMemberExtension
             $this->Template->pagination = $objPagination->generate("\n  ");
         }
 
-        if(empty($arrMembers))
+        if (empty($arrMembers))
         {
             $this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
         }
 
         $this->Template->members = $arrMembers;
-	}
+    }
 
     /**
      * Checks whether a member is in any given group
@@ -173,14 +175,14 @@ class ModuleMemberList extends ModuleMemberExtension
      */
     private function checkMemberGroups(array $arrGroups, MemberModel $objMember): bool
     {
-        if(empty($arrGroups))
+        if (empty($arrGroups))
         {
             return false;
         }
 
         $arrMemberGroups = StringUtil::deserialize($objMember->groups);
 
-        if(!\is_array($arrMemberGroups) || !\count(array_intersect($arrGroups, $arrMemberGroups)))
+        if (!\is_array($arrMemberGroups) || !\count(array_intersect($arrGroups, $arrMemberGroups)))
         {
             return false;
         }
@@ -195,8 +197,11 @@ class ModuleMemberList extends ModuleMemberExtension
      */
     private function getMembers()
     {
-        $arrOptions = [];
         $t = MemberModel::getTable();
+        $time = Date::floorToMinute();
+
+        $arrColumns = ["$t.disable='' AND ($t.start='' OR $t.start<='$time') AND ($t.stop='' OR $t.stop>'$time') "];
+        $arrOptions = ['order' => ''];
 
         if (!!$this->ext_orderField)
         {
@@ -218,6 +223,6 @@ class ModuleMemberList extends ModuleMemberExtension
                 break;
         }
 
-        return MemberModel::findBy(["$t.disable=''"], null, $arrOptions);
+        return MemberModel::findBy($arrColumns, null, $arrOptions);
     }
 }

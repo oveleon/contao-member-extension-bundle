@@ -7,10 +7,10 @@ declare(strict_types=1);
  *
  * @package     contao-member-extension-bundle
  * @license     MIT
- * @author      Daniele Sciannimanica   <https://github.com/doishub>
- * @author      Fabian Ekert            <https://github.com/eki89>
- * @author      Sebastian Zoglowek      <https://github.com/zoglo>
- * @copyright   Oveleon                 <https://www.oveleon.de/>
+ * @author      Sebastian Zoglowek     <https://github.com/zoglo>
+ * @author      Daniele Sciannimanica  <https://github.com/doishub>
+ * @author      Fabian Ekert           <https://github.com/eki89>
+ * @copyright   Oveleon                <https://www.oveleon.de/>
  */
 
 namespace Oveleon\ContaoMemberExtensionBundle;
@@ -29,7 +29,6 @@ use Contao\System;
 use Contao\Validator;
 use Psr\Log\LogLevel;
 
-
 /**
  * Class Member
  *
@@ -41,18 +40,11 @@ class Member extends Frontend
 
     /**
      * MemberAvatar file name
-     *
-     * @var string
      */
-    protected $avatarName = 'memberAvatar';
+    protected string $avatarName = 'memberAvatar';
 
     /**
      * Create avatar for a member | Registration
-     *
-     * @param int   $userId
-     * @param array $arrData
-     *
-     * @return void
      */
     public function createAvatar(int $userId, array $arrData): void
     {
@@ -62,13 +54,8 @@ class Member extends Frontend
 
     /**
      * Update avatar of a member | Login
-     *
-     * @param FrontendUser  $objUser
-     * @param array         $arrData
-     *
-     * @return void
      */
-    public function updateAvatar(FrontendUser $objUser, $arrData): void
+    public function updateAvatar(FrontendUser $objUser, array $arrData): void
     {
         $objMember = MemberModel::findById($objUser->id);
         $this->processAvatar($objMember, $arrData);
@@ -76,11 +63,6 @@ class Member extends Frontend
 
     /**
      * Process avatar upload for a member
-     *
-     * @param MemberModel   $objMember
-     * @param array         $arrData
-     *
-     * @return void
      */
     protected function processAvatar(MemberModel $objMember, ?array $arrData): void
     {
@@ -91,6 +73,7 @@ class Member extends Frontend
             return;
         }
 
+        // ToDo: remove $_SESSION when contao 4.13 support ends (Contao ^5.* is not possible with Contao 4.* support)
         $file = $_SESSION['FILES']['avatar'];
         $maxlength_kb = $this->getMaximumUploadSize();
         $maxlength_kb_readable = $this->getReadableSize($maxlength_kb);
@@ -136,7 +119,7 @@ class Member extends Frontend
         }
 
         $objFile = new File($file['name']);
-        $uploadTypes = StringUtil::trimsplit(',', \Config::get('validImageTypes'));
+        $uploadTypes = StringUtil::trimsplit(',', Config::get('validImageTypes'));
 
         // File type is not allowed
         if (!\in_array($objFile->extension, $uploadTypes))
@@ -173,6 +156,7 @@ class Member extends Frontend
         // Upload valid file type with no width and height -> svg
 
         // Don't upload if no homedir is assigned
+        // ToDo: Create homedir?
         if (!$objMember->assignDir || !$objMember->homeDir)
         {
             // ToDo: add error message for no homedir
@@ -186,7 +170,7 @@ class Member extends Frontend
         // The upload folder could not be found
         if ($objUploadFolder === null)
         {
-            throw new \Exception("Invalid upload folder ID $intUploadFolder");
+            throw new Exception("Invalid upload folder ID $intUploadFolder");
         }
 
         $strUploadFolder = $objUploadFolder->path;
@@ -246,7 +230,7 @@ class Member extends Frontend
 
             // Add a log entry
             $logger = System::getContainer()->get('monolog.logger.contao');
-            $logger->log(LogLevel::INFO, 'File "' . $strUploadFolder . '/' . $file['name'] . '" has been uploaded', array('contao' => new ContaoContext(__METHOD__, TL_FILES)));
+            $logger->log(LogLevel::INFO, 'File "' . $strUploadFolder . '/' . $file['name'] . '" has been uploaded', ['contao' => new ContaoContext(__METHOD__, TL_FILES)]);
         }
 
         unset($_SESSION['FILES']['avatar']);
@@ -254,8 +238,6 @@ class Member extends Frontend
 
     /**
      * Return the maximum upload file size in bytes
-     *
-     * @return string
      */
     protected function getMaximumUploadSize()
     {
@@ -269,13 +251,8 @@ class Member extends Frontend
 
     /**
      * Parses an avatar to the template
-     *
-     * @param MemberModel|null $objMember
-     * @param $objTemplate
-     * @param $strImgSize
-     * @return void
      */
-    public static function parseMemberAvatar(?MemberModel $objMember, &$objTemplate, $strImgSize)
+    public static function parseMemberAvatar(?MemberModel $objMember, &$objTemplate, ?string $imgSize): void
     {
         $objTemplate->addImage= true;
 
@@ -285,7 +262,7 @@ class Member extends Frontend
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
         // Check if member avatar exists
-        if(null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'.$objFile->path))
+        if (null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'. $objFile->path))
         {
             $objFile = !!($uuidDefault = Config::get('defaultAvatar')) ? FilesModel::findByUuid($uuidDefault) : null;
         }
@@ -297,24 +274,30 @@ class Member extends Frontend
         }
 
         $objTemplate->addFallbackImage = false;
-        $arrData = ['singleSRC'=>$objFile->path, 'size'=>$strImgSize];
+        $imgSize = $imgSize ?? null;
 
-        //ToDo: Change to FigureBuilder in the future
-        $objTemplate->addImageToTemplate($objTemplate, $arrData, null, null, $objFile);
+        $figureBuilder = System::getContainer()
+            ->get('contao.image.studio')
+            ->createFigureBuilder()
+            ->from($objFile->path)
+            ->setSize($imgSize)
+        ;
+
+        if (null !== ($figure = $figureBuilder->buildIfResourceExists()))
+        {
+            $figure->applyLegacyTemplateData($objTemplate);
+        }
     }
 
     /**
      * Gets the url for a member avatar
-     *
-     * @param MemberModel|null $objMember
-     * @return string
      */
     public static function getMemberAvatarURL(?MemberModel $objMember): string
     {
         // ToDo: Merge logic with parseMemberAvatar
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
-        if(null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'. $objFile->path))
+        if (null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'. $objFile->path))
         {
             $objFile = !!($uuidDefault = Config::get('defaultAvatar')) ? FilesModel::findByUuid($uuidDefault) : null;
         }
@@ -329,13 +312,11 @@ class Member extends Frontend
     }
 
     /**
-     * @param MemberModel $objMember
-     *
-     * @return void
+     * Deletes an avatar
      */
     public static function deleteAvatar(MemberModel $objMember): void
     {
-        if(!!$objMember->avatar)
+        if (!!$objMember->avatar)
         {
             $objFile = FilesModel::findByUuid($objMember->avatar) ?: '';
             $projectDir = System::getContainer()->getParameter('kernel.project_dir');

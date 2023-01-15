@@ -7,10 +7,10 @@ declare(strict_types=1);
  *
  * @package     contao-member-extension-bundle
  * @license     MIT
- * @author      Daniele Sciannimanica   <https://github.com/doishub>
- * @author      Fabian Ekert            <https://github.com/eki89>
- * @author      Sebastian Zoglowek      <https://github.com/zoglo>
- * @copyright   Oveleon                 <https://www.oveleon.de/>
+ * @author      Sebastian Zoglowek     <https://github.com/zoglo>
+ * @author      Daniele Sciannimanica  <https://github.com/doishub>
+ * @author      Fabian Ekert           <https://github.com/eki89>
+ * @copyright   Oveleon                <https://www.oveleon.de/>
  */
 
 namespace Oveleon\ContaoMemberExtensionBundle;
@@ -52,7 +52,7 @@ abstract class ModuleMemberExtension extends Module
 
         foreach ($arrMemberFields as $field)
         {
-            switch($field)
+            switch ($field)
             {
                 /*case 'homeDir':
                 case 'assignDir':
@@ -63,7 +63,7 @@ abstract class ModuleMemberExtension extends Module
                     break;
 
                 default:
-                    if($varValue = $objMember->{$field})
+                    if ($varValue = $objMember->{$field})
                     {
                         if (\is_array(($arrValue = StringUtil::deserialize($varValue))))
                         {
@@ -80,7 +80,7 @@ abstract class ModuleMemberExtension extends Module
 
         $objTemplate->fields = $arrFields;
 
-        if($this->jumpTo)
+        if ($this->jumpTo)
         {
             $objTemplate->link = $this->generateMemberUrl($objMember);
         }
@@ -101,12 +101,12 @@ abstract class ModuleMemberExtension extends Module
 
         if (!$objPage instanceof PageModel)
         {
-            $strLink = ampersand(Environment::get('request'));
+            $strLink = StringUtil::ampersand(Environment::get('request'));
         }
         else
         {
             $params = (Config::get('useAutoItem') ? '/' : '/items/') . ($objMember->alias ?: $objMember->id);
-            $strLink = ampersand($objPage->getFrontendUrl($params));
+            $strLink = StringUtil::ampersand($objPage->getFrontendUrl($params));
         }
 
         return $strLink;

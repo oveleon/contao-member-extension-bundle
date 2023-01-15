@@ -1,21 +1,17 @@
 <?xml version="1.0" ?><xliff version="1.1">
-  <file datatype="php" original="src/Resources/contao/languages/en/default.php" source-language="en" target-language="de">
+  <file datatype="php" original="contao/languages/en/default.php" source-language="en">
     <body>
       <trans-unit id="MSC.emptyMemberList">
         <source>No members could be found.</source>
-        <target>Es konnten keine Mitglieder gefunden werden.</target>
       </trans-unit>
       <trans-unit id="MSC.memberDetail">
         <source>More</source>
-        <target>Mehr</target>
       </trans-unit>
       <trans-unit id="MSC.deleteAvatar">
         <source>Delete avatar</source>
-        <target>Profilbild löschen</target>
       </trans-unit>
       <trans-unit id="MSC.avatarDeleted">
         <source>The avatar was successfully deleted</source>
-        <target>Das Profilbild wurde erfolgreich gelöscht</target>
       </trans-unit>
     </body>
   </file>

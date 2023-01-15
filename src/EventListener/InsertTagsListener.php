@@ -7,10 +7,10 @@ declare(strict_types=1);
  *
  * @package     contao-member-extension-bundle
  * @license     MIT
- * @author      Daniele Sciannimanica   <https://github.com/doishub>
- * @author      Fabian Ekert            <https://github.com/eki89>
- * @author      Sebastian Zoglowek      <https://github.com/zoglo>
- * @copyright   Oveleon                 <https://www.oveleon.de/>
+ * @author      Sebastian Zoglowek     <https://github.com/zoglo>
+ * @author      Daniele Sciannimanica  <https://github.com/doishub>
+ * @author      Fabian Ekert           <https://github.com/eki89>
+ * @copyright   Oveleon                <https://www.oveleon.de/>
  */
 
 namespace Oveleon\ContaoMemberExtensionBundle\EventListener;
@@ -60,15 +60,16 @@ class InsertTagsListener
         $this->framework->initialize();
         $tokenChecker = System::getContainer()->get('contao.security.token_checker');
 
-        if($elements[1] !== 'member')
+        if ($elements[1] !== 'member')
         {
             return '';
         }
 
-        switch ($elements[2]) {
+        switch ($elements[2])
+        {
 
             case 'current':
-                if(!$tokenChecker->hasFrontendUser())
+                if (!$tokenChecker->hasFrontendUser())
                 {
                     return '';
                 }
@@ -76,7 +77,7 @@ class InsertTagsListener
                 break;
 
             default:
-                if(!\is_numeric($elements[2]))
+                if (!\is_numeric($elements[2]))
                 {
                     return '';
                 }
@@ -90,10 +91,14 @@ class InsertTagsListener
         {
             case 'avatar':
             {
-                $strImgSize = $this->convertImgSize($elements[3]);
+                if (isset($elements[3]))
+                {
+                    $strImgSize = $this->convertImgSize($elements[3]);
+                }
+
                 $objTemplate = new FrontendTemplate('memberExtension_image');
 
-                Member::parseMemberAvatar($objMember, $objTemplate, $strImgSize);
+                Member::parseMemberAvatar($objMember, $objTemplate, $strImgSize ?? null);
 
                 return $objTemplate->parse();
             }
@@ -124,7 +129,7 @@ class InsertTagsListener
             ResizeConfiguration::MODE_CROP,
         ];
 
-        if(!!$mode && in_array($mode, $arrValidModes, true))
+        if (!!$mode && in_array($mode, $arrValidModes, true))
         {
             $arrSizes[] = $mode;
         }

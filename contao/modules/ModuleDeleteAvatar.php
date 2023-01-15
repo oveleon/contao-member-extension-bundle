@@ -7,10 +7,10 @@ declare(strict_types=1);
  *
  * @package     contao-member-extension-bundle
  * @license     MIT
- * @author      Daniele Sciannimanica   <https://github.com/doishub>
- * @author      Fabian Ekert            <https://github.com/eki89>
- * @author      Sebastian Zoglowek      <https://github.com/zoglo>
- * @copyright   Oveleon                 <https://www.oveleon.de/>
+ * @author      Sebastian Zoglowek     <https://github.com/zoglo>
+ * @author      Daniele Sciannimanica  <https://github.com/doishub>
+ * @author      Fabian Ekert           <https://github.com/eki89>
+ * @copyright   Oveleon                <https://www.oveleon.de/>
  */
 
 namespace Oveleon\ContaoMemberExtensionBundle;
@@ -39,24 +39,23 @@ class ModuleDeleteAvatar extends Module
     protected $strTemplate = 'memberExtension_deleteAvatar';
 
     /**
-     * Return a wildcard in the back end
+     * Display a wildcard in the back end
      *
      * @return string
      */
     public function generate()
     {
         $container = System::getContainer();
-
         $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
-        if ($request && System::getContainer()->get('contao.routing.scope_matcher')->isBackendRequest($request))
+        if ($request && $container->get('contao.routing.scope_matcher')->isBackendRequest($request))
         {
             $objTemplate = new BackendTemplate('be_wildcard');
-            $objTemplate->wildcard = '### ' . mb_strtoupper($GLOBALS['TL_LANG']['FMD']['deleteAvatar'][0] ?? '', 'UTF-8') . ' ###';
+            $objTemplate->wildcard = '### ' . $GLOBALS['TL_LANG']['FMD']['deleteAvatar'][0] . ' ###';
             $objTemplate->title = $this->headline;
             $objTemplate->id = $this->id;
             $objTemplate->link = $this->name;
-            $objTemplate->href = 'contao/main.php?do=themes&amp;table=tl_module&amp;act=edit&amp;id=' . $this->id;
+            $objTemplate->href = StringUtil::specialcharsUrl(System::getContainer()->get('router')->generate('contao_backend', ['do'=>'themes', 'table'=>'tl_module', 'act'=>'edit', 'id'=>$this->id]));
 
             return $objTemplate->parse();
         }
@@ -76,7 +75,7 @@ class ModuleDeleteAvatar extends Module
         $this->import(FrontendUser::class, 'User');
         $objMember = MemberModel::findByPk($this->User->id);
 
-        if(null === $objMember)
+        if (null === $objMember)
         {
             return '';
         }
@@ -110,7 +109,7 @@ class ModuleDeleteAvatar extends Module
             $objMember = MemberModel::findByPk($this->User->id);
 
             // Delete avatar if it exists
-            if(!!$objMember->avatar)
+            if (!!$objMember->avatar)
             {
                 Member::deleteAvatar($objMember);
                 // Unset avatar
@@ -124,7 +123,7 @@ class ModuleDeleteAvatar extends Module
         }
 
         // Confirmation message
-        if($session->isStarted() && $flashBag->has('mod_avatar_deleted')) {
+        if ($session->isStarted() && $flashBag->has('mod_avatar_deleted')) {
             $arrMessages = $flashBag->get('mod_avatar_deleted');
             $this->Template->message = $arrMessages[0];
         }

@@ -1,23 +1,29 @@
 <?xml version="1.0" ?><xliff version="1.1">
-  <file datatype="php" original="src/Resources/contao/languages/en/tl_member.php" source-language="en">
+  <file datatype="php" original="contao/languages/en/tl_member.php" source-language="en" target-language="de">
     <body>
       <trans-unit id="tl_member_settings.avatar_legend">
         <source>Extended member settings</source>
+        <target>Erweiterte Mitgliedseinstellungen</target>
       </trans-unit>
       <trans-unit id="tl_member_settings.defaultAvatar.0">
         <source>Default avatar</source>
+        <target>Standard-Profilbild</target>
       </trans-unit>
       <trans-unit id="tl_member_settings.defaultAvatar.1">
         <source>The default avatar is displayed for members who have not uploaded their own profile picture.</source>
+        <target>Das Standard-Profilbild wird bei Mitgliedern angezeigt, welches kein eigenes Profilbild hochgeladen haben.</target>
       </trans-unit>
       <trans-unit id="tl_member_settings.order_random">
         <source>Random order</source>
+        <target>Zufällige Reihenfolge</target>
       </trans-unit>
       <trans-unit id="tl_member_settings.order_asc">
         <source>Ascending</source>
+        <target>Aufsteigend</target>
       </trans-unit>
       <trans-unit id="tl_member_settings.order_desc">
         <source>Descending</source>
+        <target>Absteigend</target>
       </trans-unit>
     </body>
   </file>
