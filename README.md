@@ -10,7 +10,7 @@
 
 ---
 
-> Working with **Contao 4.9** and up to **Contao 4.13** (PHP ^7.4 and PHP 8)
+> Working with **Contao 4.13** (PHP ^8.0)
 
 ---
 
@@ -20,7 +20,7 @@ Additionally, you can display members with their details in a reader page.
 
 + [Features](#features)
 + [Installation](#installation)
-   + [Upgrading](#upgrading-to-version-12)
+   + [Upgrading (v.1.1 to >=v.1.2)](#upgrading-to-version--12)
    + [Composer](#via-composer)
    + [Contao Manager](#via-contao-manager)
 + [Initial Setup](#initial-setup)
@@ -36,7 +36,7 @@ Additionally, you can display members with their details in a reader page.
 
 ## Features
 
-- Compatible with Contao 4.9 and higher versions (PHP 8 Support)
+- Compatible with Contao 4.13 (PHP ^8.0)
 - Extends members with avatars
 - Paginated member lists
 - Member detail pages
@@ -46,8 +46,8 @@ Additionally, you can display members with their details in a reader page.
 
 ## Installation
 
-#### Upgrading to version 1.2
-> After upgrading from version 1.1 to version 1.2, make sure to edit your modules (memberlist, memberreader and avatar/profile picture) and set up the new templates.
+#### Upgrading to version >=1.2
+> After upgrading from version 1.1 to version >=1.2, make sure to edit your modules (memberlist, memberreader and avatar/profile picture) and set up the new templates.
 
 #### Via composer
 ```

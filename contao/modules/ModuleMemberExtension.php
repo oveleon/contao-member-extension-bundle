@@ -101,12 +101,12 @@ abstract class ModuleMemberExtension extends Module
 
         if (!$objPage instanceof PageModel)
         {
-            $strLink = ampersand(Environment::get('request'));
+            $strLink = StringUtil::ampersand(Environment::get('request'));
         }
         else
         {
             $params = (Config::get('useAutoItem') ? '/' : '/items/') . ($objMember->alias ?: $objMember->id);
-            $strLink = ampersand($objPage->getFrontendUrl($params));
+            $strLink = StringUtil::ampersand($objPage->getFrontendUrl($params));
         }
 
         return $strLink;

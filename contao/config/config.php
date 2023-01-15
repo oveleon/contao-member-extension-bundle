@@ -14,7 +14,7 @@ declare(strict_types=1);
  */
 
 // Back end modules
-use Contao\System;
+use Contao\ArrayUtil;
 
 $GLOBALS['BE_MOD']['system']['member_settings'] = [
     'tables'            => ['tl_member_settings'],
@@ -22,8 +22,7 @@ $GLOBALS['BE_MOD']['system']['member_settings'] = [
 ];
 
 // Front end modules
-// ToDo: Change to ArrayUtil::arrayInsert when Contao 4.9 support ends
-array_insert($GLOBALS['FE_MOD']['user'], -1, [
+ArrayUtil::arrayInsert($GLOBALS['FE_MOD']['user'], -1, [
     'avatar'       => 'Oveleon\ContaoMemberExtensionBundle\ModuleAvatar',
     'deleteAvatar' => 'Oveleon\ContaoMemberExtensionBundle\ModuleDeleteAvatar',
     'memberList'   => 'Oveleon\ContaoMemberExtensionBundle\ModuleMemberList',
@@ -31,8 +30,5 @@ array_insert($GLOBALS['FE_MOD']['user'], -1, [
 ]);
 
 // Register hooks
-$GLOBALS['TL_HOOKS']['createNewUser'][] = ['Oveleon\ContaoMemberExtensionBundle\Member', 'createAvatar'];
+$GLOBALS['TL_HOOKS']['createNewUser'][] =      ['Oveleon\ContaoMemberExtensionBundle\Member', 'createAvatar'];
 $GLOBALS['TL_HOOKS']['updatePersonalData'][] = ['Oveleon\ContaoMemberExtensionBundle\Member', 'updateAvatar'];
-
-// Style sheet
-$request = System::getContainer()->get('request_stack')->getCurrentRequest();

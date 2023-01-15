@@ -26,9 +26,9 @@ $GLOBALS['TL_DCA']['tl_member_settings'] = [
 
     'fields' => [
         'defaultAvatar' => [
-            'label' => &$GLOBALS['TL_LANG']['tl_member_settings']['defaultAvatar'],
+            'label'     => &$GLOBALS['TL_LANG']['tl_member_settings']['defaultAvatar'],
             'inputType' => 'fileTree',
-            'eval' => array('fieldType'=>'radio', 'filesOnly'=>true, 'isGallery'=>true, 'extensions'=>Config::get('validImageTypes'), 'tl_class'=>'clr')
+            'eval'      => ['fieldType'=>'radio', 'filesOnly'=>true, 'isGallery'=>true, 'extensions'=>Config::get('validImageTypes'), 'tl_class'=>'clr']
         ]
     ]
 ];
