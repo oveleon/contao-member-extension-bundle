@@ -73,6 +73,7 @@ class Member extends Frontend
             return;
         }
 
+        // ToDo: remove $_SESSION when contao 4.13 support ends (Contao ^5.* is not possible with Contao 4.* support)
         $file = $_SESSION['FILES']['avatar'];
         $maxlength_kb = $this->getMaximumUploadSize();
         $maxlength_kb_readable = $this->getReadableSize($maxlength_kb);
@@ -118,7 +119,7 @@ class Member extends Frontend
         }
 
         $objFile = new File($file['name']);
-        $uploadTypes = StringUtil::trimsplit(',', \Config::get('validImageTypes'));
+        $uploadTypes = StringUtil::trimsplit(',', Config::get('validImageTypes'));
 
         // File type is not allowed
         if (!\in_array($objFile->extension, $uploadTypes))
@@ -238,7 +239,7 @@ class Member extends Frontend
     /**
      * Return the maximum upload file size in bytes
      */
-    protected function getMaximumUploadSize(): string
+    protected function getMaximumUploadSize()
     {
         if ($this->maxlength > 0)
         {
@@ -251,7 +252,7 @@ class Member extends Frontend
     /**
      * Parses an avatar to the template
      */
-    public static function parseMemberAvatar(?MemberModel $objMember, &$objTemplate, ?string $strImgSize): void
+    public static function parseMemberAvatar(?MemberModel $objMember, &$objTemplate, ?string $imgSize): void
     {
         $objTemplate->addImage= true;
 
@@ -261,7 +262,7 @@ class Member extends Frontend
         $projectDir = System::getContainer()->getParameter('kernel.project_dir');
 
         // Check if member avatar exists
-        if (null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'.$objFile->path))
+        if (null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'. $objFile->path))
         {
             $objFile = !!($uuidDefault = Config::get('defaultAvatar')) ? FilesModel::findByUuid($uuidDefault) : null;
         }
@@ -273,16 +274,19 @@ class Member extends Frontend
         }
 
         $objTemplate->addFallbackImage = false;
+        $imgSize = $imgSize ?? null;
 
-        $arrData = ['singleSRC'=>$objFile->path];
+        $figureBuilder = System::getContainer()
+            ->get('contao.image.studio')
+            ->createFigureBuilder()
+            ->from($objFile->path)
+            ->setSize($imgSize)
+        ;
 
-        if (null !== $strImgSize)
+        if (null !== ($figure = $figureBuilder->buildIfResourceExists()))
         {
-            $arrData['size'] = $strImgSize;
+            $figure->applyLegacyTemplateData($objTemplate);
         }
-
-        //ToDo: Change to FigureBuilder in the future
-        $objTemplate->addImageToTemplate($objTemplate, $arrData, null, null, $objFile);
     }
 
     /**
