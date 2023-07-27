@@ -186,8 +186,15 @@ class Member extends Frontend
             $this->import('Files');
 
             // Rename file
-            $file['name'] =  $this->avatarName . '.' . $objFile->extension;
-
+            if ($objMember->id && $objMember->lastname) 
+            {
+                $file['name'] =  $objMember->id . '_' . $objMember->lastname . '.' . $objFile->extension;
+            } 
+            else
+            {    
+                $file['name'] =  $this->avatarName . '.' . $objFile->extension;
+            }
+            
             // Move the file to its destination
             $this->Files->move_uploaded_file($file['tmp_name'], $strUploadFolder . '/' . $file['name']);
             $this->Files->chmod($strUploadFolder . '/' . $file['name'], 0666 & ~umask());
