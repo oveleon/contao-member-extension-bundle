@@ -201,7 +201,7 @@ class ModuleMemberList extends ModuleMemberExtension
         $time = Date::floorToMinute();
 
         $arrColumns = ["$t.disable='' AND ($t.start='' OR $t.start<='$time') AND ($t.stop='' OR $t.stop>'$time') "];
-        $arrOptions = ['order' => ''];
+        $arrOptions = [];
 
         if (!!$this->ext_orderField)
         {
