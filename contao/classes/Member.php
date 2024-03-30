@@ -68,8 +68,11 @@ class Member extends Frontend
     {
         $objMember = MemberModel::findByPk($objMember->id);
 
-        if ($objMember === null || !array_key_exists('FILES', $_SESSION))
-        {
+        if (
+            $objMember === null ||
+            !array_key_exists('FILES', $_SESSION) ||
+            !isset($_SESSION['FILES']['avatar'])
+        ) {
             return;
         }
 
