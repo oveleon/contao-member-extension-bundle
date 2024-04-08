@@ -1,8 +1,0 @@
-services:
-    contao_member.listener.insert_tags:
-        class: Oveleon\ContaoMemberExtensionBundle\EventListener\InsertTagsListener
-        arguments:
-            - '@contao.framework'
-        tags:
-          - { name: contao.hook, hook: replaceInsertTags }
-        public: true
