@@ -15,14 +15,15 @@ declare(strict_types=1);
 
 namespace Oveleon\ContaoMemberExtensionBundle\EventListener;
 
+use Contao\CoreBundle\Security\Authentication\Token\TokenChecker;
 use Contao\FrontendTemplate;
 use Contao\FrontendUser;
 use Contao\Image\ResizeConfiguration;
 use Contao\MemberModel;
-use Contao\System;
 use Contao\CoreBundle\Framework\ContaoFramework;
 use Oveleon\ContaoMemberExtensionBundle\Member;
 
+#[AsHook('replaceInsertTags')]
 class InsertTagsListener
 {
     private const SUPPORTED_TAGS = [
@@ -30,25 +31,18 @@ class InsertTagsListener
         'avatar_url'
     ];
 
-    /**
-     * @var ContaoFramework
-     */
-    private $framework;
+    public function __construct(
+        private readonly ContaoFramework $framework,
+        private readonly TokenChecker $tokenChecker
+    ) {}
 
-    public function __construct(ContaoFramework $framework)
-    {
-        $this->framework = $framework;
-    }
-
-    /**
-     * @return string|false
-     */
-    public function __invoke(string $tag, bool $useCache, $cacheValue, array $flags)
+    public function __invoke(string $tag, bool $useCache, $cacheValue, array $flags): string|false
     {
         $elements = explode('::', $tag);
         $key = strtolower($elements[0]);
 
-        if (\in_array($key, self::SUPPORTED_TAGS, true)) {
+        if (\in_array($key, self::SUPPORTED_TAGS, true))
+        {
             return $this->replaceMemberInsertTag($key, $elements, $flags);
         }
 
@@ -57,9 +51,6 @@ class InsertTagsListener
 
     private function replaceMemberInsertTag(string $insertTag, array $elements, array $flags): string
     {
-        $this->framework->initialize();
-        $tokenChecker = System::getContainer()->get('contao.security.token_checker');
-
         if ($elements[1] !== 'member')
         {
             return '';
@@ -69,11 +60,11 @@ class InsertTagsListener
         {
 
             case 'current':
-                if (!$tokenChecker->hasFrontendUser())
+                if (!$this->tokenChecker->hasFrontendUser())
                 {
                     return '';
                 }
-                $memberID = FrontendUser::getInstance()->id;
+                $memberID = FrontendUser::getInstance()?->id;
                 break;
 
             default:

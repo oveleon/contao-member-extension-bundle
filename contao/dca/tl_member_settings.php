@@ -13,8 +13,6 @@ declare(strict_types=1);
  * @copyright   Oveleon                <https://www.oveleon.de/>
  */
 
-use Contao\Config;
-
 $GLOBALS['TL_DCA']['tl_member_settings'] = [
 
     'config' => [
@@ -22,13 +20,12 @@ $GLOBALS['TL_DCA']['tl_member_settings'] = [
         'closed' => true
     ],
 
-    'palettes' => ['default' =>'{avatar_legend},defaultAvatar;'],
+    'palettes' => ['default' => '{avatar_legend},defaultAvatar;'],
 
     'fields' => [
         'defaultAvatar' => [
-            'label'     => &$GLOBALS['TL_LANG']['tl_member_settings']['defaultAvatar'],
             'inputType' => 'fileTree',
-            'eval'      => ['fieldType'=>'radio', 'filesOnly'=>true, 'isGallery'=>true, 'extensions'=>Config::get('validImageTypes'), 'tl_class'=>'clr']
+            'eval' => ['fieldType' => 'radio', 'filesOnly' => true, 'isGallery' => true, 'extensions' => '%contao.image.valid_extensions%', 'tl_class' => 'clr']
         ]
     ]
 ];
