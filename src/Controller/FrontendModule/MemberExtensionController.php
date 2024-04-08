@@ -13,24 +13,19 @@ declare(strict_types=1);
  * @copyright   Oveleon                <https://www.oveleon.de/>
  */
 
-namespace Oveleon\ContaoMemberExtensionBundle;
+namespace Oveleon\ContaoMemberExtensionBundle\Controller\FrontendModule;
 
 use Contao\Config;
+use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
 use Contao\Date;
 use Contao\Environment;
 use Contao\MemberGroupModel;
 use Contao\MemberModel;
-use Contao\Module;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
 
-/**
- * Parent class for member modules.
- *
- * @author Daniele Sciannimanica <https://github.com/doishub>
- */
-abstract class ModuleMemberExtension extends Module
+abstract class MemberExtensionController extends AbstractFrontendModuleController
 {
     /**
      * Parse member template

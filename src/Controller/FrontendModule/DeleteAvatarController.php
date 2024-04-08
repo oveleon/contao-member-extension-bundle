@@ -13,30 +13,63 @@ declare(strict_types=1);
  * @copyright   Oveleon                <https://www.oveleon.de/>
  */
 
-namespace Oveleon\ContaoMemberExtensionBundle;
+namespace Oveleon\ContaoMemberExtensionBundle\Controller\FrontendModule;
 
 use Contao\BackendTemplate;
-use Contao\Config;
+use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
+use Contao\CoreBundle\Exception\RedirectResponseException;
 use Contao\FrontendUser;
 use Contao\Input;
 use Contao\MemberModel;
-use Contao\Module;
+use Contao\ModuleModel;
 use Contao\StringUtil;
 use Contao\System;
+use Contao\Template;
+use Exception;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Class ModuleDeleteAvatar
- *
- * @author Sebastian Zoglowek <https://github.com/zoglo>
- */
-class ModuleDeleteAvatar extends Module
+#[AsFrontendModule(DeleteAvatarController::TYPE, category:'user', template:'memberExtension_deleteAvatar')]
+class DeleteAvatarController extends AbstractFrontendModuleController
 {
+    const TYPE = 'deleteAvatar';
+
+    private BackendTemplate|Template $template;
+    private ModuleModel $model;
+    private Request $request;
+    private ?MemberModel $member;
+
     /**
-     * Template.
-     *
-     * @var string
+     * @throws Exception
      */
-    protected $strTemplate = 'memberExtension_deleteAvatar';
+    protected function getResponse(Template $template, ModuleModel $model, Request $request): ?Response
+    {
+        $container = System::getContainer();
+
+        $this->model = $model;
+        $this->request = $request;
+        $this->template = $template;
+
+        // Do not display template in backend
+        if ($container->get('contao.routing.scope_matcher')->isBackendRequest($request))
+        {
+            $template = new BackendTemplate('be_wildcard');
+        }
+
+        // Return if there is no logged-in user
+        if (
+            !$container->get('contao.security.token_checker')->hasFrontendUser() ||
+            null === ($this->member = MemberModel::findByPk(FrontendUser::getInstance()->id))
+        ) {
+            $template->getResponse();
+        }
+
+
+        $this->process();
+
+        return $template->getResponse();
+    }
 
     /**
      * Display a wildcard in the back end
@@ -48,7 +81,7 @@ class ModuleDeleteAvatar extends Module
         $container = System::getContainer();
         $request = System::getContainer()->get('request_stack')->getCurrentRequest();
 
-        if ($request && $container->get('contao.routing.scope_matcher')->isBackendRequest($request))
+        /*if ($request && $container->get('contao.routing.scope_matcher')->isBackendRequest($request))
         {
             $objTemplate = new BackendTemplate('be_wildcard');
             $objTemplate->wildcard = '### ' . $GLOBALS['TL_LANG']['FMD']['deleteAvatar'][0] . ' ###';
@@ -58,13 +91,7 @@ class ModuleDeleteAvatar extends Module
             $objTemplate->href = StringUtil::specialcharsUrl(System::getContainer()->get('router')->generate('contao_backend', ['do'=>'themes', 'table'=>'tl_module', 'act'=>'edit', 'id'=>$this->id]));
 
             return $objTemplate->parse();
-        }
-
-        // Set the item from the auto_item parameter
-        if (!isset($_GET['items']) && isset($_GET['auto_item']) && Config::get('useAutoItem'))
-        {
-            Input::setGet('items', Input::get('auto_item'));
-        }
+        }*/
 
         // Return if there is no logged-in user
         if (!$container->get('contao.security.token_checker')->hasFrontendUser())
@@ -95,9 +122,21 @@ class ModuleDeleteAvatar extends Module
 
     /**
      * Generate the module
+     * @throws Exception
      */
-    protected function compile()
+    private function process(): void
     {
+        $container = System::getContainer();
+
+        // Confirmation message
+        $session = $container->get('session');
+        $flashBag = $session->getFlashBag();
+
+        if (!($session->isStarted() && $flashBag->has('mod_avatar_deleted')) && !$this->member->avatar)
+        {
+            $this->template->getResponse();
+        }
+
         $strFormId = 'deleteAvatar_' . $this->id;
         $session = System::getContainer()->get('session');
         $flashBag = $session->getFlashBag();
@@ -105,30 +144,28 @@ class ModuleDeleteAvatar extends Module
         // Get form submit
         if (Input::post('FORM_SUBMIT') == $strFormId)
         {
-            $this->import(FrontendUser::class, 'User');
-            $objMember = MemberModel::findByPk($this->User->id);
-
             // Delete avatar if it exists
-            if (!!$objMember->avatar)
+            if (!!$this->member->avatar)
             {
-                Member::deleteAvatar($objMember);
+                Member::deleteAvatar($this->member);
                 // Unset avatar
-                $objMember->avatar = null;
-                $objMember->save();
+                $this->member->avatar = null;
+                $this->member->save();
 
                 // Set message for deletion feedback
-                $flashBag->set('mod_avatar_deleted', $GLOBALS['TL_LANG']['MSC']['avatarDeleted']);
-                $this->reload();
+                $flashBag->set('mod_avatar_deleted', $GLOBALS['TL_LANG']['MSC']['avatarDeleted'] ?? '');
+
+                throw new RedirectResponseException($this->request->getRequestUri());
             }
         }
 
         // Confirmation message
         if ($session->isStarted() && $flashBag->has('mod_avatar_deleted')) {
             $arrMessages = $flashBag->get('mod_avatar_deleted');
-            $this->Template->message = $arrMessages[0];
+            $this->template->message = $arrMessages[0];
         }
 
-        $this->Template->formId = $strFormId;
-        $this->Template->slabel = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['deleteAvatar']);
+        $this->template->formId = $strFormId;
+        $this->template->slabel = StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['deleteAvatar'] ?? '');
     }
 }

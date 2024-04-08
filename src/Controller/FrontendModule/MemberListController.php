@@ -13,10 +13,11 @@ declare(strict_types=1);
  * @copyright   Oveleon                <https://www.oveleon.de/>
  */
 
-namespace Oveleon\ContaoMemberExtensionBundle;
+namespace Oveleon\ContaoMemberExtensionBundle\Controller\FrontendModule;
 
 use Contao\BackendTemplate;
 use Contao\Config;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\Date;
 use Contao\Environment;
@@ -24,9 +25,13 @@ use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\MemberModel;
 use Contao\Model\Collection;
+use Contao\ModuleModel;
 use Contao\Pagination;
 use Contao\StringUtil;
 use Contao\System;
+use Contao\Template;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class ModuleMemberList
@@ -37,20 +42,25 @@ use Contao\System;
  * @property string $memberFields Fields to be displayed
  * @property string $memberListTpl Frontend list template
  */
-class ModuleMemberList extends ModuleMemberExtension
+#[AsFrontendModule(MemberListController::TYPE, category: 'user', template: 'mod_memberList')]
+class MemberListController extends MemberExtensionController
 {
+    const TYPE = 'memberList';
 
-    /**
-     * Template
-     * @var string
-     */
-    protected $strTemplate = 'mod_memberList';
+    private string $strMemberTemplate = 'memberExtension_list_default';
 
-    /**
-     * Template
-     * @var string
-     */
-    protected $strMemberTemplate = 'memberExtension_list_default';
+    protected function getResponse(Template $template, ModuleModel $model, Request $request): ?Response
+    {
+        $container = System::getContainer();
+
+        // Do not display template in backend
+        /*if ($container->get('contao.routing.scope_matcher')->isBackendRequest($request))
+        {
+            $template = new BackendTemplate('be_wildcard');
+        }*/
+
+        return $template->getResponse();
+    }
 
     /**
      * Display a wildcard in the back end

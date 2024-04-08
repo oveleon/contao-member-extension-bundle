@@ -13,28 +13,34 @@ declare(strict_types=1);
  * @copyright   Oveleon                <https://www.oveleon.de/>
  */
 
-namespace Oveleon\ContaoMemberExtensionBundle;
+namespace Oveleon\ContaoMemberExtensionBundle\Controller\FrontendModule;
 
 use Contao\BackendTemplate;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
 use Contao\FrontendUser;
 use Contao\MemberModel;
+use Contao\ModuleModel;
 use Contao\StringUtil;
 use Contao\System;
+use Contao\Template;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Class ModuleAvatar
- *
- * @author Fabian Ekert <fabian@oveleon.de>
- * @author Sebastian Zoglowek <https://github.com/zoglo>
- */
-class ModuleAvatar extends ModuleMemberExtension
+#[AsFrontendModule(category: 'user', template: 'memberExtension_avatar')]
+class AvatarController extends MemberExtensionController
 {
-    /**
-     * Template.
-     *
-     * @var string
-     */
-    protected $strTemplate = 'memberExtension_avatar';
+    protected function getResponse(Template $template, ModuleModel $model, Request $request): ?Response
+    {
+        $container = System::getContainer();
+
+        // Do not display template in backend
+        /*if ($container->get('contao.routing.scope_matcher')->isBackendRequest($request))
+        {
+            $template = new BackendTemplate('be_wildcard');
+        }*/
+
+        return $template->getResponse();
+    }
 
     /**
      * Display a wildcard in the back end
