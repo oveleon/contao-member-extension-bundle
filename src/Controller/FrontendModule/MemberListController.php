@@ -15,7 +15,6 @@ declare(strict_types=1);
 
 namespace Oveleon\ContaoMemberExtensionBundle\Controller\FrontendModule;
 
-use Contao\BackendTemplate;
 use Contao\Config;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
 use Contao\CoreBundle\Exception\PageNotFoundException;
@@ -28,82 +27,32 @@ use Contao\Model\Collection;
 use Contao\ModuleModel;
 use Contao\Pagination;
 use Contao\StringUtil;
-use Contao\System;
 use Contao\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Class ModuleMemberList
- *
- * @property string $ext_order order of list items
- * @property string ext_orderField order field for list items
- * @property string $ext_groups considered member groups
- * @property string $memberFields Fields to be displayed
- * @property string $memberListTpl Frontend list template
- */
 #[AsFrontendModule(MemberListController::TYPE, category: 'user', template: 'mod_memberList')]
 class MemberListController extends MemberExtensionController
 {
     const TYPE = 'memberList';
+    private ModuleModel $model;
 
-    private string $strMemberTemplate = 'memberExtension_list_default';
-
-    protected function getResponse(Template $template, ModuleModel $model, Request $request): ?Response
+    protected function getResponse(Template $template, ModuleModel $model, Request $request): Response
     {
-        $container = System::getContainer();
+        $this->model = $model;
 
-        // Do not display template in backend
-        /*if ($container->get('contao.routing.scope_matcher')->isBackendRequest($request))
-        {
-            $template = new BackendTemplate('be_wildcard');
-        }*/
-
-        return $template->getResponse();
-    }
-
-    /**
-     * Display a wildcard in the back end
-     *
-     * @return string
-     */
-    public function generate()
-    {
-        $container = System::getContainer();
-        $request = System::getContainer()->get('request_stack')->getCurrentRequest();
-
-        if ($request && $container->get('contao.routing.scope_matcher')->isBackendRequest($request))
-        {
-            $objTemplate = new BackendTemplate('be_wildcard');
-            $objTemplate->wildcard = '### ' . $GLOBALS['TL_LANG']['FMD']['memberList'][0] . ' ###';
-            $objTemplate->title = $this->headline;
-            $objTemplate->id = $this->id;
-            $objTemplate->link = $this->name;
-            $objTemplate->href = StringUtil::specialcharsUrl(System::getContainer()->get('router')->generate('contao_backend', ['do'=>'themes', 'table'=>'tl_module', 'act'=>'edit', 'id'=>$this->id]));
-
-            return $objTemplate->parse();
-        }
-
-        return parent::generate();
-    }
-
-    /**
-     * Generate the module
-     */
-    protected function compile()
-    {
         $limit = null;
         $offset = 0;
 
-        $arrGroups = StringUtil::deserialize($this->ext_groups);
+        $arrGroups = StringUtil::deserialize($model->ext_groups);
 
         if (empty($arrGroups) || !\is_array($arrGroups))
         {
-            $this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
-            return;
+            $template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
+            $template->getResponse();
         }
 
-        $objTemplate = new FrontendTemplate($this->memberListTpl ?: $this->strMemberTemplate);
+        $memberTemplate = new FrontendTemplate($model->memberListTpl ?: 'memberExtension_list_default');
 
         $objMembers = $this->getMembers();
 
@@ -113,7 +62,7 @@ class MemberListController extends MemberExtensionController
 
         if (null !== $objMembers)
         {
-            while($objMembers->next())
+            while ($objMembers->next())
             {
                 $objMember = $objMembers->current();
 
@@ -124,37 +73,37 @@ class MemberListController extends MemberExtensionController
 
                 $intTotal += 1;
 
-                $arrMemberFields = StringUtil::deserialize($this->memberFields, true);
-                $objTemplate->setData($objMember->row());
+                $arrMemberFields = StringUtil::deserialize($model->memberFields, true);
+                $memberTemplate->setData($objMember->row());
 
-                $arrMembers[] = $this->parseMemberTemplate($objMember, $objTemplate, $arrMemberFields, $this->imgSize);
+                $arrMembers[] = $this->parseMemberTemplate($objMember, $memberTemplate, $arrMemberFields, $model);
             }
         }
 
         $total = $intTotal - $offset;
 
-        if ($this->numberOfItems > 0)
+        if ($model->numberOfItems > 0)
         {
-            $limit = $this->numberOfItems;
+            $limit = $model->numberOfItems;
         }
 
-        if ($this->perPage > 0 && (!isset($limit) || $this->numberOfItems > $this->perPage))
+        if ($model->perPage > 0 && (!isset($limit) || $model->numberOfItems > $model->perPage))
         {
             if (isset($limit))
             {
                 $total = min($limit, $total);
             }
 
-            $id = 'page_n' . $this->id;
+            $id = 'page_n' . $model->id;
             $page = Input::get($id) ?? 1;
 
-            if ($page < 1 || $page > max(ceil($total/$this->perPage), 1))
+            if ($page < 1 || $page > max(ceil($total/$model->perPage), 1))
             {
                 throw new PageNotFoundException('Page not found: ' . Environment::get('uri'));
             }
 
-            $limit = $this->perPage;
-            $offset += (max($page, 1) - 1) * $this->perPage;
+            $limit = $model->perPage;
+            $offset += (max($page, 1) - 1) * $model->perPage;
             $skip = 0;
 
             if ($offset + $limit > $total + $skip)
@@ -164,25 +113,20 @@ class MemberListController extends MemberExtensionController
 
             $arrMembers = \array_slice($arrMembers, $offset, ((int) $limit ?: $intTotal), true);
 
-            $objPagination = new Pagination($total, $this->perPage, Config::get('maxPaginationLinks'), $id);
-            $this->Template->pagination = $objPagination->generate("\n  ");
+            $objPagination = new Pagination($total, $model->perPage, Config::get('maxPaginationLinks'), $id);
+            $template->pagination = $objPagination->generate("\n  ");
         }
 
         if (empty($arrMembers))
         {
-            $this->Template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
+            $template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
         }
 
-        $this->Template->members = $arrMembers;
+        $template->members = $arrMembers;
+
+        return $template->getResponse();
     }
 
-    /**
-     * Checks whether a member is in any given group
-     *
-     * @param array $arrGroups
-     * @param MemberModel $objMember
-     * @return bool
-     */
     private function checkMemberGroups(array $arrGroups, MemberModel $objMember): bool
     {
         if (empty($arrGroups))
@@ -200,25 +144,20 @@ class MemberListController extends MemberExtensionController
         return true;
     }
 
-    /**
-     * Get members
-     *
-     * @return Collection|MemberModel|null
-     */
-    private function getMembers()
+    private function getMembers(): Collection|MemberModel|null
     {
         $t = MemberModel::getTable();
         $time = Date::floorToMinute();
 
         $arrColumns = ["$t.disable='' AND ($t.start='' OR $t.start<='$time') AND ($t.stop='' OR $t.stop>'$time') "];
-        $arrOptions = [];
+        $arrOptions = ['order' => ''];
 
-        if (!!$this->ext_orderField)
+        if (!!$orderField = $this->model->ext_orderField)
         {
-            $arrOptions['order'] .= "$t.$this->ext_orderField ";
+            $arrOptions['order'] .= "$t.$orderField ";
         }
 
-        switch ($this->ext_order)
+        switch ($this->model->ext_order)
         {
             case 'order_random':
                 $arrOptions['order'] = "RAND()";

@@ -19,29 +19,28 @@ use Contao\Config;
 use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
 use Contao\Date;
 use Contao\Environment;
+use Contao\FrontendTemplate;
 use Contao\MemberGroupModel;
 use Contao\MemberModel;
+use Contao\Model;
+use Contao\ModuleModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
+use Oveleon\ContaoMemberExtensionBundle\Member;
 
 abstract class MemberExtensionController extends AbstractFrontendModuleController
 {
-    /**
-     * Parse member template
-     *
-     * @param $objMember
-     * @param $objTemplate
-     * @param $arrMemberFields
-     * @param $strImgSize
-     * @return string
-     */
-    protected function parseMemberTemplate($objMember, $objTemplate, $arrMemberFields, $strImgSize): string
+    private ModuleModel $model;
+
+    protected function parseMemberTemplate(MemberModel|Model $objMember, FrontendTemplate $objTemplate, array $arrMemberFields, ModuleModel $model): string
     {
         System::loadLanguageFile('default');
         System::loadLanguageFile('tl_member');
         System::loadLanguageFile('countries');
         System::loadLanguageFile('languages');
+
+        $this->model = $model;
 
         $arrFields = [];
 
@@ -54,7 +53,7 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
                     break;*/
 
                 case 'avatar':
-                    Member::parseMemberAvatar($objMember, $objTemplate, $strImgSize);
+                    Member::parseMemberAvatar($objMember, $objTemplate, $model->imgSize);
                     break;
 
                 default:
@@ -75,7 +74,7 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
 
         $objTemplate->fields = $arrFields;
 
-        if ($this->jumpTo)
+        if ($model->jumpTo)
         {
             $objTemplate->link = $this->generateMemberUrl($objMember);
         }
@@ -83,16 +82,9 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
         return $objTemplate->parse();
     }
 
-    /**
-     * Generate a URL and return it as string
-     *
-     * @param MemberModel $objMember
-     *
-     * @return string
-     */
     protected function generateMemberUrl(MemberModel $objMember): string
     {
-        $objPage = PageModel::findPublishedById($this->jumpTo);
+        $objPage = PageModel::findPublishedById($this->model->jumpTo);
 
         if (!$objPage instanceof PageModel)
         {
