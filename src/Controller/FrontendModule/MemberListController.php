@@ -27,6 +27,7 @@ use Contao\Model\Collection;
 use Contao\ModuleModel;
 use Contao\Pagination;
 use Contao\StringUtil;
+use Contao\System;
 use Contao\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,17 +55,15 @@ class MemberListController extends MemberExtensionController
 
         $memberTemplate = new FrontendTemplate($model->memberListTpl ?: 'memberExtension_list_default');
 
-        $objMembers = $this->getMembers();
-
         $intTotal = 0;
-
         $arrMembers = [];
 
-        if (null !== $objMembers)
+        if (null !== ($objMembers = $this->getMembers()))
         {
-            while ($objMembers->next())
+            foreach ($objMembers as $objMember)
             {
-                $objMember = $objMembers->current();
+                // ToDo: Add filter
+                // continue;
 
                 if (!$this->checkMemberGroups($arrGroups, $objMember))
                 {
@@ -170,6 +169,15 @@ class MemberListController extends MemberExtensionController
             case 'order_asc':
             default:
                 break;
+        }
+
+        // Hook modify the member results
+        if (isset($GLOBALS['TL_HOOKS']['getMembers']) && \is_array($GLOBALS['TL_HOOKS']['getMembers']))
+        {
+            foreach ($GLOBALS['TL_HOOKS']['getMembers'] as $callback)
+            {
+                System::importStatic($callback[0])->{$callback[1]}($arrColumns, $arrOptions, $this);
+            }
         }
 
         return MemberModel::findBy($arrColumns, null, $arrOptions);

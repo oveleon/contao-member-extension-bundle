@@ -44,6 +44,15 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
 
         $arrFields = [];
 
+        // HOOK: modify the member details
+        if (isset($GLOBALS['TL_HOOKS']['parseMemberTemplate']) && \is_array($GLOBALS['TL_HOOKS']['parseMemberTemplate']))
+        {
+            foreach ($GLOBALS['TL_HOOKS']['parseMemberTemplate'] as $callback)
+            {
+                System::importStatic($callback[0])->{$callback[1]}($objMember, $arrMemberFields, $objTemplate, $model, $this);
+            }
+        }
+
         foreach ($arrMemberFields as $field)
         {
             switch ($field)

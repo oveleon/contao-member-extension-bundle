@@ -24,6 +24,7 @@ use Contao\Input;
 use Contao\MemberModel;
 use Contao\ModuleModel;
 use Contao\StringUtil;
+use Contao\System;
 use Contao\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,6 +59,15 @@ class MemberReaderController extends MemberExtensionController
             throw new PageNotFoundException('Page not found: ' . Environment::get('uri'));
         }
 
+        // Hook modify the member detail page
+        if (isset($GLOBALS['TL_HOOKS']['parseMemberReader']) && \is_array($GLOBALS['TL_HOOKS']['parseMemberReader']))
+        {
+            foreach ($GLOBALS['TL_HOOKS']['parseMemberReader'] as $callback)
+            {
+                System::importStatic($callback[0])->{$callback[1]}($member, $template, $model, $this);
+            }
+        }
+
         $arrMemberFields = StringUtil::deserialize($model->memberFields, true);
 
         $memberTemplate = new FrontendTemplate($model->memberReaderTpl ?: 'memberExtension_reader_full');
@@ -65,7 +75,7 @@ class MemberReaderController extends MemberExtensionController
 
         $template->referer = 'javascript:history.go(-1)';
         $template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
-        $template->member = $this->parseMemberTemplate($member, $memberTemplate, $arrMemberFields, $model);
+        $template->member = $this->parseMemberDetails($member, $memberTemplate, $arrMemberFields, $model);
 
         return $template->getResponse();
     }
