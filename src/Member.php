@@ -41,82 +41,67 @@ class Member
      * Process avatar upload for a member
      * @throws Exception
      */
-    public static function processAvatar(MemberModel $objMember, ?array $arrData): void
+    public static function processAvatar(?MemberModel $objMember, ?array $arrData): void
     {
-        $objMember = MemberModel::findByPk($objMember->id);
+        if (null === $objMember)
+        {
+            return;
+        }
 
-        if (
-            $objMember === null ||
-            !array_key_exists('FILES', $_SESSION) ||
-            !isset($_SESSION['FILES']['avatar'])
-        ) {
+        $container = System::getContainer();
+        $request = $container->get('request_stack')->getCurrentRequest();
+
+        if (null === ($file = $request->files->get('avatar')))
+        {
             return;
         }
 
         // ToDo: remove $_SESSION when contao 4.13 support ends (Contao ^5.* is not possible with Contao 4.* support)
-        $file = $_SESSION['FILES']['avatar'];
         $maxlength_kb = FileUpload::getMaxUploadSize();
         //$maxlength_kb_readable = System::getReadableSize($maxlength_kb);
 
         // Sanitize the filename
-        try
-        {
-            $file['name'] = StringUtil::sanitizeFileName($file['name']);
-        }
-        catch (\InvalidArgumentException $e)
-        {
-            // ToDo: add error message for invalid characters
-            return;
+        try {
+            $fileName = StringUtil::sanitizeFileName($file->getClientOriginalName());
+        } catch (\InvalidArgumentException $e) {
+            return; // ToDo: add error message for invalid characters
         }
 
         // Invalid file name
-        if (!Validator::isValidFileName($file['name']))
+        if (!Validator::isValidFileName($fileName))
         {
-            // ToDo: add error message for invalid characters
-            return;
+            return; // ToDo: add error message for invalid characters
         }
 
         // File was not uploaded
-        if (!is_uploaded_file($file['tmp_name']))
+        if (!$path = $file->getRealPath())
         {
             // ToDo: Add error messages
             /*if ($file['error'] == 1 || $file['error'] == 2) { // Add error message for maximum file size }
             elseif ($file['error'] == 3) { // Add error message for partial upload }
             elseif ($file['error'] > 0) { // Add error message for failed upload }*/
 
-            unset($_SESSION['FILES']['avatar']);
-
             return;
         }
 
         // File is too big
-        if ($file['size'] > $maxlength_kb)
+        if ($file->getSize() > $maxlength_kb)
         {
-            // ToDo: add error message for maximum file size
-            unset($_SESSION['FILES']['avatar']);
-
-            return;
+            return; // ToDo: add error message for maximum file size
         }
 
-        $container = System::getContainer();
-
-        $objFile = new File($file['name']);
-        $uploadTypes = StringUtil::trimsplit(',', $container->getParameter('contao.image.valid_extensions'));
+        $objFile = new File($fileName);
 
         // File type is not allowed
-        if (!\in_array($objFile->extension, $uploadTypes))
+        if (!\in_array($objFile->extension, $container->getParameter('contao.image.valid_extensions')))
         {
-            // ToDo: add error message for not allowed file type
-            unset($_SESSION['FILES']['avatar']);
-
-            return;
+            return; // ToDo: add error message for not allowed file type
         }
 
         if (
-            ($arrImageSize = getimagesize($file['tmp_name'])) &&
+            ($arrImageSize = getimagesize($path)) &&
             ($arrImageSize[0] > Config::get('imageWidth') || $arrImageSize[1] > Config::get('imageHeight'))
         ) {
-            unset($_SESSION['FILES']['avatar']);
             return;
         }
 
@@ -126,8 +111,7 @@ class Member
         // ToDo: Create homedir?
         if (!$objMember->assignDir || !$objMember->homeDir)
         {
-            // ToDo: add error message for no homedir
-            return;
+            return; // ToDo: add error message for no homedir
         }
 
         $intUploadFolder = $objMember->homeDir;
@@ -151,15 +135,14 @@ class Member
             static::deleteAvatar($objMember);
 
             // Rename file
-            $file['name'] =  self::AVATAR_NAME . '.' . $objFile->extension;
+            $fileName =  self::AVATAR_NAME . '.' . $objFile->extension;
 
             // Move the file to its destination
             $filesObj = Files::getInstance();
-            $filesObj->move_uploaded_file($file['tmp_name'], $strUploadFolder . '/' . $file['name']);
-            $filesObj->chmod($strUploadFolder . '/' . $file['name'], 0666 & ~umask());
+            $filesObj->move_uploaded_file($path, $strUploadFolder . '/' . $fileName);
+            $filesObj->chmod($strUploadFolder . '/' . $fileName, 0666 & ~umask());
 
-            $strUuid = null;
-            $strFile = $strUploadFolder . '/' . $file['name'];
+            $strFile = $strUploadFolder . '/' . $fileName;
 
 
             // Generate the DB entries
@@ -172,8 +155,6 @@ class Member
                     $objModel = Dbafs::addResource($strFile);
                 }
 
-                $strUuid = StringUtil::binToUuid($objModel->uuid);
-
                 // Update the hash of the target folder
                 Dbafs::updateFolderHashes($strUploadFolder);
 
@@ -182,22 +163,8 @@ class Member
                 $objMember->save();
             }
 
-            // Add the session entry
-            $_SESSION['FILES']['avatar'] = array
-            (
-                'name'     => $file['name'],
-                'type'     => $file['type'],
-                'tmp_name' => $projectDir . '/' . $strFile,
-                'error'    => $file['error'],
-                'size'     => $file['size'],
-                'uploaded' => true,
-                'uuid'     => $strUuid
-            );
-
-            System::getContainer()->get('monolog.logger.contao.files')->info('File "' . $strUploadFolder . '/' . $file['name'] . '" has been uploaded');
+            $container->get('monolog.logger.contao.files')->info('File "' . $strUploadFolder . '/' . $fileName . '" has been uploaded');
         }
-
-        unset($_SESSION['FILES']['avatar']);
     }
 
     /**
