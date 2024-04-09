@@ -26,7 +26,7 @@ class MemberFieldsOptionsListener
                 isset($v['eval']['feViewable']) &&
                 $v['eval']['feViewable'] === true
             ) {
-                $fields[$k] = $GLOBALS['TL_DCA']['tl_member']['fields'][$k]['label'][0] ?? '' . ' ['.$k.']';
+                $fields[$k] = ($GLOBALS['TL_DCA']['tl_member']['fields'][$k]['label'][0] ?? $k) . ' ['.$k.']';
             }
         }
 
@@ -42,7 +42,7 @@ class MemberFieldsOptionsListener
         {
             if (!empty($v['inputType']) && $v['inputType'] !== 'password')
             {
-                $properties[$k] = $GLOBALS['TL_DCA']['tl_member']['fields'][$k]['label'][0] ?? '';
+                $properties[$k] = $GLOBALS['TL_DCA']['tl_member']['fields'][$k]['label'][0] ?? $k;
             }
         }
 
