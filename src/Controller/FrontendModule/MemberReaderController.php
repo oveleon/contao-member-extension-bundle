@@ -75,7 +75,7 @@ class MemberReaderController extends MemberExtensionController
 
         $template->referer = 'javascript:history.go(-1)';
         $template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
-        $template->member = $this->parseMemberDetails($member, $memberTemplate, $arrMemberFields, $model);
+        $template->member = $this->parseMemberTemplate($member, $memberTemplate, $arrMemberFields, $model);
 
         return $template->getResponse();
     }

@@ -53,6 +53,8 @@ class MemberListController extends MemberExtensionController
             $template->getResponse();
         }
 
+        // ToDo: Add filter for fields with feFilterable
+
         $memberTemplate = new FrontendTemplate($model->memberListTpl ?: 'memberExtension_list_default');
 
         $intTotal = 0;

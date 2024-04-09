@@ -41,6 +41,15 @@
         <source>Here you can select the member fields to be output.</source>
         <target>Hier können Sie die auszugebenden Mitgliederfelder auswählen.</target>
       </trans-unit>
+      <trans-unit id="tl_module.ext_activateFilter.0">
+        <source>Activate filters</source>
+        <target>Filter aktivieren</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_activateFilter.1">
+        <source>Adds filtering. Only works with checkbox fields with the eval flag 'feFilterable'.</source>
+        <target>Fügt eine Filterung hinzu. Funktioniert nur mit Checkbox-Feldern mit dem eval-flag 'feFilterable'.</target>
+      </trans-unit>
+
       <trans-unit id="tl_module.memberListTpl.0">
         <source>List template</source>
         <target>Listen-Template</target>
