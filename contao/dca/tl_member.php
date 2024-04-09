@@ -14,6 +14,7 @@ declare(strict_types=1);
  */
 
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\System;
 
 // Extend the default palette
 PaletteManipulator::create()
@@ -33,6 +34,14 @@ $GLOBALS['TL_DCA']['tl_member']['list']['global_operations']['settings'] = [
 $GLOBALS['TL_DCA']['tl_member']['fields']['avatar'] = [
     'exclude' => true,
     'inputType' => 'fileTree',
-    'eval' => ['feEditable' => true, 'feViewable' => true, 'feGroup' => 'personal', 'fieldType' => 'radio', 'filesOnly' => true, 'isGallery' => true, 'extensions' => '%contao.image.valid_extensions%', 'tl_class' => 'clr'],
+    'eval' => [
+        'feEditable' => true,
+        'feViewable' => true,
+        'feGroup' => 'personal',
+        'fieldType' => 'radio',
+        'filesOnly' => true,
+        'extensions' => implode(',', System::getContainer()->getParameter('contao.image.valid_extensions')),
+        'tl_class' => 'clr'
+    ],
     'sql' => "binary(16) NULL"
 ];

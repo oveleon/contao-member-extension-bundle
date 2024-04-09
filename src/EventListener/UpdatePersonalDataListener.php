@@ -3,9 +3,9 @@
 namespace Oveleon\ContaoMemberExtensionBundle\EventListener;
 
 use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
+use Contao\FrontendUser;
 use Contao\MemberModel;
 use Contao\Module;
-use Contao\FrontendUser;
 use Exception;
 use Oveleon\ContaoMemberExtensionBundle\Member;
 
