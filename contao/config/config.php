@@ -14,21 +14,7 @@ declare(strict_types=1);
  */
 
 // Back end modules
-use Contao\ArrayUtil;
-
 $GLOBALS['BE_MOD']['system']['member_settings'] = [
-    'tables'            => ['tl_member_settings'],
-    'hideInNavigation'  => true,
+    'tables' => ['tl_member_settings'],
+    'hideInNavigation' => true
 ];
-
-// Front end modules
-ArrayUtil::arrayInsert($GLOBALS['FE_MOD']['user'], -1, [
-    'avatar'       => 'Oveleon\ContaoMemberExtensionBundle\ModuleAvatar',
-    'deleteAvatar' => 'Oveleon\ContaoMemberExtensionBundle\ModuleDeleteAvatar',
-    'memberList'   => 'Oveleon\ContaoMemberExtensionBundle\ModuleMemberList',
-    'memberReader' => 'Oveleon\ContaoMemberExtensionBundle\ModuleMemberReader'
-]);
-
-// Register hooks
-$GLOBALS['TL_HOOKS']['createNewUser'][] =      ['Oveleon\ContaoMemberExtensionBundle\Member', 'createAvatar'];
-$GLOBALS['TL_HOOKS']['updatePersonalData'][] = ['Oveleon\ContaoMemberExtensionBundle\Member', 'updateAvatar'];

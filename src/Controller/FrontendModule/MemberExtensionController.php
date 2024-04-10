@@ -13,42 +13,45 @@ declare(strict_types=1);
  * @copyright   Oveleon                <https://www.oveleon.de/>
  */
 
-namespace Oveleon\ContaoMemberExtensionBundle;
+namespace Oveleon\ContaoMemberExtensionBundle\Controller\FrontendModule;
 
 use Contao\Config;
+use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
 use Contao\Date;
 use Contao\Environment;
+use Contao\FrontendTemplate;
 use Contao\MemberGroupModel;
 use Contao\MemberModel;
-use Contao\Module;
+use Contao\Model;
+use Contao\ModuleModel;
 use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
+use Oveleon\ContaoMemberExtensionBundle\Member;
 
-/**
- * Parent class for member modules.
- *
- * @author Daniele Sciannimanica <https://github.com/doishub>
- */
-abstract class ModuleMemberExtension extends Module
+abstract class MemberExtensionController extends AbstractFrontendModuleController
 {
-    /**
-     * Parse member template
-     *
-     * @param $objMember
-     * @param $objTemplate
-     * @param $arrMemberFields
-     * @param $strImgSize
-     * @return string
-     */
-    protected function parseMemberTemplate($objMember, $objTemplate, $arrMemberFields, $strImgSize): string
+    private ModuleModel $model;
+
+    protected function parseMemberTemplate(MemberModel|Model $objMember, FrontendTemplate $objTemplate, array $arrMemberFields, ModuleModel $model): string
     {
         System::loadLanguageFile('default');
         System::loadLanguageFile('tl_member');
         System::loadLanguageFile('countries');
         System::loadLanguageFile('languages');
 
+        $this->model = $model;
+
         $arrFields = [];
+
+        // HOOK: modify the member details
+        if (isset($GLOBALS['TL_HOOKS']['parseMemberTemplate']) && \is_array($GLOBALS['TL_HOOKS']['parseMemberTemplate']))
+        {
+            foreach ($GLOBALS['TL_HOOKS']['parseMemberTemplate'] as $callback)
+            {
+                System::importStatic($callback[0])->{$callback[1]}($objMember, $arrMemberFields, $objTemplate, $model, $this);
+            }
+        }
 
         foreach ($arrMemberFields as $field)
         {
@@ -59,7 +62,7 @@ abstract class ModuleMemberExtension extends Module
                     break;*/
 
                 case 'avatar':
-                    Member::parseMemberAvatar($objMember, $objTemplate, $strImgSize);
+                    Member::parseMemberAvatar($objMember, $objTemplate, $model->imgSize);
                     break;
 
                 default:
@@ -80,7 +83,7 @@ abstract class ModuleMemberExtension extends Module
 
         $objTemplate->fields = $arrFields;
 
-        if ($this->jumpTo)
+        if ($model->jumpTo)
         {
             $objTemplate->link = $this->generateMemberUrl($objMember);
         }
@@ -88,16 +91,9 @@ abstract class ModuleMemberExtension extends Module
         return $objTemplate->parse();
     }
 
-    /**
-     * Generate a URL and return it as string
-     *
-     * @param MemberModel $objMember
-     *
-     * @return string
-     */
     protected function generateMemberUrl(MemberModel $objMember): string
     {
-        $objPage = PageModel::findPublishedById($this->jumpTo);
+        $objPage = PageModel::findPublishedById($this->model->jumpTo);
 
         if (!$objPage instanceof PageModel)
         {

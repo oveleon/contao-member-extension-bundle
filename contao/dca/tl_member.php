@@ -13,8 +13,8 @@ declare(strict_types=1);
  * @copyright   Oveleon                <https://www.oveleon.de/>
  */
 
-use Contao\Config;
 use Contao\CoreBundle\DataContainer\PaletteManipulator;
+use Contao\System;
 
 // Extend the default palette
 PaletteManipulator::create()
@@ -24,17 +24,24 @@ PaletteManipulator::create()
 
 // Add global operations
 $GLOBALS['TL_DCA']['tl_member']['list']['global_operations']['settings'] = [
-    'label'         => &$GLOBALS['TL_LANG']['tl_member']['settings'],
-    'href'          => 'do=member_settings',
-    'icon'          => 'edit.svg',
-    'attributes'    => 'onclick="Backend.getScrollOffset()" accesskey="e"'
+    'label' => &$GLOBALS['TL_LANG']['tl_member']['settings'],
+    'href' => 'do=member_settings',
+    'icon' => 'edit.svg',
+    'attributes' => 'onclick="Backend.getScrollOffset()" accesskey="e"'
 ];
 
 // Add fields to tl_user
 $GLOBALS['TL_DCA']['tl_member']['fields']['avatar'] = [
-    'label'         => &$GLOBALS['TL_LANG']['tl_member']['avatar'],
-    'exclude'       => true,
-    'inputType'     => 'fileTree',
-    'eval'          => ['feEditable'=>true, 'feViewable'=>true, 'feGroup'=>'personal', 'fieldType'=>'radio', 'filesOnly'=>true, 'isGallery'=>true, 'extensions'=>Config::get('validImageTypes'), 'tl_class'=>'clr'],
-    'sql'           => "binary(16) NULL"
+    'exclude' => true,
+    'inputType' => 'fileTree',
+    'eval' => [
+        'feEditable' => true,
+        'feViewable' => true,
+        'feGroup' => 'personal',
+        'fieldType' => 'radio',
+        'filesOnly' => true,
+        'extensions' => implode(',', System::getContainer()->getParameter('contao.image.valid_extensions')),
+        'tl_class' => 'clr'
+    ],
+    'sql' => "binary(16) NULL"
 ];

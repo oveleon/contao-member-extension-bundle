@@ -15,14 +15,15 @@ declare(strict_types=1);
 
 namespace Oveleon\ContaoMemberExtensionBundle\EventListener;
 
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
+use Contao\CoreBundle\Security\Authentication\Token\TokenChecker;
 use Contao\FrontendTemplate;
 use Contao\FrontendUser;
 use Contao\Image\ResizeConfiguration;
 use Contao\MemberModel;
-use Contao\System;
-use Contao\CoreBundle\Framework\ContaoFramework;
 use Oveleon\ContaoMemberExtensionBundle\Member;
 
+#[AsHook('replaceInsertTags')]
 class InsertTagsListener
 {
     private const SUPPORTED_TAGS = [
@@ -30,62 +31,35 @@ class InsertTagsListener
         'avatar_url'
     ];
 
-    /**
-     * @var ContaoFramework
-     */
-    private $framework;
+    public function __construct(private readonly TokenChecker $tokenChecker)
+    {}
 
-    public function __construct(ContaoFramework $framework)
-    {
-        $this->framework = $framework;
-    }
-
-    /**
-     * @return string|false
-     */
-    public function __invoke(string $tag, bool $useCache, $cacheValue, array $flags)
+    public function __invoke(string $tag, bool $useCache, $cacheValue): string|false
     {
         $elements = explode('::', $tag);
         $key = strtolower($elements[0]);
 
-        if (\in_array($key, self::SUPPORTED_TAGS, true)) {
-            return $this->replaceMemberInsertTag($key, $elements, $flags);
+        if (in_array($key, self::SUPPORTED_TAGS, true))
+        {
+            return $this->replaceMemberInsertTag($key, $elements);
         }
 
         return false;
     }
 
-    private function replaceMemberInsertTag(string $insertTag, array $elements, array $flags): string
+    private function replaceMemberInsertTag(string $insertTag, array $elements): string
     {
-        $this->framework->initialize();
-        $tokenChecker = System::getContainer()->get('contao.security.token_checker');
+        $memberID = match ($elements[2]) {
+            'current' => $this->tokenChecker->hasFrontendUser() ? FrontendUser::getInstance()->id : '',
+            default => is_numeric($elements[2]) ? $elements[2] : '',
+        };
 
-        if ($elements[1] !== 'member')
+        if (!\is_numeric($memberID))
         {
             return '';
         }
 
-        switch ($elements[2])
-        {
-
-            case 'current':
-                if (!$tokenChecker->hasFrontendUser())
-                {
-                    return '';
-                }
-                $memberID = FrontendUser::getInstance()->id;
-                break;
-
-            default:
-                if (!\is_numeric($elements[2]))
-                {
-                    return '';
-                }
-                $memberID = $elements[2];
-                break;
-        }
-
-        $objMember = MemberModel::findByPk($memberID);
+        $member = MemberModel::findByPk($memberID);
 
         switch ($insertTag)
         {
@@ -93,19 +67,19 @@ class InsertTagsListener
             {
                 if (isset($elements[3]))
                 {
-                    $strImgSize = $this->convertImgSize($elements[3]);
+                    $size = $this->convertImgSize($elements[3]);
                 }
 
-                $objTemplate = new FrontendTemplate('memberExtension_image');
+                $memberTemplate = new FrontendTemplate('memberExtension_image');
 
-                Member::parseMemberAvatar($objMember, $objTemplate, $strImgSize ?? null);
+                Member::parseMemberAvatar($member, $memberTemplate, $size ?? null);
 
-                return $objTemplate->parse();
+                return $memberTemplate->parse();
             }
 
             case 'avatar_url':
             {
-                return Member::getMemberAvatarURL($objMember);
+                return Member::getMemberAvatarURL($member);
             }
         }
 
@@ -125,7 +99,7 @@ class InsertTagsListener
 
         $arrValidModes = [
             ResizeConfiguration::MODE_BOX,
-            ResizeConfiguration::MODE_PROPORTIONAL,
+            ResizeConfiguration::MODE_PROPORTIONAL, // To be removed when simultaneous C4/5 support ends
             ResizeConfiguration::MODE_CROP,
         ];
 

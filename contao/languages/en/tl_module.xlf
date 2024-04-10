@@ -31,6 +31,12 @@
       <trans-unit id="tl_module.memberFields.1">
         <source>Here you can select the member fields to be output.</source>
       </trans-unit>
+      <trans-unit id="tl_module.ext_activateFilter.0">
+        <source>Activate filters</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_activateFilter.1">
+        <source>Adds filtering. Only works with checkbox fields with the eval flag 'feFilterable'.</source>
+      </trans-unit>
       <trans-unit id="tl_module.memberListTpl.0">
         <source>List template</source>
       </trans-unit>

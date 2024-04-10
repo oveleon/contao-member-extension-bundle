@@ -16,144 +16,93 @@ declare(strict_types=1);
 namespace Oveleon\ContaoMemberExtensionBundle;
 
 use Contao\Config;
-use Contao\CoreBundle\Monolog\ContaoContext;
 use Contao\Dbafs;
 use Contao\File;
+use Contao\Files;
 use Contao\FilesModel;
 use Contao\FileUpload;
-use Contao\Frontend;
-use Contao\FrontendUser;
 use Contao\MemberModel;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Validator;
-use Psr\Log\LogLevel;
+use Exception;
 
 /**
  * Class Member
  *
  * @property int $avatar UUID of the avatar
  */
-class Member extends Frontend
+class Member
 {
-    const DEFAULT_PICTURE = 'bundles/contaomemberextension/avatar.png';
-
-    /**
-     * MemberAvatar file name
-     */
-    protected string $avatarName = 'memberAvatar';
-
-    /**
-     * Create avatar for a member | Registration
-     */
-    public function createAvatar(int $userId, array $arrData): void
-    {
-        $objMember = MemberModel::findById($userId);
-        $this->processAvatar($objMember, $arrData);
-    }
-
-    /**
-     * Update avatar of a member | Login
-     */
-    public function updateAvatar(FrontendUser $objUser, array $arrData): void
-    {
-        $objMember = MemberModel::findById($objUser->id);
-        $this->processAvatar($objMember, $arrData);
-    }
+    const DEFAULT_PICTURE = 'bundles/contaomemberextension/assets/avatar.png';
+    const AVATAR_NAME = 'memberAvatar';
 
     /**
      * Process avatar upload for a member
+     * @throws Exception
      */
-    protected function processAvatar(MemberModel $objMember, ?array $arrData): void
+    public static function processAvatar(?MemberModel $objMember, ?array $arrData): void
     {
-        $objMember = MemberModel::findByPk($objMember->id);
+        if (null === $objMember)
+        {
+            return;
+        }
 
-        if (
-            $objMember === null ||
-            !array_key_exists('FILES', $_SESSION) ||
-            !isset($_SESSION['FILES']['avatar'])
-        ) {
+        $container = System::getContainer();
+        $request = $container->get('request_stack')->getCurrentRequest();
+
+        if (null === ($file = $request->files->get('avatar')))
+        {
             return;
         }
 
         // ToDo: remove $_SESSION when contao 4.13 support ends (Contao ^5.* is not possible with Contao 4.* support)
-        $file = $_SESSION['FILES']['avatar'];
-        $maxlength_kb = $this->getMaximumUploadSize();
-        $maxlength_kb_readable = $this->getReadableSize($maxlength_kb);
+        $maxlength_kb = FileUpload::getMaxUploadSize();
+        //$maxlength_kb_readable = System::getReadableSize($maxlength_kb);
 
         // Sanitize the filename
-        try
-        {
-            $file['name'] = StringUtil::sanitizeFileName($file['name']);
-        }
-        catch (\InvalidArgumentException $e)
-        {
-            // ToDo: add error message for invalid characters
-            return;
+        try {
+            $fileName = StringUtil::sanitizeFileName($file->getClientOriginalName());
+        } catch (\InvalidArgumentException $e) {
+            return; // ToDo: add error message for invalid characters
         }
 
         // Invalid file name
-        if (!Validator::isValidFileName($file['name']))
+        if (!Validator::isValidFileName($fileName))
         {
-            // ToDo: add error message for invalid characters
-            return;
+            return; // ToDo: add error message for invalid characters
         }
 
         // File was not uploaded
-        if (!is_uploaded_file($file['tmp_name']))
+        if (!$path = $file->getRealPath())
         {
             // ToDo: Add error messages
             /*if ($file['error'] == 1 || $file['error'] == 2) { // Add error message for maximum file size }
             elseif ($file['error'] == 3) { // Add error message for partial upload }
             elseif ($file['error'] > 0) { // Add error message for failed upload }*/
 
-            unset($_SESSION['FILES']['avatar']);
-
             return;
         }
 
         // File is too big
-        if ($file['size'] > $maxlength_kb)
+        if ($file->getSize() > $maxlength_kb)
         {
-            // ToDo: add error message for maximum file size
-            unset($_SESSION['FILES']['avatar']);
-
-            return;
+            return; // ToDo: add error message for maximum file size
         }
 
-        $objFile = new File($file['name']);
-        $uploadTypes = StringUtil::trimsplit(',', Config::get('validImageTypes'));
+        $objFile = new File($fileName);
 
         // File type is not allowed
-        if (!\in_array($objFile->extension, $uploadTypes))
+        if (!\in_array($objFile->extension, $container->getParameter('contao.image.valid_extensions')))
         {
-            // ToDo: add error message for not allowed file type
-            unset($_SESSION['FILES']['avatar']);
-
-            return;
+            return; // ToDo: add error message for not allowed file type
         }
 
-        if ($arrImageSize = @getimagesize($file['tmp_name']))
-        {
-            $intImageWidth = Config::get('imageWidth');
-
-            // Image exceeds maximum image width
-            if ($intImageWidth > 0 && $arrImageSize[0] > $intImageWidth) {
-                // ToDo: add error message for exceeding width
-                unset($_SESSION['FILES']['avatar']);
-
-                return;
-            }
-
-            $intImageHeight = Config::get('imageHeight');
-
-            // Image exceeds maximum image height
-            if ($intImageHeight > 0 && $arrImageSize[1] > $intImageHeight) {
-                // ToDo: add error message for exceeding height
-                unset($_SESSION['FILES']['avatar']);
-
-                return;
-            }
+        if (
+            ($arrImageSize = getimagesize($path)) &&
+            ($arrImageSize[0] > Config::get('imageWidth') || $arrImageSize[1] > Config::get('imageHeight'))
+        ) {
+            return;
         }
 
         // Upload valid file type with no width and height -> svg
@@ -162,8 +111,7 @@ class Member extends Frontend
         // ToDo: Create homedir?
         if (!$objMember->assignDir || !$objMember->homeDir)
         {
-            // ToDo: add error message for no homedir
-            return;
+            return; // ToDo: add error message for no homedir
         }
 
         $intUploadFolder = $objMember->homeDir;
@@ -179,24 +127,22 @@ class Member extends Frontend
         $strUploadFolder = $objUploadFolder->path;
 
         // Store the file if the upload folder exists
-        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+        $projectDir = $container->getParameter('kernel.project_dir');
 
         if (!!$strUploadFolder & is_dir($projectDir . '/' . $strUploadFolder))
         {
             // Delete existing avatar if it exists
-            $this->deleteAvatar($objMember);
-
-            $this->import('Files');
+            static::deleteAvatar($objMember);
 
             // Rename file
-            $file['name'] =  $this->avatarName . '.' . $objFile->extension;
+            $fileName =  self::AVATAR_NAME . '.' . $objFile->extension;
 
             // Move the file to its destination
-            $this->Files->move_uploaded_file($file['tmp_name'], $strUploadFolder . '/' . $file['name']);
-            $this->Files->chmod($strUploadFolder . '/' . $file['name'], 0666 & ~umask());
+            $filesObj = Files::getInstance();
+            $filesObj->move_uploaded_file($path, $strUploadFolder . '/' . $fileName);
+            $filesObj->chmod($strUploadFolder . '/' . $fileName, 0666 & ~umask());
 
-            $strUuid = null;
-            $strFile = $strUploadFolder . '/' . $file['name'];
+            $strFile = $strUploadFolder . '/' . $fileName;
 
 
             // Generate the DB entries
@@ -209,8 +155,6 @@ class Member extends Frontend
                     $objModel = Dbafs::addResource($strFile);
                 }
 
-                $strUuid = StringUtil::binToUuid($objModel->uuid);
-
                 // Update the hash of the target folder
                 Dbafs::updateFolderHashes($strUploadFolder);
 
@@ -219,37 +163,8 @@ class Member extends Frontend
                 $objMember->save();
             }
 
-            // Add the session entry
-            $_SESSION['FILES']['avatar'] = array
-            (
-                'name'     => $file['name'],
-                'type'     => $file['type'],
-                'tmp_name' => $projectDir . '/' . $strFile,
-                'error'    => $file['error'],
-                'size'     => $file['size'],
-                'uploaded' => true,
-                'uuid'     => $strUuid
-            );
-
-            // Add a log entry
-            $logger = System::getContainer()->get('monolog.logger.contao');
-            $logger->log(LogLevel::INFO, 'File "' . $strUploadFolder . '/' . $file['name'] . '" has been uploaded', ['contao' => new ContaoContext(__METHOD__, TL_FILES)]);
+            $container->get('monolog.logger.contao.files')->info('File "' . $strUploadFolder . '/' . $fileName . '" has been uploaded');
         }
-
-        unset($_SESSION['FILES']['avatar']);
-    }
-
-    /**
-     * Return the maximum upload file size in bytes
-     */
-    protected function getMaximumUploadSize()
-    {
-        if ($this->maxlength > 0)
-        {
-            return $this->maxlength;
-        }
-
-        return FileUpload::getMaxUploadSize();
     }
 
     /**
@@ -257,12 +172,14 @@ class Member extends Frontend
      */
     public static function parseMemberAvatar(?MemberModel $objMember, &$objTemplate, ?string $imgSize): void
     {
+        $container = System::getContainer();
+
         $objTemplate->addImage= true;
 
         $objTemplate->singleSRC = self::DEFAULT_PICTURE;
         $objTemplate->addFallbackImage = true;
 
-        $projectDir = System::getContainer()->getParameter('kernel.project_dir');
+        $projectDir = $container->getParameter('kernel.project_dir');
 
         // Check if member avatar exists
         if (null === $objMember || null === $objMember->avatar || null === ($objFile = FilesModel::findByUuid($objMember->avatar)) || !\is_file($projectDir.'/'. $objFile->path))
@@ -279,7 +196,7 @@ class Member extends Frontend
         $objTemplate->addFallbackImage = false;
         $imgSize = $imgSize ?? null;
 
-        $figureBuilder = System::getContainer()
+        $figureBuilder = $container
             ->get('contao.image.studio')
             ->createFigureBuilder()
             ->from($objFile->path)
@@ -316,6 +233,7 @@ class Member extends Frontend
 
     /**
      * Deletes an avatar
+     * @throws Exception
      */
     public static function deleteAvatar(MemberModel $objMember): void
     {
