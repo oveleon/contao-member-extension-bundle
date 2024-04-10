@@ -209,27 +209,6 @@ Allows filtering the member list in the frontend if the following conditions are
 
 ### Hooks
 
-#### GetMembers
-
-Allows modifying the columns and options for the database query.
-
-```php
-// src/EventListener/onGetMembersListener.php
-namespace App\EventListener;
-
-use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
-use Oveleon\ContaoMemberExtensionBundle\Controller\FrontendModule\MemberListController;
-
-#[AsHook('getMembers')]
-class onGetMembersListener
-{
-    public function __invoke(array &$columns, array &$options, MemberListController &$context): void
-    {
-        // Do something...
-    }
-}
-```
-
 #### getMembers
 
 Allows modifying the columns and options for the database query.
