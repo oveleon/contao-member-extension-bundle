@@ -1,0 +1,11 @@
+<?php $GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaomemberextension/scripts/filter.js|static'; ?>
+
+<form method="POST" class="member-filter-form">
+  <div class="formbody">
+    <input type="hidden" name="FORM_SUBMIT" value="<?= $this->formId ?>">
+    <input type="hidden" name="REQUEST_TOKEN" value="<?= $this->requestToken ?>">
+    <?php foreach ($this->filters as $filter): ?>
+      <?= $filter ?>
+    <?php endforeach; ?>
+  </div>
+</form>

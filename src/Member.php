@@ -34,7 +34,7 @@ use Exception;
  */
 class Member
 {
-    const DEFAULT_PICTURE = 'bundles/contaomemberextension/avatar.png';
+    const DEFAULT_PICTURE = 'bundles/contaomemberextension/assets/avatar.png';
     const AVATAR_NAME = 'memberAvatar';
 
     /**

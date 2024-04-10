@@ -2,13 +2,23 @@
 
 <?php $this->block('content'); ?>
 
+<?php if (!empty($this->filters)): ?>
+  <div class="member-list-filter">
+    <?php $this->insert('memberExtension_filter', [
+      'filters' => $this->filters,
+      'requestToken' => $this->requestToken,
+      'formId' => $this->filterFormId,
+    ]) ?>
+  </div>
+<?php endif; ?>
+
 <?php if (empty($this->members)): ?>
-    <p class="empty message"><?=$this->empty?></p>
+  <p class="empty message"><?=$this->empty?></p>
 <?php else: ?>
-    <?php foreach ($this->members as $member): ?>
-      <?=$member?>
-    <?php endforeach; ?>
-    <?= $this->pagination ?>
+  <?php foreach ($this->members as $member): ?>
+    <?=$member?>
+  <?php endforeach; ?>
+  <?= $this->pagination ?>
 <?php endif; ?>
 
 <?php $this->endblock(); ?>

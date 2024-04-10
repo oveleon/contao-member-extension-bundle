@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace Oveleon\ContaoMemberExtensionBundle\Controller\FrontendModule;
 
 use Contao\Config;
+use Contao\Controller;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\Date;
@@ -29,6 +30,7 @@ use Contao\Pagination;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
+use Contao\Widget;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -37,10 +39,14 @@ class MemberListController extends MemberExtensionController
 {
     const TYPE = 'memberList';
     private ModuleModel $model;
+    private Template $template;
+
+    private array $memberFilter = [];
 
     protected function getResponse(Template $template, ModuleModel $model, Request $request): Response
     {
         $this->model = $model;
+        $this->template = $template;
 
         $limit = null;
         $offset = 0;
@@ -53,7 +59,10 @@ class MemberListController extends MemberExtensionController
             $template->getResponse();
         }
 
-        // ToDo: Add filter for fields with feFilterable
+        if ($this->model->ext_activateFilter)
+        {
+            $this->parseFilters();
+        }
 
         $memberTemplate = new FrontendTemplate($model->memberListTpl ?: 'memberExtension_list_default');
 
@@ -64,11 +73,10 @@ class MemberListController extends MemberExtensionController
         {
             foreach ($objMembers as $objMember)
             {
-                // ToDo: Add filter
-                // continue;
-
-                if (!$this->checkMemberGroups($arrGroups, $objMember))
-                {
+                if (
+                    !$this->checkMemberGroups($arrGroups, $objMember) ||
+                    ($this->model->ext_activateFilter && $this->excludeMember($objMember))
+                ) {
                     continue;
                 }
 
@@ -183,5 +191,79 @@ class MemberListController extends MemberExtensionController
         }
 
         return MemberModel::findBy($arrColumns, null, $arrOptions);
+    }
+
+    private function excludeMember(MemberModel $member): bool
+    {
+        foreach ($this->memberFilter as $condition)
+        {
+            if ($member->$condition !== '1')
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function parseFilters(): void
+    {
+        Controller::loadDataContainer('tl_member');
+        System::loadLanguageFile('tl_member');
+
+        $filters = [];
+
+        foreach ($GLOBALS['TL_DCA']['tl_member']['fields'] ?? [] as $fieldName => $fieldConfig)
+        {
+            $type = $fieldConfig['inputType'] ?? null;
+            $filterable = $fieldConfig['eval']['feFilterable'] ?? null;
+
+            if ('checkbox' === $type && $filterable)
+            {
+                $filters[] = $fieldName;
+            }
+        }
+
+        if (!empty($filters))
+        {
+            /** @var Widget $strClass */
+            if (null === ($strClass = $GLOBALS['TL_FFL']['checkbox'] ?? null))
+            {
+                return;
+            }
+
+            $formId = 'memberListFilter_' . $this->model->id;
+
+            $this->template->requestToken = System::getContainer()->get('contao.csrf.token_manager')->getDefaultTokenValue();
+            $this->template->filterFormId = $formId;
+
+            foreach ($filters as $key => $filter)
+            {
+                $objWidget = new $strClass([
+                    'type'      => 'checkbox',
+                    'name'      => $filter,
+                    'id'        => $filter . '_'. $this->model->id,
+                    'options'   => [[
+                        'default'=> '',
+                        'value' => '1',
+                        'label' => $GLOBALS['TL_LANG']['tl_member'][$filter][0] ?? $filters
+                    ]]
+                ]);
+
+                if (Input::post('FORM_SUBMIT') === $formId)
+                {
+                    $objWidget->validate();
+
+                    if (!!$objWidget->value)
+                    {
+                        $this->memberFilter[] = $objWidget->name;
+                    }
+                }
+
+                $filters[$key] = $objWidget->parse();
+            }
+        }
+
+        $this->template->filters = $filters;
     }
 }
