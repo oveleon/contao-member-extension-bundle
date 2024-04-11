@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace Oveleon\ContaoMemberExtensionBundle\Controller\FrontendModule;
 
-use Contao\Config;
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\DependencyInjection\Attribute\AsFrontendModule;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\Environment;
@@ -23,6 +23,7 @@ use Contao\FrontendTemplate;
 use Contao\Input;
 use Contao\MemberModel;
 use Contao\ModuleModel;
+use Contao\PageModel;
 use Contao\StringUtil;
 use Contao\System;
 use Contao\Template;
@@ -36,13 +37,25 @@ class MemberReaderController extends MemberExtensionController
 
     protected function getResponse(Template $template, ModuleModel $model, Request $request): Response
     {
-        // Set the item from the auto_item parameter
-        if (!isset($_GET['items']) && isset($_GET['auto_item']) && Config::get('useAutoItem'))
-        {
-            Input::setGet('items', Input::get('auto_item'));
+        $auto_item = Input::get('auto_item');
+
+        if (
+            version_compare(ContaoCoreBundle::getVersion(), '5', '<') &&
+            !isset($_GET['items']) &&
+            isset($_GET['auto_item']) &&
+            $this->useAutoItem()
+        ) {
+            Input::setGet('member', Input::get('auto_item'));
+            $auto_item = Input::get('member');
+
         }
 
-        $member = MemberModel::findByIdOrAlias(Input::get('items'));
+        if (null === $auto_item)
+        {
+            return new Response();
+        }
+
+        $member = MemberModel::findByIdOrAlias($auto_item);
 
         // The member does not exist and is not deactivated
         if (null === $member || $member->disable)
@@ -73,8 +86,17 @@ class MemberReaderController extends MemberExtensionController
         $memberTemplate = new FrontendTemplate($model->memberReaderTpl ?: 'memberExtension_reader_full');
         $memberTemplate->setData($member->row());
 
-        $template->referer = 'javascript:history.go(-1)';
-        $template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
+        if ($model->overviewPage)
+        {
+            $template->referer = PageModel::findById($model->overviewPage)->getFrontendUrl();
+            $template->back = $model->customLabel ?: $GLOBALS['TL_LANG']['MSC']['goBack'];
+        }
+        else
+        {
+            $template->referer = 'javascript:history.go(-1)';
+            $template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
+        }
+
         $template->member = $this->parseMemberTemplate($member, $memberTemplate, $arrMemberFields, $model);
 
         return $template->getResponse();

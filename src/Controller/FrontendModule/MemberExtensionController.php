@@ -16,7 +16,10 @@ declare(strict_types=1);
 namespace Oveleon\ContaoMemberExtensionBundle\Controller\FrontendModule;
 
 use Contao\Config;
+use Contao\Controller;
+use Contao\CoreBundle\ContaoCoreBundle;
 use Contao\CoreBundle\Controller\FrontendModule\AbstractFrontendModuleController;
+use Contao\CoreBundle\EventListener\Widget\HttpUrlListener;
 use Contao\Date;
 use Contao\Environment;
 use Contao\FrontendTemplate;
@@ -76,7 +79,11 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
                         {
                             $arrFields[$field] = $varValue;
                         }
-                        //self::parseMemberDetails($arrFields, $field, $varValue);
+
+                        if ($model->ext_parseDetails)
+                        {
+                            self::parseMemberDetails($arrFields, $field, $varValue);
+                        }
                     }
             }
         }
@@ -101,60 +108,59 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
         }
         else
         {
-            $params = (Config::get('useAutoItem') ? '/' : '/items/') . ($objMember->alias ?: $objMember->id);
+            $params = ($this->useAutoItem() ? '/' : '/items/') . ($this->model->ext_memberAlias ? ($objMember->alias ?: $objMember->id) : $objMember->id);
             $strLink = StringUtil::ampersand($objPage->getFrontendUrl($params));
         }
 
         return $strLink;
     }
 
-    protected function parseMemberDetails(&$arrFields, $field, $value)
+    protected function parseMemberDetails(&$arrFields, $field, $value): void
     {
         $strReturn = sprintf('<span class="label">%s: </span>',$GLOBALS['TL_LANG']['tl_member'][$field][0] ?? null);
 
         if (!\is_array(($arrValue = StringUtil::deserialize($value))))
         {
-            switch ($field) {
-                case 'gender':
-                    $strReturn .= $GLOBALS['TL_LANG']['MSC'][$value] ?? $value;
-                    break;
+            Controller::loadDataContainer('tl_member');
 
-                case 'email':
-                    $strEmail = StringUtil::encodeEmail($value);
-                    $strReturn .= '<a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;' . $strEmail . '" title="' . $strEmail . '">' . preg_replace('/\?.*$/', '', $strEmail) . '</a>';
-                    break;
+            if (!empty($rgxp = $GLOBALS['TL_DCA']['tl_member']['fields'][$field]['eval']['rgxp'] ?? []))
+            {
+                switch ($rgxp) {
+                    case HttpUrlListener::RGXP_NAME:
+                        $strUrl = $value;
 
-                case 'phone':
-                case 'mobile':
-                case 'fax':
-                    $strTel = preg_replace('/[^a-z\d+]/i', '', (string)$value);
-                    $strReturn .= '<a href="tel:' . $strTel . '" title="' . $value . '">' . $value . '</a>';
-                    break;
+                        if (strncmp($value, 'http://', 7) !== 0 || strncmp($value, 'https://', 8) !== 0) {
+                            $strUrl = 'https://' . $value;
+                        }
 
-                case 'website':
-                    $strUrl = $value;
+                        $strReturn .= '<a href="' . $strUrl . '" title="' . $value . '" target="blank noopener" rel="noreferer">' . $value . '</a>';
+                        break;
 
-                    if (strncmp($value, 'http://', 7) !== 0 || strncmp($value, 'https://', 8) !== 0) {
-                        $strUrl = 'https://' . $value;
-                    }
+                    case 'phone':
+                        $strTel = preg_replace('/[^a-z\d+]/i', '', (string)$value);
+                        $strReturn .= '<a href="tel:' . $strTel . '" title="' . $value . '">' . $value . '</a>';
+                        break;
 
-                    $strReturn .= '<a href="' . $strUrl . '" title="' . $value . '" target="blank noopener" rel="noreferer">' . $value . '</a>';
-                    break;
+                    case 'email':
+                        $strEmail = StringUtil::encodeEmail($value);
+                        $strReturn .= '<a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;' . $strEmail . '" title="' . $strEmail . '">' . preg_replace('/\?.*$/', '', $strEmail) . '</a>';
+                        break;
 
-                case 'dateOfBirth':
-                    $strReturn .= Date::parse(Config::get('dateFormat'), $value) ?? $value;
-                    break;
+                    case 'date':
+                        $strReturn .= Date::parse(Config::get('dateFormat'), $value) ?? $value;
+                        break;
 
-                case 'country':
-                    $strReturn .= $GLOBALS['TL_LANG']['CNT'][$value] ?? $value;
-                    break;
-
-                case 'language':
-                    $strReturn .= $GLOBALS['TL_LANG']['LNG'][$value] ?? $value;
-                    break;
-
-                default:
-                    $strReturn .= $value;
+                    default:
+                        $strReturn .= $value;
+                }
+            }
+            else {
+                $strReturn .= match ($field) {
+                    'gender' => $GLOBALS['TL_LANG']['MSC'][$value] ?? $value,
+                    'country' => $GLOBALS['TL_LANG']['CNT'][$value] ?? $value,
+                    'language' => $GLOBALS['TL_LANG']['LNG'][$value] ?? $value,
+                    default => $value
+                };
             }
         }
         else if ('groups' === $field)
@@ -170,5 +176,16 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
         }
 
         $arrFields[$field] = $strReturn;
+    }
+
+    /**
+     * Checks weather auto_item should be used to provide BC
+     *
+     * @deprecated - To be removed when contao 4.13 support ends
+     * @internal
+     */
+    protected function useAutoItem(): bool
+    {
+        return version_compare(ContaoCoreBundle::getVersion(), '5', '<') ? Config::get('useAutoItem') : true;
     }
 }
