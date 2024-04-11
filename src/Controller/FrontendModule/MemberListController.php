@@ -159,21 +159,25 @@ class MemberListController extends MemberExtensionController
         $time = Date::floorToMinute();
 
         $arrColumns = ["$t.disable='' AND ($t.start='' OR $t.start<='$time') AND ($t.stop='' OR $t.stop>'$time') "];
-        $arrOptions = ['order' => ''];
+        $arrOptions = [];
 
         if (!!$orderField = $this->model->ext_orderField)
         {
-            $arrOptions['order'] .= "$t.$orderField ";
+            $arrOptions['order'] = "$t.$orderField ";
         }
 
         switch ($this->model->ext_order)
         {
             case 'order_random':
                 $arrOptions['order'] = "RAND()";
+
                 break;
 
             case 'order_desc':
-                $arrOptions['order'] .= "DESC";
+                if (isset($arrOptions['order'])) {
+                    $arrOptions['order'] .= "DESC ";
+                }
+
                 break;
 
             case 'order_asc':
