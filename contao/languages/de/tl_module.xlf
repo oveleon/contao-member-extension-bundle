@@ -33,14 +33,6 @@
         <source>Here you can select the member fields to be displayed.</source>
         <target>Hier können Sie die auszugebenden Mitgliederfelder auswählen.</target>
       </trans-unit>
-      <trans-unit id="tl_module.memberFields.0">
-        <source>Member fields</source>
-        <target>Mitglieds-Felder</target>
-      </trans-unit>
-      <trans-unit id="tl_module.memberFields.1">
-        <source>Here you can select the member fields to be output.</source>
-        <target>Hier können Sie die auszugebenden Mitgliederfelder auswählen.</target>
-      </trans-unit>
       <trans-unit id="tl_module.ext_activateFilter.0">
         <source>Activate filters</source>
         <target>Filter aktivieren</target>
@@ -48,6 +40,22 @@
       <trans-unit id="tl_module.ext_activateFilter.1">
         <source>Adds filtering. Only works with checkbox fields with the eval flag 'feFilterable'.</source>
         <target>Fügt eine Filterung hinzu. Funktioniert nur mit Checkbox-Feldern mit dem eval-flag 'feFilterable'.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_parseDetails.0">
+        <source>Parse details</source>
+        <target>Details umwandeln</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_parseDetails.1">
+        <source>Converts all member details based on their rgxp.</source>
+        <target>Konvertiert alle Mitgliederdaten auf Grundlage der rgxp.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_memberAlias.0">
+        <source>Use member alias</source>
+        <target>Mitgliedsalias verwenden</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_memberAlias.1">
+        <source>Uses the member alias for the detail page.</source>
+        <target>Verwendet den Mitgliedsalias für die Detailseite.</target>
       </trans-unit>
 
       <trans-unit id="tl_module.memberListTpl.0">

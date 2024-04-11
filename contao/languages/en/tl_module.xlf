@@ -25,18 +25,25 @@
       <trans-unit id="tl_module.memberFields.1">
         <source>Here you can select the member fields to be displayed.</source>
       </trans-unit>
-      <trans-unit id="tl_module.memberFields.0">
-        <source>Member fields</source>
-      </trans-unit>
-      <trans-unit id="tl_module.memberFields.1">
-        <source>Here you can select the member fields to be output.</source>
-      </trans-unit>
       <trans-unit id="tl_module.ext_activateFilter.0">
         <source>Activate filters</source>
       </trans-unit>
       <trans-unit id="tl_module.ext_activateFilter.1">
         <source>Adds filtering. Only works with checkbox fields with the eval flag 'feFilterable'.</source>
       </trans-unit>
+      <trans-unit id="tl_module.ext_parseDetails.0">
+        <source>Parse details</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_parseDetails.1">
+        <source>Converts all member details based on their rgxp.</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_memberAlias.0">
+        <source>Use member alias</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_memberAlias.1">
+        <source>Uses the member alias for the detail page.</source>
+      </trans-unit>
+
       <trans-unit id="tl_module.memberListTpl.0">
         <source>List template</source>
       </trans-unit>
