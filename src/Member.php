@@ -56,7 +56,6 @@ class Member
             return;
         }
 
-        // ToDo: remove $_SESSION when contao 4.13 support ends (Contao ^5.* is not possible with Contao 4.* support)
         $maxlength_kb = FileUpload::getMaxUploadSize();
         //$maxlength_kb_readable = System::getReadableSize($maxlength_kb);
 

@@ -9,6 +9,14 @@
         <source>Here you can choose a profile picture for the member.</source>
         <target>Hier können Sie ein Profilbild für das Mitglied auswählen.</target>
       </trans-unit>
+      <trans-unit id="tl_member.alias.0">
+        <source>Member alias</source>
+        <target>Mitgliedsalias</target>
+      </trans-unit>
+      <trans-unit id="tl_member.alias.1">
+        <source>The member alias is a unique reference to the news item which can be called instead of its numeric ID.</source>
+        <target>Der Mitgliedsalias ist eine eindeutige Referenz, die anstelle der numerischen Mitglieds-ID aufgerufen werden kann.</target>
+      </trans-unit>
       <trans-unit id="tl_member.settings.0">
         <source>Settings</source>
         <target>Einstellungen</target>

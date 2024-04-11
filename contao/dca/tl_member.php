@@ -18,7 +18,8 @@ use Contao\System;
 
 // Extend the default palette
 PaletteManipulator::create()
-    ->addField(['avatar'], 'personal_legend', PaletteManipulator::POSITION_APPEND)
+    ->addField('avatar', 'personal_legend', PaletteManipulator::POSITION_APPEND)
+    ->addField('alias', 'avatar')
     ->applyToPalette('default', 'tl_member')
 ;
 
@@ -44,4 +45,11 @@ $GLOBALS['TL_DCA']['tl_member']['fields']['avatar'] = [
         'tl_class' => 'clr'
     ],
     'sql' => "binary(16) NULL"
+];
+
+$GLOBALS['TL_DCA']['tl_member']['fields']['alias'] = [
+    'search' => true,
+    'inputType' => 'text',
+    'eval' => ['rgxp'=>'alias', 'doNotCopy'=>true, 'unique'=>true, 'maxlength'=>255, 'tl_class'=>'w50'],
+    'sql' => "varchar(255) BINARY NOT NULL default ''"
 ];

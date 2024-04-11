@@ -7,6 +7,12 @@
       <trans-unit id="tl_member.avatar.1">
         <source>Here you can choose an avatar for the member.</source>
       </trans-unit>
+      <trans-unit id="tl_member.alias.0">
+        <source>Member alias</source>
+      </trans-unit>
+      <trans-unit id="tl_member.alias.1">
+        <source>The member alias is a unique reference to the news item which can be called instead of its numeric ID.</source>
+      </trans-unit>
       <trans-unit id="tl_member.settings.0">
         <source>Settings</source>
       </trans-unit>
