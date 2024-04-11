@@ -127,13 +127,7 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
             {
                 switch ($rgxp) {
                     case HttpUrlListener::RGXP_NAME:
-                        $strUrl = $value;
-
-                        if (strncmp($value, 'http://', 7) !== 0 || strncmp($value, 'https://', 8) !== 0) {
-                            $strUrl = 'https://' . $value;
-                        }
-
-                        $strReturn .= '<a href="' . $strUrl . '" title="' . $value . '" target="blank noopener" rel="noreferer">' . $value . '</a>';
+                        $strReturn .= '<a href="' . $value . '" title="' . $value . '" target="blank noopener" rel="noreferer">' . $value . '</a>';
                         break;
 
                     case 'phone':
