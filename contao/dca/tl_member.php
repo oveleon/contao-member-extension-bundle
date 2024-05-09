@@ -37,7 +37,6 @@ $GLOBALS['TL_DCA']['tl_member']['fields']['avatar'] = [
     'inputType' => 'fileTree',
     'eval' => [
         'feEditable' => true,
-        'feViewable' => true,
         'feGroup' => 'personal',
         'fieldType' => 'radio',
         'filesOnly' => true,

@@ -14,7 +14,7 @@ class MemberFieldsOptionsListener
     }
 
     #[AsCallback(table: 'tl_module', target: 'fields.ext_orderField.options')]
-    public function getViewableMemberFields(): array
+    public function getEditableMemberFields(): array
     {
         $fields = [];
 
@@ -23,8 +23,8 @@ class MemberFieldsOptionsListener
             if (
                 !empty($v['inputType']) &&
                 $k !== 'avatar' &&
-                isset($v['eval']['feViewable']) &&
-                $v['eval']['feViewable'] === true
+                isset($v['eval']['feEditable']) &&
+                $v['eval']['feEditable'] === true
             ) {
                 $fields[$k] = ($GLOBALS['TL_DCA']['tl_member']['fields'][$k]['label'][0] ?? $k) . ' ['.$k.']';
             }
