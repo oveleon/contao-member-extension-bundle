@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use Contao\DC_File;
+
 /*
  * This file is part of Oveleon ContaoMemberExtension Bundle.
  *
@@ -16,7 +18,7 @@ declare(strict_types=1);
 $GLOBALS['TL_DCA']['tl_member_settings'] = [
 
     'config' => [
-        'dataContainer' => 'File',
+        'dataContainer' => DC_File::class,
         'closed' => true
     ],
 
