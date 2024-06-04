@@ -1,0 +1,9 @@
+<?php
+
+$GLOBALS['TL_JAVASCRIPT'][] = 'bundles/contaomemberextension/scripts/dataTables.min.js|static';
+$GLOBALS['TL_CSS'][] = 'bundles/contaomemberextension/css/dataTables.min.css|static';
+$GLOBALS['TL_HEAD'][] = "<script>window.addEventListener('load',()=>{
+  document.querySelectorAll('.member-table > table')?.forEach(table => {
+    new DataTable(table);
+  })
+})</script>";

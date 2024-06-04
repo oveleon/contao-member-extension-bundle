@@ -66,6 +66,13 @@ class MemberListController extends MemberExtensionController
 
         $memberTemplate = new FrontendTemplate($model->memberListTpl ?: 'memberExtension_list_default');
 
+        if (
+            str_starts_with($this->template->getName(), 'mod_' . self::TYPE . '_table') &&
+            str_starts_with($memberTemplate->getName(), 'memberExtension_list_row')
+        ) {
+            $this->isTable = true;
+        }
+
         $intTotal = 0;
         $arrMembers = [];
 
@@ -82,10 +89,10 @@ class MemberListController extends MemberExtensionController
 
                 $intTotal += 1;
 
-                $arrMemberFields = StringUtil::deserialize($model->memberFields, true);
+                $this->memberFields = StringUtil::deserialize($model->memberFields, true);
                 $memberTemplate->setData($objMember->row());
 
-                $arrMembers[] = $this->parseMemberTemplate($objMember, $memberTemplate, $arrMemberFields, $model);
+                $arrMembers[] = $this->parseMemberTemplate($objMember, $memberTemplate, $model);
             }
         }
 
@@ -131,6 +138,9 @@ class MemberListController extends MemberExtensionController
             $template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
         }
 
+        $template->hasDetailPage = !!$model->jumpTo;
+
+        $template->labels = array_keys($this->labels);
         $template->members = $arrMembers;
 
         return $template->getResponse();

@@ -36,7 +36,15 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
 {
     private ModuleModel $model;
 
-    protected function parseMemberTemplate(MemberModel|Model $objMember, FrontendTemplate $objTemplate, array $arrMemberFields, ModuleModel $model): string
+    protected bool $isTable = false;
+
+    protected array $memberFields = [];
+
+    protected array $labels = [];
+
+    private bool $parsedLabels = false;
+
+    protected function parseMemberTemplate(MemberModel|Model $objMember, FrontendTemplate $objTemplate, ModuleModel $model): string
     {
         System::loadLanguageFile('default');
         System::loadLanguageFile('tl_member');
@@ -52,11 +60,11 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
         {
             foreach ($GLOBALS['TL_HOOKS']['parseMemberTemplate'] as $callback)
             {
-                System::importStatic($callback[0])->{$callback[1]}($objMember, $arrMemberFields, $objTemplate, $model, $this);
+                System::importStatic($callback[0])->{$callback[1]}($objMember, $this->memberFields, $objTemplate, $model, $this);
             }
         }
 
-        foreach ($arrMemberFields as $field)
+        foreach ($this->memberFields as $field)
         {
             switch ($field)
             {
@@ -88,12 +96,21 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
             }
         }
 
-        $objTemplate->fields = $arrFields;
+        $returnFields = [];
+
+        foreach ($this->memberFields as $value)
+        {
+            $returnFields[$value] = $arrFields[$value] ?? '';
+        }
+
+        $objTemplate->fields = $returnFields;
 
         if ($model->jumpTo)
         {
             $objTemplate->link = $this->generateMemberUrl($objMember);
         }
+
+        $this->parsedLabels = true;
 
         return $objTemplate->parse();
     }
@@ -117,7 +134,7 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
 
     protected function parseMemberDetails(&$arrFields, $field, $value): void
     {
-        $strReturn = sprintf('<span class="label">%s: </span>',$GLOBALS['TL_LANG']['tl_member'][$field][0] ?? null);
+        $strReturn = !$this->isTable ? sprintf('<span class="label">%s: </span>',$GLOBALS['TL_LANG']['tl_member'][$field][0] ?? null) : '';
 
         if (!\is_array(($arrValue = StringUtil::deserialize($value))))
         {
@@ -169,6 +186,7 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
             $strReturn .= implode(", ", $arrReturn);
         }
 
+        $this->labels[$field] = true;
         $arrFields[$field] = $strReturn;
     }
 

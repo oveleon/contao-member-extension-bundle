@@ -1,0 +1,10 @@
+<tr class="member_list_table_item">
+  <?php foreach ($this->fields as $k => $v): ?>
+    <td class="<?= $k ?>"><?= $v ?></td>
+  <?php endforeach; ?>
+  <?php if ($this->link): ?>
+    <td class="detail-link">
+      <a href="<?=$this->link?>"><?=$GLOBALS['TL_LANG']['MSC']['memberDetail'] ?? ''?></a>
+    </td>
+  <?php endif; ?>
+</tr>

@@ -1,0 +1,46 @@
+
+<?php $this->extend('block_unsearchable'); ?>
+
+<?php $this->block('content'); ?>
+
+<?php if (!empty($this->filters)): ?>
+  <div class="member-list-filter">
+    <?php $this->insert('memberExtension_filter', [
+      'filters' => $this->filters,
+      'requestToken' => $this->requestToken,
+      'formId' => $this->filterFormId,
+    ]) ?>
+  </div>
+<?php endif; ?>
+
+<div class="member-table" style="overflow-x: scroll">
+  <table>
+    <?php if (empty($this->members)): ?>
+      <tbody id="statistic-content">
+      <tr>
+        <td class="empty message"><?=$this->empty?></td>
+      </tr>
+      </tbody>
+    <?php else: ?>
+      <thead>
+        <tr>
+          <?php foreach ($this->labels as $label): ?>
+            <th class="head"><?= $label ?></th>
+          <?php endforeach; ?>
+          <?php if ($this->hasDetailPage): ?>
+            <th class="head"><?=$GLOBALS['TL_LANG']['MSC']['memberDetail'] ?? ''?></th>
+          <?php endif; ?>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($this->members as $row): ?>
+          <?= $row ?>
+        <?php endforeach; ?>
+      </tbody>
+    <?php endif; ?>
+  </table>
+</div>
+
+<?= $this->pagination ?>
+
+<?php $this->endblock(); ?>
