@@ -97,7 +97,7 @@ class MemberReaderController extends MemberExtensionController
             $template->back = $GLOBALS['TL_LANG']['MSC']['goBack'];
         }
 
-        $template->member = $this->parseMemberTemplate($member, $memberTemplate, $arrMemberFields, $model);
+        $template->member = $this->parseMemberTemplate($member, $memberTemplate, $model);
 
         return $template->getResponse();
     }
