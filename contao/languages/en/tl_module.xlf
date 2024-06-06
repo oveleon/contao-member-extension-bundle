@@ -56,6 +56,9 @@
       <trans-unit id="tl_module.memberReaderTpl.1">
         <source>Here you can set your own member reader template.</source>
       </trans-unit>
+      <trans-unit id="tl_module.includeMemberListTable">
+        <source>For the member-list-table to work, you have to choose &lt;em&gt;%s&lt;/em&gt; for your list template and include the &lt;em&gt;%s&lt;/em&gt; jQuery template in the page layout.</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

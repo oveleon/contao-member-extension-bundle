@@ -103,7 +103,7 @@ class MemberListController extends MemberExtensionController
             $limit = $model->numberOfItems;
         }
 
-        if ($model->perPage > 0 && (!isset($limit) || $model->numberOfItems > $model->perPage))
+        if ($model->perPage > 0 && (!isset($limit) || $model->numberOfItems > $model->perPage) && !$this->isTable)
         {
             if (isset($limit))
             {
@@ -140,7 +140,8 @@ class MemberListController extends MemberExtensionController
 
         $template->hasDetailPage = !!$model->jumpTo;
 
-        $template->labels = array_keys($this->labels);
+        $template->total = $total;
+        $template->labels = $this->labels;
         $template->members = $arrMembers;
 
         return $template->getResponse();

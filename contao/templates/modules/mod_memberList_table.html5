@@ -13,22 +13,18 @@
   </div>
 <?php endif; ?>
 
-<div class="member-table" style="overflow-x: scroll">
-  <table>
-    <?php if (empty($this->members)): ?>
-      <tbody id="statistic-content">
-      <tr>
-        <td class="empty message"><?=$this->empty?></td>
-      </tr>
-      </tbody>
-    <?php else: ?>
+<div class="member-table">
+  <?php if (empty($this->members)): ?>
+    <p class="empty message"><?=$this->empty?></p>
+  <?php else: ?>
+    <table data-zero-label="No matching records found" data-search-label="Search:"<?= (($this->perPage > 0) && ($this->total > 10)) ? ' data-paging-true="1"' : '' ?>>
       <thead>
         <tr>
           <?php foreach ($this->labels as $label): ?>
             <th class="head"><?= $label ?></th>
           <?php endforeach; ?>
           <?php if ($this->hasDetailPage): ?>
-            <th class="head"><?=$GLOBALS['TL_LANG']['MSC']['memberDetail'] ?? ''?></th>
+            <th class="head"><?= $this->trans('MSC.memberDetailHeader') ?></th>
           <?php endif; ?>
         </tr>
       </thead>
@@ -37,8 +33,8 @@
           <?= $row ?>
         <?php endforeach; ?>
       </tbody>
-    <?php endif; ?>
-  </table>
+    </table>
+  <?php endif; ?>
 </div>
 
 <?= $this->pagination ?>

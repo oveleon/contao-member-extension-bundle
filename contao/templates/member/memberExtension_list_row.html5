@@ -4,7 +4,7 @@
   <?php endforeach; ?>
   <?php if ($this->link): ?>
     <td class="detail-link">
-      <a href="<?=$this->link?>"><?=$GLOBALS['TL_LANG']['MSC']['memberDetail'] ?? ''?></a>
+      <a href="<?=$this->link?>"><?= $this->trans('MSC.memberDetail') ?></a>
     </td>
   <?php endif; ?>
 </tr>

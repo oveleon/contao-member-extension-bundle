@@ -5,6 +5,10 @@
         <source>No members could be found.</source>
         <target>Es konnten keine Mitglieder gefunden werden.</target>
       </trans-unit>
+      <trans-unit id="MSC.memberDetailHeader">
+        <source>Details</source>
+        <target>Details</target>
+      </trans-unit>
       <trans-unit id="MSC.memberDetail">
         <source>More</source>
         <target>Mehr</target>

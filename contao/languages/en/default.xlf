@@ -4,6 +4,9 @@
       <trans-unit id="MSC.emptyMemberList">
         <source>No members could be found.</source>
       </trans-unit>
+      <trans-unit id="MSC.memberDetailHeader">
+        <source>Details</source>
+      </trans-unit>
       <trans-unit id="MSC.memberDetail">
         <source>More</source>
       </trans-unit>

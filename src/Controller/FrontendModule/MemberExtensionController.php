@@ -42,8 +42,6 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
 
     protected array $labels = [];
 
-    private bool $parsedLabels = false;
-
     protected function parseMemberTemplate(MemberModel|Model $objMember, FrontendTemplate $objTemplate, ModuleModel $model): string
     {
         System::loadLanguageFile('default');
@@ -103,14 +101,17 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
             $returnFields[$value] = $arrFields[$value] ?? '';
         }
 
+        $labels = array_keys($returnFields);
+
+        $this->parsedLabels = true;
+        $this->labels = array_map(fn($field) => $GLOBALS['TL_LANG']['tl_member'][$field][0] ?? $field, $labels);;
+
         $objTemplate->fields = $returnFields;
 
         if ($model->jumpTo)
         {
             $objTemplate->link = $this->generateMemberUrl($objMember);
         }
-
-        $this->parsedLabels = true;
 
         return $objTemplate->parse();
     }
@@ -186,7 +187,6 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
             $strReturn .= implode(", ", $arrReturn);
         }
 
-        $this->labels[$field] = true;
         $arrFields[$field] = $strReturn;
     }
 
