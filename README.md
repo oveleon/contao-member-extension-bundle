@@ -45,6 +45,8 @@ registration module. Additionally, you can display members with their details in
 - Paginated member lists
 - Member detail pages
 - Insert tags for member avatars
+- Sortable data-tables (funded by @netzarbeiter)
+  - requires jQuery to work (https://datatables.net/)
 
 ---
 

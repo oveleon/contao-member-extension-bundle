@@ -74,6 +74,10 @@
         <source>Here you can set your own member reader template.</source>
         <target>Hier können Sie ein eigenes Mitglieds-Leser Template einstellen.</target>
       </trans-unit>
+      <trans-unit id="tl_module.includeMemberListTable">
+        <source>For the member-list-table to work, you have to choose &lt;em&gt;%s&lt;/em&gt; for your list template and include the &lt;em&gt;%s&lt;/em&gt; jQuery template in the page layout.</source>
+        <target>Damit die Mitglieds-Tabelle funktioniert, müssen Sie das &lt;em&gt;%s&lt;/em&gt; als Listen-Template auswählen und das &lt;em&gt;%s&lt;/em&gt; jQuery-Template im Seitenlayout einbinden.</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>

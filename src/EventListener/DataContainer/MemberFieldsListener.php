@@ -27,7 +27,8 @@ class MemberFieldsListener
 
         if (!$varValue)
         {
-            $varValue = $dc->activeRecord->firstname . '_' . $dc->activeRecord->lastname . ($aliasExists ? '_' . $dc->activeRecord->id : '');
+            // ToDo - use slug generator for aliases
+            $varValue = str_replace(' ','-', $dc->activeRecord->firstname) . '_' . str_replace(' ','-', $dc->activeRecord->lastname) . ($aliasExists ? '_' . $dc->activeRecord->id : '');
         }
         if (preg_match('/^[1-9]\d*$/', $varValue))
         {
