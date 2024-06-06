@@ -81,7 +81,7 @@ class MemberReaderController extends MemberExtensionController
             }
         }
 
-        $arrMemberFields = StringUtil::deserialize($model->memberFields, true);
+        $this->memberFields = StringUtil::deserialize($model->memberFields, true);
 
         $memberTemplate = new FrontendTemplate($model->memberReaderTpl ?: 'memberExtension_reader_full');
         $memberTemplate->setData($member->row());
