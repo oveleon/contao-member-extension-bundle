@@ -93,7 +93,7 @@ class InsertTagsListener
             return null;
         }
 
-        list($intWidth, $intHeight, $mode) = explode('x', $strSize);
+        list($intWidth, $intHeight, $mode) = array_pad(explode('x', $strSize),3, null);
 
         $arrSizes = [$intWidth, $intHeight];
 
