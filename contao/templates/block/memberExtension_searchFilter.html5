@@ -5,7 +5,9 @@
         <label for="ctrl_select-filter"><?= $this->trans('tl_member.' . $this->selectField . '.0') ?></label>
         <select name="select_filter" id="ctrl_select-filter" class="select">
           <?php foreach ($this->selectOptions as $option): ?>
-            <option value="<?= $option ?>"<?=($option === $this->selected)?' selected':''?>><?= !!$option ? $option : '-' ?></option>
+            <option value="<?= $option ?>"<?=($option === $this->selected)?' selected':''?>>
+              <?= !!$option ? $this->trans('country' === $this->selectField ? 'CNT.' . $option : 'tl_member' .$option . '1') : '-' ?>
+            </option>
           <?php endforeach; ?>
         </select>
       </div>
