@@ -96,9 +96,18 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
 
         $returnFields = [];
 
+        $skipEmptyValues = System::getContainer()->getParameter('contao_member_extension.skip_empty_values');
+
         foreach ($this->memberFields as $value)
         {
-            $returnFields[$value] = $arrFields[$value] ?? '';
+            $val = $arrFields[$value] ?? '';
+
+            if ($skipEmptyValues && !$val)
+            {
+                continue;
+            }
+
+            $returnFields[$value] = $val;
         }
 
         $labels = array_keys($returnFields);
