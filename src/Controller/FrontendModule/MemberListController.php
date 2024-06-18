@@ -107,6 +107,8 @@ class MemberListController extends MemberExtensionController
             }
         }
 
+        $this->template->total = $intTotal;
+
         $total = $intTotal - $offset;
 
         if ($this->model->numberOfItems > 0)
