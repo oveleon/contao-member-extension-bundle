@@ -39,7 +39,7 @@ class MemberListController extends MemberExtensionController
 {
     const TYPE = 'memberList';
     private ModuleModel $model;
-    private Template $template;
+    public Template $template;
 
     private array $memberFilter = [];
     /**
@@ -234,6 +234,11 @@ class MemberListController extends MemberExtensionController
             {
                 System::importStatic($callback[0])->{$callback[1]}($arrColumns, $arrOptions, $this);
             }
+        }
+
+        if (null === $arrColumns)
+        {
+            return null;
         }
 
         return MemberModel::findBy($arrColumns, null, $arrOptions);
