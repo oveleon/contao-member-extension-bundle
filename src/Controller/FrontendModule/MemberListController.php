@@ -68,7 +68,7 @@ class MemberListController extends MemberExtensionController
         $limit = null;
         $offset = 0;
 
-        $this->template->searchable = $this->model->ext_activateSearch && !!$this->model->ext_activateFilter;
+        $this->template->selectFilterable = $this->model->ext_activateFilter && $this->model->ext_selectFilter;
 
         if ($this->model->ext_activateFilter)
         {
@@ -183,19 +183,21 @@ class MemberListController extends MemberExtensionController
         $arrColumns = ["$t.disable='' AND ($t.start='' OR $t.start<='$time') AND ($t.stop='' OR $t.stop>'$time') "];
         $arrOptions = [];
 
-        // Search
-        if ($this->template->searchable && !!($string = Input::get('search_string')))
+        if (!!($field = $this->model->ext_where) && !!($string = Input::get('search_string')))
         {
-            $field = $this->model->ext_where;
             $this->template->searchString = $string;
             $arrColumns[] = "$t.$field LIKE '$string%'";
+        }
 
-            if (isset($GLOBALS['TL_HOOKS']['modifyMemberSearch']) && \is_array($GLOBALS['TL_HOOKS']['modifyMemberSearch']))
+        if ($this->model->ext_activateFilter && !!($select = $this->model->ext_selectFilter))
+        {
+            $uniqueOptions = System::getContainer()->get('database_connection')?->fetchAllAssociative('SELECT DISTINCT '.$t.'.'.$select.' FROM ' . $t . ' ORDER BY '.$t.'.'.$select);
+            $this->template->selectOptions = array_column($uniqueOptions, $select);
+
+            if (!!($option = Input::get('select_filter')))
             {
-                foreach ($GLOBALS['TL_HOOKS']['modifyMemberSearch'] as $callback)
-                {
-                    System::importStatic($callback[0])->{$callback[1]}($arrColumns, $this);
-                }
+                $this->template->selectedOption = $option;
+                $arrColumns[] = "$t.$select='$option'";
             }
         }
 

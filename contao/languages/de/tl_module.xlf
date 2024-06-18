@@ -1,9 +1,9 @@
 <?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="contao/languages/en/tl_module.php" source-language="en" target-language="de">
     <body>
-      <trans-unit id="tl_module.member_search_legend">
-        <source>Search</source>
-        <target>Suche</target>
+      <trans-unit id="tl_module.filter_search_legend">
+        <source>Filter / Search</source>
+        <target>Filterung / Suche</target>
       </trans-unit>
       <trans-unit id="tl_module.ext_order.0">
         <source>Sort order</source>
@@ -37,14 +37,6 @@
         <source>Here you can select the member fields to be displayed.</source>
         <target>Hier können Sie die auszugebenden Mitgliederfelder auswählen.</target>
       </trans-unit>
-      <trans-unit id="tl_module.ext_activateFilter.0">
-        <source>Activate filters</source>
-        <target>Filter aktivieren</target>
-      </trans-unit>
-      <trans-unit id="tl_module.ext_activateFilter.1">
-        <source>Adds filtering. Only works with checkbox fields with the eval flag 'feFilterable'.</source>
-        <target>Fügt eine Filterung hinzu. Funktioniert nur mit Checkbox-Feldern mit dem eval-flag 'feFilterable'.</target>
-      </trans-unit>
       <trans-unit id="tl_module.ext_parseDetails.0">
         <source>Parse details</source>
         <target>Details umwandeln</target>
@@ -62,21 +54,29 @@
         <target>Verwendet den Mitgliedsalias für die Detailseite.</target>
       </trans-unit>
 
-      <trans-unit id="tl_module.ext_activateSearch.0">
-        <source>Activate search</source>
-        <target>Suche aktivieren</target>
-      </trans-unit>
-      <trans-unit id="tl_module.ext_activateSearch.1">
-        <source>Activates the search for a value</source>
-        <target>Aktiviert die Suche nach einem Wert</target>
-      </trans-unit>
       <trans-unit id="tl_module.ext_where.0">
         <source>Search field</source>
         <target>Suchfeld</target>
       </trans-unit>
       <trans-unit id="tl_module.ext_where.1">
-        <source>Here you can select the field that you want to be searchable.</source>
-        <target>Hier können Sie das Feld auswählen, welches durchsuchbar sein soll.</target>
+        <source>Activates search. Here you can select the field that you want to be searchable.</source>
+        <target>Aktiviert die Suche. Hier können Sie das Feld auswählen, welches durchsuchbar sein soll.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_activateFilter.0">
+        <source>Activate filters</source>
+        <target>Filter aktivieren</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_activateFilter.1">
+        <source>Adds filtering. Only works with checkbox fields with the eval flag 'feFilterable'.</source>
+        <target>Fügt eine Filterung hinzu. Funktioniert nur mit Checkbox-Feldern mit dem eval-flag 'feFilterable'.</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_selectFilter.0">
+        <source>Select filter</source>
+        <target>Select-Filter</target>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_selectFilter.1">
+        <source>Here you can select a field that provides an options filter in the frontend.</source>
+        <target>Hier können Sie ein Feld auswählen, welches einen Optionen-Filter im Frontend zur Verfügung stellt.</target>
       </trans-unit>
 
       <trans-unit id="tl_module.memberListTpl.0">

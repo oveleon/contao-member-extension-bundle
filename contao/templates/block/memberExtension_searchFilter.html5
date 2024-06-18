@@ -1,0 +1,23 @@
+<form method="GET">
+  <div class="formbody">
+    <?php if ($this->selectField): ?>
+      <div class="widget widget-select">
+        <label for="ctrl_select-filter"><?= $this->trans('tl_member.' . $this->selectField . '.0') ?></label>
+        <select name="select_filter" id="ctrl_select-filter" class="select">
+          <?php foreach ($this->selectOptions as $option): ?>
+            <option value="<?= $option ?>"<?=($option === $this->selected)?' selected':''?>><?= !!$option ? $option : '-' ?></option>
+          <?php endforeach; ?>
+        </select>
+      </div>
+    <?php endif; ?>
+    <?php if ($this->searchField): ?>
+      <div class="widget widget-text">
+        <label for="ctrl_search"><?= $this->trans('tl_member.' . $this->searchField . '.0') ?></label>
+        <input type="text" name="search_string" id="ctrl_search" class="text" value="<?= $this->searchString ?>">
+      </div>
+    <?php endif; ?>
+    <div class="widget widget-submit">
+      <button type="submit" class="submit"><?= $this->trans('MSC.search') ?></button>
+    </div>
+  </div>
+</form>
