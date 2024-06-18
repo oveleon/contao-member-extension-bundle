@@ -44,6 +44,19 @@
         <source>Uses the member alias for the detail page.</source>
       </trans-unit>
 
+      <trans-unit id="tl_module.ext_activateSearch.0">
+        <source>Activate search</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_activateSearch.1">
+        <source>Activates the search for a value</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_where.0">
+        <source>Search field</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_where.1">
+        <source>Here you can select the field that you want to be searchable.</source>
+      </trans-unit>
+
       <trans-unit id="tl_module.memberListTpl.0">
         <source>List template</source>
       </trans-unit>

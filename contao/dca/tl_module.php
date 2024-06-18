@@ -14,8 +14,8 @@ declare(strict_types=1);
  */
 
 use Contao\Controller;
+use Contao\CoreBundle\DataContainer\PaletteManipulator;
 use Contao\System;
-use Oveleon\ContaoMemberExtensionBundle\EventListener\DataContainer\MemberFieldsOptionsListener;
 
 System::loadLanguageFile('tl_member_settings');
 
@@ -24,6 +24,9 @@ $GLOBALS['TL_DCA']['tl_module']['palettes']['avatar'] = '{title_legend},name,hea
 $GLOBALS['TL_DCA']['tl_module']['palettes']['deleteAvatar'] = '{title_legend},name,headline,type;{template_legend:hide},customTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['memberList'] = '{title_legend},name,headline,type;{config_legend},ext_order,ext_orderField,numberOfItems,perPage,ext_groups,memberFields,imgSize,ext_activateFilter,ext_parseDetails,ext_memberAlias;{redirect_legend},jumpTo;{template_legend:hide},customTpl,memberListTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID';
 $GLOBALS['TL_DCA']['tl_module']['palettes']['memberReader'] = '{title_legend},name,headline,type;{config_legend},ext_groups,memberFields,imgSize,ext_parseDetails,overviewPage,customLabel;{template_legend:hide},customTpl,memberReaderTpl;{protected_legend:hide},protected;{expert_legend:hide},guests,cssID';
+
+$GLOBALS['TL_DCA']['tl_module']['palettes']['__selector__'][] = 'ext_activateSearch';
+$GLOBALS['TL_DCA']['tl_module']['subpalettes']['ext_activateSearch'] = 'ext_where';
 
 $GLOBALS['TL_DCA']['tl_module']['fields']['memberListTpl'] = [
     'exclude' => true,
@@ -93,3 +96,23 @@ $GLOBALS['TL_DCA']['tl_module']['fields']['ext_activateFilter'] = [
     'eval' => ['tl_class' => 'w50 m12'],
     'sql' => "char(1) NOT NULL default ''"
 ];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['ext_activateSearch'] = [
+    'exclude' => true,
+    'inputType' => 'checkbox',
+    'eval' => ['submitOnChange'=>true, 'tl_class' => 'w50'],
+    'sql' => "char(1) NOT NULL default ''"
+];
+
+$GLOBALS['TL_DCA']['tl_module']['fields']['ext_where'] = [
+    'exclude' => true,
+    'inputType' => 'select',
+    'eval' => ['tl_class' => 'w50', 'includeBlankOption' => true, 'chosen' => true],
+    'sql' => "varchar(32) NOT NULL default ''"
+];
+
+PaletteManipulator::create()
+    ->addLegend('member_search_legend', 'config_legend')
+    ->addField('ext_activateSearch', 'member_search_legend', PaletteManipulator::POSITION_APPEND)
+    ->applyToPalette('memberList', 'tl_module')
+;

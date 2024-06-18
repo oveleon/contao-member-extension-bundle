@@ -1,0 +1,11 @@
+<form method="GET" class="member-search-form">
+  <div class="formbody">
+    <div class="widget widget-text">
+      <label for="ctrl_search"><?= $this->trans($this->searchField ? 'tl_member.' . $this->searchField . '.0' : 'MSC.keywords') ?></label>
+      <input type="text" name="search_string" id="ctrl_search" class="text" value="<?= $this->searchString ?>">
+    </div>
+    <div class="widget widget-submit">
+      <button type="submit" class="submit"><?= $this->trans('MSC.search') ?></button>
+    </div>
+  </div>
+</form>

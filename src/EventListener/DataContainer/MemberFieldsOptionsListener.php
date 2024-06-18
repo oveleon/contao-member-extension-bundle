@@ -14,6 +14,7 @@ class MemberFieldsOptionsListener
     }
 
     #[AsCallback(table: 'tl_module', target: 'fields.ext_orderField.options')]
+    #[AsCallback(table: 'tl_module', target: 'fields.ext_where.options')]
     public function getEditableMemberFields(): array
     {
         $fields = [];

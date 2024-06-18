@@ -2,6 +2,16 @@
 
 <?php $this->block('content'); ?>
 
+<?php if (!empty($this->searchable)): ?>
+  <div class="member-list-search">
+    <?php $this->insert('memberExtension_search', [
+      'searchField'  => $this->searchField ?? '',
+      'searchString' => $this->searchString ?? '',
+      'requestToken' => $this->requestToken
+    ]) ?>
+  </div>
+<?php endif; ?>
+
 <?php if (!empty($this->filters)): ?>
   <div class="member-list-filter">
     <?php $this->insert('memberExtension_filter', [
