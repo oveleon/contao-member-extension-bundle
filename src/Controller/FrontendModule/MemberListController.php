@@ -186,7 +186,7 @@ class MemberListController extends MemberExtensionController
         // Search
         if ($this->template->searchable && !!($string = Input::get('search_string')))
         {
-            $this->template->searchField = $field = $this->model->ext_where;
+            $field = $this->model->ext_where;
             $this->template->searchString = $string;
             $arrColumns[] = "$t.$field LIKE '$string%'";
 

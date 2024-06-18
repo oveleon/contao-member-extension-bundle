@@ -5,7 +5,7 @@
 <?php if (!empty($this->searchable)): ?>
   <div class="member-list-search">
     <?php $this->insert('memberExtension_search', [
-      'searchField'  => $this->searchField ?? '',
+      'searchField'  => $this->ext_where ?? '',
       'searchString' => $this->searchString ?? '',
       'requestToken' => $this->requestToken
     ]) ?>
