@@ -65,6 +65,11 @@ class MemberListController extends MemberExtensionController
 
     protected function parseMemberList(): Response
     {
+        System::loadLanguageFile('default');
+        System::loadLanguageFile('tl_member');
+        System::loadLanguageFile('countries');
+        System::loadLanguageFile('languages');
+
         $limit = null;
         $offset = 0;
 

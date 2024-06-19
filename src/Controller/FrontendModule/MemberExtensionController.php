@@ -44,11 +44,6 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
 
     protected function parseMemberTemplate(MemberModel|Model $objMember, FrontendTemplate $objTemplate, ModuleModel $model): string
     {
-        System::loadLanguageFile('default');
-        System::loadLanguageFile('tl_member');
-        System::loadLanguageFile('countries');
-        System::loadLanguageFile('languages');
-
         $this->model = $model;
 
         $arrFields = [];
