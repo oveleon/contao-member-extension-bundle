@@ -22,11 +22,15 @@ class ContaoMemberExtensionExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container): void
     {
+        $config = $this->processConfiguration(new Configuration(), $configs);
+
         $loader = new YamlFileLoader(
             $container,
             new FileLocator(__DIR__ . '/../../config')
         );
 
         $loader->load('services.yaml');
+
+        $container->setParameter('contao_member_extension.skip_empty_values', $config['skip_empty_values']);
     }
 }

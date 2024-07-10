@@ -2,6 +2,19 @@
 
 <?php $this->block('content'); ?>
 
+<?php if ($this->ext_where || $this->selectFilterable): ?>
+  <div class="member-list-search-filter">
+    <?php $this->insert('memberExtension_searchFilter', [
+      'selectField' => $this->ext_selectFilter ?? '',
+      'selectOptions' => $this->selectOptions ?? [],
+      'selected' => $this->selectedOption ?? '',
+      'searchField'  => $this->ext_where ?? '',
+      'searchString' => $this->searchString ?? '',
+      'requestToken' => $this->requestToken
+    ]) ?>
+  </div>
+<?php endif; ?>
+
 <?php if (!empty($this->filters)): ?>
   <div class="member-list-filter">
     <?php $this->insert('memberExtension_filter', [

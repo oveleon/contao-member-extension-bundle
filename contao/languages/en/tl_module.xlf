@@ -1,6 +1,9 @@
 <?xml version="1.0" ?><xliff version="1.1">
   <file datatype="php" original="contao/languages/en/tl_module.php" source-language="en">
     <body>
+      <trans-unit id="tl_module.filter_search_legend">
+        <source>Filter / Search</source>
+      </trans-unit>
       <trans-unit id="tl_module.ext_order.0">
         <source>Sort order</source>
       </trans-unit>
@@ -25,12 +28,6 @@
       <trans-unit id="tl_module.memberFields.1">
         <source>Here you can select the member fields to be displayed.</source>
       </trans-unit>
-      <trans-unit id="tl_module.ext_activateFilter.0">
-        <source>Activate filters</source>
-      </trans-unit>
-      <trans-unit id="tl_module.ext_activateFilter.1">
-        <source>Adds filtering. Only works with checkbox fields with the eval flag 'feFilterable'.</source>
-      </trans-unit>
       <trans-unit id="tl_module.ext_parseDetails.0">
         <source>Parse details</source>
       </trans-unit>
@@ -42,6 +39,25 @@
       </trans-unit>
       <trans-unit id="tl_module.ext_memberAlias.1">
         <source>Uses the member alias for the detail page.</source>
+      </trans-unit>
+
+      <trans-unit id="tl_module.ext_where.0">
+        <source>Search field</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_where.1">
+        <source>Activates search. Here you can select the field that you want to be searchable.</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_activateFilter.0">
+        <source>Activate filters</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_activateFilter.1">
+        <source>Adds filtering. Only works with checkbox fields with the eval flag 'feFilterable'.</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_selectFilter.0">
+        <source>Select filter</source>
+      </trans-unit>
+      <trans-unit id="tl_module.ext_selectFilter.1">
+        <source>Here you can select a field that provides an options filter in the frontend.</source>
       </trans-unit>
 
       <trans-unit id="tl_module.memberListTpl.0">

@@ -44,11 +44,6 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
 
     protected function parseMemberTemplate(MemberModel|Model $objMember, FrontendTemplate $objTemplate, ModuleModel $model): string
     {
-        System::loadLanguageFile('default');
-        System::loadLanguageFile('tl_member');
-        System::loadLanguageFile('countries');
-        System::loadLanguageFile('languages');
-
         $this->model = $model;
 
         $arrFields = [];
@@ -96,9 +91,18 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
 
         $returnFields = [];
 
+        $skipEmptyValues = System::getContainer()->getParameter('contao_member_extension.skip_empty_values');
+
         foreach ($this->memberFields as $value)
         {
-            $returnFields[$value] = $arrFields[$value] ?? '';
+            $val = $arrFields[$value] ?? '';
+
+            if ($skipEmptyValues && !$val)
+            {
+                continue;
+            }
+
+            $returnFields[$value] = $val;
         }
 
         $labels = array_keys($returnFields);

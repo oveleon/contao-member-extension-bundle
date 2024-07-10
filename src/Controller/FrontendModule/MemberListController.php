@@ -39,32 +39,48 @@ class MemberListController extends MemberExtensionController
 {
     const TYPE = 'memberList';
     private ModuleModel $model;
-    private Template $template;
+    public Template $template;
 
     private array $memberFilter = [];
+    /**
+     * @var array|mixed|string|string[]|null
+     */
+    private array $groups;
 
     protected function getResponse(Template $template, ModuleModel $model, Request $request): Response
     {
         $this->model = $model;
         $this->template = $template;
+        $this->request = $request;
+        $this->groups = StringUtil::deserialize($model->ext_groups, true);
 
-        $limit = null;
-        $offset = 0;
-
-        $arrGroups = StringUtil::deserialize($model->ext_groups);
-
-        if (empty($arrGroups) || !\is_array($arrGroups))
+        if (empty($this->groups))
         {
             $template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
             $template->getResponse();
         }
+
+        return $this->parseMemberList();
+    }
+
+    protected function parseMemberList(): Response
+    {
+        System::loadLanguageFile('default');
+        System::loadLanguageFile('tl_member');
+        System::loadLanguageFile('countries');
+        System::loadLanguageFile('languages');
+
+        $limit = null;
+        $offset = 0;
+
+        $this->template->selectFilterable = $this->model->ext_activateFilter && $this->model->ext_selectFilter;
 
         if ($this->model->ext_activateFilter)
         {
             $this->parseFilters();
         }
 
-        $memberTemplate = new FrontendTemplate($model->memberListTpl ?: 'memberExtension_list_default');
+        $memberTemplate = new FrontendTemplate($this->model->memberListTpl ?: 'memberExtension_list_default');
 
         if (
             str_starts_with($this->template->getName(), 'mod_' . self::TYPE . '_table') &&
@@ -81,7 +97,7 @@ class MemberListController extends MemberExtensionController
             foreach ($objMembers as $objMember)
             {
                 if (
-                    !$this->checkMemberGroups($arrGroups, $objMember) ||
+                    !$this->checkMemberGroups($objMember) ||
                     ($this->model->ext_activateFilter && $this->excludeMember($objMember))
                 ) {
                     continue;
@@ -89,37 +105,39 @@ class MemberListController extends MemberExtensionController
 
                 $intTotal += 1;
 
-                $this->memberFields = StringUtil::deserialize($model->memberFields, true);
+                $this->memberFields = StringUtil::deserialize($this->model->memberFields, true);
                 $memberTemplate->setData($objMember->row());
 
-                $arrMembers[] = $this->parseMemberTemplate($objMember, $memberTemplate, $model);
+                $arrMembers[] = $this->parseMemberTemplate($objMember, $memberTemplate, $this->model);
             }
         }
 
+        $this->template->total = $intTotal;
+
         $total = $intTotal - $offset;
 
-        if ($model->numberOfItems > 0)
+        if ($this->model->numberOfItems > 0)
         {
-            $limit = $model->numberOfItems;
+            $limit = $this->model->numberOfItems;
         }
 
-        if ($model->perPage > 0 && (!isset($limit) || $model->numberOfItems > $model->perPage) && !$this->isTable)
+        if ($this->model->perPage > 0 && (!isset($limit) || $this->model->numberOfItems > $this->model->perPage) && !$this->isTable)
         {
             if (isset($limit))
             {
                 $total = min($limit, $total);
             }
 
-            $id = 'page_n' . $model->id;
+            $id = 'page_n' . $this->model->id;
             $page = Input::get($id) ?? 1;
 
-            if ($page < 1 || $page > max(ceil($total/$model->perPage), 1))
+            if ($page < 1 || $page > max(ceil($total/$this->model->perPage), 1))
             {
                 throw new PageNotFoundException('Page not found: ' . Environment::get('uri'));
             }
 
-            $limit = $model->perPage;
-            $offset += (max($page, 1) - 1) * $model->perPage;
+            $limit = $this->model->perPage;
+            $offset += (max($page, 1) - 1) * $this->model->perPage;
             $skip = 0;
 
             if ($offset + $limit > $total + $skip)
@@ -129,34 +147,34 @@ class MemberListController extends MemberExtensionController
 
             $arrMembers = \array_slice($arrMembers, $offset, ((int) $limit ?: $intTotal), true);
 
-            $objPagination = new Pagination($total, $model->perPage, Config::get('maxPaginationLinks'), $id);
-            $template->pagination = $objPagination->generate("\n  ");
+            $objPagination = new Pagination($total, $this->model->perPage, Config::get('maxPaginationLinks'), $id);
+            $this->template->pagination = $objPagination->generate("\n  ");
         }
 
         if (empty($arrMembers))
         {
-            $template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
+            $this->template->empty = $GLOBALS['TL_LANG']['MSC']['emptyMemberList'];
         }
 
-        $template->hasDetailPage = !!$model->jumpTo;
+        $this->template->hasDetailPage = !!$this->model->jumpTo;
 
-        $template->total = $total;
-        $template->labels = $this->labels;
-        $template->members = $arrMembers;
+        $this->template->total = $total;
+        $this->template->labels = $this->labels;
+        $this->template->members = $arrMembers;
 
-        return $template->getResponse();
+        return $this->template->getResponse();
     }
 
-    private function checkMemberGroups(array $arrGroups, MemberModel $objMember): bool
+    protected function checkMemberGroups(MemberModel $objMember): bool
     {
-        if (empty($arrGroups))
+        if (empty($this->groups))
         {
             return false;
         }
 
         $arrMemberGroups = StringUtil::deserialize($objMember->groups);
 
-        if (!\is_array($arrMemberGroups) || !\count(array_intersect($arrGroups, $arrMemberGroups)))
+        if (!\is_array($arrMemberGroups) || !\count(array_intersect($this->groups, $arrMemberGroups)))
         {
             return false;
         }
@@ -164,13 +182,31 @@ class MemberListController extends MemberExtensionController
         return true;
     }
 
-    private function getMembers(): Collection|MemberModel|null
+    protected function getMembers(): Collection|MemberModel|null
     {
         $t = MemberModel::getTable();
         $time = Date::floorToMinute();
 
         $arrColumns = ["$t.disable='' AND ($t.start='' OR $t.start<='$time') AND ($t.stop='' OR $t.stop>'$time') "];
         $arrOptions = [];
+
+        if (!!($field = $this->model->ext_where) && !!($string = Input::get('search_string')))
+        {
+            $this->template->searchString = $string;
+            $arrColumns[] = "$t.$field LIKE '$string%'";
+        }
+
+        if ($this->model->ext_activateFilter && !!($select = $this->model->ext_selectFilter))
+        {
+            $uniqueOptions = System::getContainer()->get('database_connection')?->fetchAllAssociative('SELECT DISTINCT '.$t.'.'.$select.' FROM ' . $t . ' ORDER BY '.$t.'.'.$select);
+            $this->template->selectOptions = array_column($uniqueOptions, $select);
+
+            if (!!($option = Input::get('select_filter')))
+            {
+                $this->template->selectedOption = $option;
+                $arrColumns[] = "$t.$select='$option'";
+            }
+        }
 
         if (!!$orderField = $this->model->ext_orderField)
         {
@@ -205,6 +241,11 @@ class MemberListController extends MemberExtensionController
             }
         }
 
+        if (null === $arrColumns)
+        {
+            return null;
+        }
+
         return MemberModel::findBy($arrColumns, null, $arrOptions);
     }
 
@@ -221,7 +262,7 @@ class MemberListController extends MemberExtensionController
         return false;
     }
 
-    private function parseFilters(): void
+    protected function parseFilters(): void
     {
         Controller::loadDataContainer('tl_member');
         System::loadLanguageFile('tl_member');
