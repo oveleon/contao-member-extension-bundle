@@ -63,6 +63,11 @@ class MemberReaderController extends MemberExtensionController
             throw new PageNotFoundException('Page not found: ' . Environment::get('uri'));
         }
 
+        System::loadLanguageFile('default');
+        System::loadLanguageFile('tl_member');
+        System::loadLanguageFile('countries');
+        System::loadLanguageFile('languages');
+
         // Check for group intersection
         $arrGroups = StringUtil::deserialize($model->ext_groups);
         $memberGroups = StringUtil::deserialize($member->groups);
