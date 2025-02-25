@@ -74,7 +74,7 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
                     {
                         if (\is_array(($arrValue = StringUtil::deserialize($varValue))))
                         {
-                            $arrFields[$field] = implode(",", $arrValue);
+                            $arrFields[$field] = implode(", ", $arrValue);
                         }
                         else
                         {
