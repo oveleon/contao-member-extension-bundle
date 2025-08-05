@@ -190,6 +190,9 @@ abstract class MemberExtensionController extends AbstractFrontendModuleControlle
 
             $strReturn .= implode(", ", $arrReturn);
         }
+        else {
+            $strReturn .= implode(", ", $arrValue);
+        }
 
         $arrFields[$field] = $strReturn;
     }
